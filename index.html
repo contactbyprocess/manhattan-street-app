@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <!-- PWA plein écran sous l’encoche -->
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="Manhattan Street" />
+  <meta name="theme-color" content="#000000" />
+  <link rel="manifest" href="manifest.json" />
+
+  <title>Manhattan Street — Commande</title>
+
+  <link rel="stylesheet" href="styles.css?v=21" />
+  <script defer src="app.js?v=21"></script>
+</head>
+<body>
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <!-- (le reste ne change pas) -->
+  <!-- Toast -->
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+  <!-- BANNIÈRE (full-bleed en haut, hauteur limitée) -->
+  <section class="banner edge-top">
+    <div class="banner-track" id="bannerTrack">
+      <!-- Pas grave si les images ne sont pas prêtes -->
+      <img src="assets/banner1.jpg?v=21" alt="Bannière 1" />
+      <img src="assets/banner2.jpg?v=21" alt="Bannière 2" />
+      <img src="assets/banner3.jpg?v=21" alt="Bannière 3" />
+    </div>
+    <div class="banner-dots" id="bannerDots"></div>
+  </section>
+
+  <!-- CONTENU SCROLLABLE (le body lui ne scrolle pas) -->
+  <main class="layout">
+
+    <!-- ACCUEIL -->
+    <section class="tab tab-home active" id="tab-home">
+      <section class="hero-min">
+        <h1 class="hero-hash">#ManhattanStreet</h1>
+        <p class="hero-tag">TON INCONTOURNABLE 🗽🔥</p>
+      </section>
+
+      <!-- Mon programme -->
+      <section class="home-card">
+        <div class="prog-row">
+          <h2 class="home-title">Mon Programme</h2>
+          <div class="points-badge">Points : <strong id="pointsCountTop">0</strong></div>
+        </div>
+      </section>
+
+      <!-- Hype du moment -->
+      <section class="home-block">
+        <div class="home-block-head">
+          <h2>La hype du moment ✨</h2>
+          <button class="btn outline small" id="goOrderTop">Commander ›</button>
+        </div>
+        <div class="hscroll compact3" id="featured"></div>
+      </section>
+
+      <!-- Espace client -->
+      <section class="home-block">
+        <h2>Mon espace client</h2>
+        <div class="client-grid">
+          <button class="client-tile" id="tileOrders"><span>Mes commandes</span></button>
+          <button class="client-tile" id="tileProfile"><span>Mon profil</span></button>
+        </div>
+      </section>
+    </section>
+
+    <!-- COMMANDE -->
+    <section class="tab" id="tab-order">
+      <div class="card">
+        <h2 id="orderModeTitle">Commande</h2>
+        <div class="order-info hint" id="orderInfo"></div>
+
+        <div class="map-wrap">
+          <iframe id="mapFrame" title="Carte" loading="lazy"
+            src="https://www.openstreetmap.org/export/embed.html?bbox=3.204%2C50.734%2C3.224%2C50.754&layer=mapnik&marker=50.744%2C3.214"></iframe>
+        </div>
+
+        <div id="dineInBlock" class="grid" style="display:none;margin-top:10px">
+          <label>Numéro de table
+            <input id="tableNumber" inputmode="numeric" pattern="[0-9]*" placeholder="Ex : 12" />
+          </label>
+        </div>
+
+        <div class="order-actions">
+          <button class="btn primary" id="orderStart">Commencer ma commande</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- FIDÉLITÉ -->
+    <section class="tab" id="tab-loyalty">
+      <div class="card">
+        <h2>Ma carte de fidélité</h2>
+
+        <div class="loyalty-card">
+          <div class="lc-header">MANHATTAN STREET</div>
+          <div class="lc-body">
+            <div class="lc-name" id="lcName">Prénom</div>
+            <div class="lc-id" id="lcId">ID — XXXX</div>
+            <div class="lc-points">Points : <span id="lcPoints">0</span></div>
+          </div>
+        </div>
+
+        <p class="hint" style="margin-top:8px">Présente ce QR en caisse :</p>
+        <div class="qr-wrap">
+          <div id="qrCanvas" class="qr-canvas" aria-label="QR code"></div>
+          <div class="qr-code-text" id="qrCodeText"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- HISTORIQUE -->
+    <section class="tab" id="tab-orders">
+      <div class="card">
+        <h2>Mon historique</h2>
+        <div id="myOrders"></div>
+      </div>
+    </section>
+
+    <!-- PROFIL -->
+    <section class="tab" id="tab-profile">
+      <div class="card">
+        <h2>Mon profil</h2>
+        <div class="grid">
+          <label>Prénom <input id="profileName" /></label>
+          <label>E-mail <input id="profileEmail" type="email" /></label>
+          <label>Téléphone <input id="profilePhone" type="tel" /></label>
+        </div>
+        <button class="btn primary" id="saveProfileBtn">Enregistrer</button>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- CTA rond -->
+  <button id="orderCta" class="order-cta-round" aria-label="Commander">🛍️</button>
+
+  <!-- Modal type de commande -->
+  <div id="orderTypeModal" class="modal" aria-hidden="true">
+    <div class="modal-bg"></div>
+    <div class="modal-card">
+      <div class="modal-header"><h3>Choisis ton type de commande</h3></div>
+      <div class="pad">
+        <div class="order-type-grid">
+          <button class="order-type" id="otClickCollect"><div class="ot-emoji">🛍️</div><div>Click & Collect</div></button>
+          <button class="order-type" id="otDelivery"><div class="ot-emoji">🚚</div><div>Livraison</div></button>
+          <button class="order-type" id="otDineIn"><div class="ot-emoji">🍽️</div><div>Sur place</div></button>
+        </div>
+        <div id="dineInExtras" class="dinein-form" style="display:none">
+          <label>Numéro de table
+            <input id="tableNumberModal" inputmode="numeric" pattern="[0-9]*" placeholder="Ex : 12" />
+          </label>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn ghost" id="orderTypeClose">Fermer</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- TABBAR -->
+  <nav class="tabbar">
+    <button data-tab="home" class="active">Accueil</button>
+    <button data-tab="loyalty">Fidélité</button>
+    <span class="tabbar-gap"></span>
+    <button data-tab="orders">Historique</button>
+    <button data-tab="profile">Profil</button>
+  </nav>
+
+</body>
+</html>
