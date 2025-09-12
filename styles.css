@@ -222,4 +222,132 @@ html, body {
   height: var(--banner-h);
   object-fit: cover;
   display: block;
+} 
+/* Reset */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: Arial, sans-serif;
+  background-color: #ffffff;
+  color: #000000;
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  -webkit-font-smoothing: antialiased;
+  -webkit-text-size-adjust: 100%;
+}
+
+/* Container principal */
+.app {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+/* Bannière */
+.banner {
+  width: 100%;
+  height: 25vh; /* hauteur réduite */
+  object-fit: cover;
+  display: block;
+  margin-top: calc(-1 * env(safe-area-inset-top)); /* colle en haut de l’écran */
+}
+
+/* Contenu principal */
+.main-content {
+  flex: 1;
+  padding: 16px;
+  overflow-y: auto;
+}
+
+/* Programme fidélité */
+.program-card {
+  border: 2px dashed #aaa;
+  border-radius: 12px;
+  padding: 12px;
+  margin: 16px 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* Section produits */
+.section-title {
+  font-size: 1.2rem;
+  font-weight: bold;
+  margin: 16px 0 8px;
+}
+
+.products {
+  display: flex;
+  gap: 12px;
+  overflow-x: auto;
+  padding-bottom: 12px;
+}
+
+.product-card {
+  flex: 0 0 150px;
+  border: 1px solid #ddd;
+  border-radius: 12px;
+  padding: 8px;
+  background: #fff;
+}
+
+.product-card img {
+  width: 100%;
+  border-radius: 8px;
+  margin-bottom: 8px;
+}
+
+/* Bouton commander flottant */
+.fab {
+  position: fixed;
+  bottom: 70px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background-color: #c94b2b;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: white;
+  font-size: 24px;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+  z-index: 10;
+}
+
+/* Menu en bas */
+.bottom-nav {
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  height: 60px;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  background-color: #fff;
+  border-top: 1px solid #ddd;
+}
+
+.bottom-nav button {
+  flex: 1;
+  height: 100%;
+  border: none;
+  background: none;
+  font-size: 14px;
+  font-weight: bold;
+  color: #333;
+}
+
+.bottom-nav button.active {
+  color: #fff;
+  background-color: #c94b2b;
+  border-radius: 12px;
+  margin: 6px;
 }
