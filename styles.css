@@ -1,0 +1,225 @@
+/* ===== Couleurs + safe area ===== */
+*{box-sizing:border-box}
+:root{
+  --bg:#ffffff; --text:#111;
+  --line:#e7e7e7; --muted:#6d6d6d;
+  --accent-cta:#c24d2c;
+  --safe-top: env(safe-area-inset-top, 0px);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+  --banner-h: 58vh; /* ajuste 55–60vh si tu veux */
+}
+
+/* Document : noir (effet app native lors du pull-down), page qui SCROLLE */
+html{background:#000; height:100%}
+body{
+  margin:0; background:var(--bg); color:var(--text);
+  font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;
+  min-height:100%;             /* le body scrolle, pas de conteneur spécial */
+  overflow:auto;
+}
+h1,h2,h3{margin:0 0 8px 0}
+
+/* ===== Toast ===== */
+.toast{position:fixed;left:50%;transform:translateX(-50%);top:16px;background:rgba(0,0,0,.85);color:#fff;padding:10px 14px;border-radius:12px;z-index:90;opacity:0;pointer-events:none;transition:opacity .2s}
+.toast.show{opacity:1}
+
+/* ===== Bannière : dans le flux, plein-haut sous encoche, hauteur LIMITÉE ===== */
+.banner{
+  position:relative; margin:0; padding:0; border:0; background:#000;
+  /* la section elle-même est dans le flux, pas de z-index, pas de fixed */
+}
+/* colle visuellement sous la barre d’état sans passer “au-dessus” du contenu */
+.banner.edge-top{
+  margin-top: calc(-1 * var(--safe-top));  /* remonte sous l’encoche */
+  padding-top: var(--safe-top);            /* mais garde l’espace interne */
+}
+.banner-track{
+  display:flex; overflow-x:auto; scroll-snap-type:x mandatory; -webkit-overflow-scrolling:touch;
+}
+.banner.edge-top .banner-track img{
+  width:100vw; height:var(--banner-h); object-fit:cover; display:block; border:0;
+}
+.banner-dots{
+  position:absolute; left:50%; transform:translateX(-50%);
+  bottom:10px; display:flex; gap:6px; z-index:2;
+}
+.banner-dots .dot{width:6px;height:6px;border-radius:50%;background:#fff;opacity:.85}
+.banner-dots .dot.active{background:var(--accent-cta)}
+
+/* ===== Contenu (dans le flux, scrolle avec la bannière) ===== */
+.layout{
+  max-width:1100px;
+  margin:12px auto calc(124px + var(--safe-bottom)) auto; /* espace pour la tabbar fixe */
+  padding:0 12px;
+}
+
+.card{background:#fff;border:1px solid var(--line);border-radius:16px;padding:16px;margin:10px 0}
+.hint{color:var(--muted);font-size:12px}
+
+.hero-min{text-align:center;padding:8px 12px 0}
+.hero-hash{font-size:32px;line-height:1.05;margin-bottom:2px}
+.hero-tag{font-size:15px;font-weight:900;letter-spacing:.3px}
+
+.home-card{background:#fff;border:1px solid var(--line);border-radius:16px;padding:12px 14px;margin:8px 0 10px}
+.prog-row{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.home-title{font-size:20px}
+.points-badge{display:inline-flex;align-items:center;gap:6px;padding:7px 12px;border:1.5px dashed #d0d0d0;border-radius:999px;font-weight:800;background:#fff}
+
+.home-block{margin:10px 0 6px}
+.home-block-head{display:flex;align-items:center;justify-content:space-between}
+.btn{border:1px solid #d7d7d7;background:#fff;color:#111;padding:12px 14px;border-radius:14px;font-weight:700;cursor:pointer}
+.btn.primary{background:var(--accent-cta);color:#fff;border-color:var(--accent-cta)}
+.btn.outline{background:transparent;border:1.5px solid var(--accent-cta);color:var(--accent-cta);font-weight:800}
+.btn.small{padding:9px 14px;border-radius:999px}
+
+/* Hscroll */
+.hscroll{display:grid;grid-auto-flow:column;gap:10px;overflow-x:auto;scroll-snap-type:x mandatory;padding:4px 2px}
+.hscroll.compact3{grid-auto-columns:30.5%}
+.hcard{scroll-snap-align:start;background:#fff;border:1px solid var(--line);border-radius:16px;overflow:hidden;cursor:pointer}
+.hcard img{width:100%;height:128px;object-fit:cover;display:block}
+.hcard .pad{padding:9px}
+.price{font-weight:800}
+
+/* Espace client */
+.client-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+.client-tile{background:#fff;border:1px solid var(--line);border-radius:16px;padding:26px 12px;font-weight:800;cursor:pointer}
+
+/* Tabs & Tabbar */
+.tab{display:none}
+.tab.active{display:block}
+.tabbar{
+  position:fixed; left:0; right:0; bottom:0; z-index:30;
+  display:grid; grid-template-columns:1fr 1fr 108px 1fr 1fr; justify-items:center; align-items:center;
+  background:#fff; border-top:1px solid var(--line); padding-bottom:var(--safe-bottom); height:96px;
+}
+.tabbar button{background:transparent;color:#111;border:none;padding:14px 8px;font-weight:800;cursor:pointer;font-size:16px}
+.tabbar button.active{color:#fff;background:var(--accent-cta);border-radius:14px;margin:0 8px}
+.tabbar-gap{height:1px}
+
+/* CTA rond (seul élément “au-dessus”) */
+.order-cta-round{
+  position:fixed; left:50%; transform:translateX(-50%);
+  bottom:110px; z-index:36;
+  width:78px; height:78px; border-radius:50%;
+  display:grid; place-items:center; font-size:26px;
+  background:var(--accent-cta); color:#fff; border:0;
+  box-shadow:0 10px 26px rgba(0,0,0,.18);
+}
+
+/* Modals */
+.modal{position:fixed; inset:0; z-index:50; display:none}
+.modal.show{display:block}
+.modal-bg{position:absolute; inset:0; background:rgba(17,17,17,.35); backdrop-filter:blur(2px)}
+.modal-card{position:absolute; left:50%; top:50%; transform:translate(-50%,-50%); width:min(640px,92vw); max-height:85vh; overflow:auto; background:#fff; border:1px solid var(--line); border-radius:18px; box-shadow:0 12px 48px rgba(0,0,0,.25)}
+.modal-header,.modal-footer{display:flex; align-items:center; gap:12px; padding:14px 16px; border-bottom:1px solid var(--line)}
+.modal-footer{border-top:1px solid var(--line); border-bottom:0; justify-content:space-between}
+.pad{padding:14px 16px}
+.grid{display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:12px}
+input,select{width:100%; padding:12px; border-radius:12px; border:1px solid #d7d7d7; background:#fff; color:#111; font-size:16px}
+.order-type-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:12px; margin-bottom:10px}
+.order-type{background:#fff; border:1px solid var(--line); border-radius:16px; padding:18px 10px; display:grid; gap:6px; place-items:center; font-weight:800}
+.ot-emoji{font-size:26px}
+
+/* Carte & fidélité */
+.map-wrap{margin:10px 0; border:1px solid var(--line); border-radius:16px; overflow:hidden; background:#fff}
+#mapFrame{display:block; width:100%; height:220px; border:0}
+.loyalty-card{margin:6px auto 0; width:100%; max-width:380px; height:200px; border-radius:16px; overflow:hidden; box-shadow:0 12px 30px rgba(0,0,0,.1); background:linear-gradient(135deg,#1b1b1b,#444); color:#fff; border:1px solid #000}
+.lc-header{padding:10px 14px; font-weight:900; letter-spacing:.6px}
+.lc-body{display:grid; gap:6px; padding:10px 14px}
+.lc-name{font-size:22px; font-weight:900}
+.lc-id{font-size:12px; opacity:.9}
+.lc-points{margin-top:auto; font-weight:800}
+.qr-wrap{display:grid; place-items:center; gap:8px; margin:10px 0}
+.qr-canvas{width:200px; height:200px; background:#fff; border:1px solid var(--line); border-radius:16px; display:grid; place-items:center; overflow:hidden}
+.qr-code-text{font-size:12px; color:#777; word-break:break-all; max-width:280px; text-align:center}
+
+/* 1) Scrolling fluide (plus de blocage) + limite l'effet "tirer vers le haut" */
+html, body {
+  height: 100%;
+  overflow: auto;                   /* le body re-scrolle correctement */
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-y: none;      /* réduit le rubber-band (iOS 16+) */
+}
+
+/* Bannière vraiment collée tout en haut (plein safe-top) */
+:root { --banner-h: 100vh; }   /* plein écran pour l’instant */
+
+.banner.edge-top {
+  margin-top: calc(-1 * env(safe-area-inset-top));
+  padding-top: env(safe-area-inset-top);
+}
+
+.banner.edge-top .banner-track img {
+  width: 100vw;
+  height: calc(100vh - var(--safe-top));  /* colle l’image sous l’encoche */
+  object-fit: cover;
+  display: block;
+}
+
+/* ===== Overlay transparent en haut + bannière collée en dessous ===== */
+
+/* 0) Variables */
+:root{
+  --safe-top: env(safe-area-inset-top, 0px);
+  --banner-h: 15vh;                 /* ≈ hauteur /4 ; ajuste 12–18vh si besoin */
+}
+
+/* 1) Overlay transparent (ne fait que réserver la place) */
+.safe-spacer{
+  height: var(--safe-top);
+  background: transparent;          /* VRAIMENT transparent */
+  display: block;
+}
+
+/* 2) Bannière dans le flux, collée sous l’overlay (aucune manip de marge négative) */
+.banner{
+  position: relative;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: #000;                  /* couleur de fond au cas où l’image tarde */
+}
+.banner.edge-top{                   /* garde la classe si tu l’as, mais neutre */
+  margin-top: 0;
+  padding-top: 0;
+}
+
+/* 3) Hauteur réduite (÷4) et recadrée proprement */
+.banner-track{ display:flex; overflow-x:auto; scroll-snap-type:x mandatory; -webkit-overflow-scrolling:touch; }
+.banner-track img{
+  width: 100vw;
+  height: var(--banner-h);          /* <<< la hauteur réduite */
+  object-fit: cover;
+  display: block;
+  border: 0;
+}
+/* ----- PWA iOS : contenu sous la barre d’état (overlay transparent) ----- */
+
+/* Le document remplit bien l'écran, pas de marge haute forcée */
+html, body {
+  margin: 0;
+  height: 100%;
+  background: #000;                 /* fond de sécurité derrière la bannière */
+  -webkit-overflow-scrolling: touch;
+}
+
+/* On annule l'ancien spacer si encore présent */
+.safe-spacer { height: 0 !important; }
+
+/* La bannière commence VRAIMENT en haut, sans compensation safe-top */
+.banner,
+.banner.edge-top {
+  margin-top: 0 !important;
+  padding-top: 0 !important;
+}
+
+/* Hauteur actuelle de ta bannière (réduite x4 environ) */
+:root { --banner-h: 15vh; }         /* ajuste 12–18vh si tu veux */
+
+/* Images de bannière : collées en haut et recadrées proprement */
+.banner-track img {
+  width: 100vw;
+  height: var(--banner-h);
+  object-fit: cover;
+  display: block;
+}
