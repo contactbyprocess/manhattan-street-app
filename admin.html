@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Back-office Cuisine — Manhattan Street</title>
+  <link rel="stylesheet" href="styles.css" />
+  <script defer src="app.js"></script>
+</head>
+<body class="admin">
+  <header class="header">
+    <div class="brand">
+      <img src="assets/logo.png" alt="Manhattan Street" class="logo" />
+      <div class="titles">
+        <h1>Back-office Cuisine</h1>
+        <p class="tagline">Validation & préparation</p>
+      </div>
+    </div>
+  </header>
+
+  <main class="admin-layout">
+    <section class="card">
+      <h2>Connexion PIN</h2>
+      <div class="grid">
+        <label>Entrer le PIN
+          <input id="pinInput" type="password" placeholder="****" />
+        </label>
+        <button class="btn primary" id="pinBtn">Entrer</button>
+      </div>
+      <p class="hint">PIN par défaut : <code>1234</code> — à changer dans <code>app.js</code>.</p>
+    </section>
+
+    <section class="card">
+      <h2>Commandes</h2>
+      <div id="orders"></div>
+    </section>
+
+    <section class="card">
+      <h2>Promos flash</h2>
+      <div class="grid">
+        <label>Code
+          <input id="promoCode" placeholder="Ex : NYC48" />
+        </label>
+        <label>Type
+          <select id="promoType">
+            <option value="percent">Réduction %</option>
+            <option value="fixed">Réduction €</option>
+            <option value="free_drink">Boisson offerte</option>
+          </select>
+        </label>
+        <label>Valeur
+          <input id="promoValue" type="number" step="0.1" placeholder="Ex : 10" />
+        </label>
+        <label>Durée (minutes)
+          <input id="promoDuration" type="number" value="120" />
+        </label>
+        <button class="btn" id="createPromoBtn">Activer</button>
+      </div>
+      <div id="promoList"></div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <a href="index.html">← Retour à l’app</a>
+  </footer>
+</body>
+</html>
