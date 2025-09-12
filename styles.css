@@ -117,3 +117,30 @@ input,select{width:100%; padding:12px; border-radius:12px; border:1px solid #d7d
 .qr-wrap{display:grid; place-items:center; gap:8px; margin:10px 0}
 .qr-canvas{width:200px; height:200px; background:#fff; border:1px solid var(--line); border-radius:16px; display:grid; place-items:center; overflow:hidden}
 .qr-code-text{font-size:12px; color:#777; word-break:break-all; max-width:280px; text-align:center}
+/* --- Bannière = 20% hauteur écran --- */
+:root { --banner-h: 20vh; }
+
+/* --- Track : 1 slide = 100% largeur viewport, pas d'espace, snap net --- */
+.banner-track{
+  display:flex;
+  overflow-x:auto;
+  scroll-snap-type:x mandatory;
+  -webkit-overflow-scrolling:touch;
+  gap:0; padding:0; margin:0;
+  scrollbar-width:none;               /* Firefox */
+}
+.banner-track::-webkit-scrollbar{display:none}  /* iOS/Chrome */
+
+/* Chaque enfant du track (img ou <div>) est un slide plein écran */
+.banner-track > *{
+  flex: 0 0 100vw;                    /* une bannière par écran */
+  height: var(--banner-h);
+  scroll-snap-align: center;
+}
+
+/* L’image remplit le slide proprement */
+.banner-track img{
+  width:100%; height:100%;
+  object-fit:cover; object-position:center top;
+  display:block; border:0; pointer-events:none;
+}
