@@ -2,23 +2,23 @@
 <html lang="fr">
 <head>
   <meta charset="utf-8" />
+  <!-- PWA plein écran sous encoche -->
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-  <meta name="apple-mobile-web-app-title" content="Manhattan Street" />
   <meta name="theme-color" content="#000000" />
   <link rel="manifest" href="manifest.json" />
+
   <title>Manhattan Street — Commande</title>
 
-  <link rel="stylesheet" href="styles.css?v=23" />
-  <script defer src="app.js?v=23"></script>
+  <link rel="stylesheet" href="styles.css?v=30" />
+  <script defer src="app.js?v=30"></script>
 </head>
 <body>
-
-  <!-- Toast -->
+  <!-- toast -->
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
 
-  <!-- BANNIÈRES -->
+  <!-- ===== Bannière (collée sous l’overlay, hauteur limitée) ===== -->
   <section class="banner">
     <div class="banner-track" id="bannerTrack">
       <img src="assets/banner1.jpg" alt="Bannière 1" />
@@ -28,7 +28,7 @@
     <div class="banner-dots" id="bannerDots"></div>
   </section>
 
-  <!-- CONTENU -->
+  <!-- ===== Contenu ===== -->
   <main class="layout">
     <!-- Accueil -->
     <section class="tab tab-home active" id="tab-home">
@@ -37,6 +37,7 @@
         <p class="hero-tag">TON INCONTOURNABLE 🗽🔥</p>
       </section>
 
+      <!-- Mon programme -->
       <section class="home-card">
         <div class="prog-row">
           <h2 class="home-title">Mon Programme</h2>
@@ -44,6 +45,7 @@
         </div>
       </section>
 
+      <!-- Hype du moment -->
       <section class="home-block">
         <div class="home-block-head">
           <h2>La hype du moment ✨</h2>
@@ -52,6 +54,7 @@
         <div class="hscroll compact3" id="featured"></div>
       </section>
 
+      <!-- Espace client -->
       <section class="home-block">
         <h2>Mon espace client</h2>
         <div class="client-grid">
@@ -88,6 +91,7 @@
     <section class="tab" id="tab-loyalty">
       <div class="card">
         <h2>Ma carte de fidélité</h2>
+
         <div class="loyalty-card">
           <div class="lc-header">MANHATTAN STREET</div>
           <div class="lc-body">
@@ -127,44 +131,39 @@
     </section>
   </main>
 
-  <!-- FAB “Commander” (image personnalisée) -->
-  <button id="orderCta" class="order-cta-round" aria-label="Commander">
-    <img src="assets/fab-commander.svg" alt="">
-  </button>
+  <!-- CTA rond -->
+  <button id="orderCta" class="order-cta-round" aria-label="Commander">🛍️</button>
 
-  <!-- TABBAR (icônes = images cliquables) -->
- <nav class="tabbar">
-  <button data-tab="home">
-    <img src="assets/tab-accueil.svg" alt="Accueil">
-    <span class="label">ACCUEIL</span>
-  </button>
+  <!-- Modal type de commande -->
+  <div id="orderTypeModal" class="modal" aria-hidden="true">
+    <div class="modal-bg"></div>
+    <div class="modal-card">
+      <div class="modal-header"><h3>Choisis ton type de commande</h3></div>
+      <div class="pad">
+        <div class="order-type-grid">
+          <button class="order-type" id="otClickCollect"><div class="ot-emoji">🛍️</div><div>Click & Collect</div></button>
+          <button class="order-type" id="otDelivery"><div class="ot-emoji">🚚</div><div>Livraison</div></button>
+          <button class="order-type" id="otDineIn"><div class="ot-emoji">🍽️</div><div>Sur place</div></button>
+        </div>
+        <div id="dineInExtras" class="dinein-form" style="display:none">
+          <label>Numéro de table
+            <input id="tableNumberModal" inputmode="numeric" pattern="[0-9]*" placeholder="Ex : 12" />
+          </label>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn ghost" id="orderTypeClose">Fermer</button>
+      </div>
+    </div>
+  </div>
 
-  <button data-tab="loyalty">
-    <img src="assets/tab-fidelite.svg" alt="Fidélité">
-    <span class="label">FIDÉLITÉ</span>
-  </button>
-
-  <span class="tabbar-gap"></span>
-
-  <button data-tab="orders">
-    <img src="assets/tab-historique.svg" alt="Historique">
-    <span class="label">HISTORIQUE</span>
-  </button>
-
-  <button data-tab="profile">
-    <img src="assets/tab-profil.svg" alt="Profil">
-    <span class="label">PROFIL</span>
-  </button>
-</nav>
-
-<!-- Bouton central (image facultative) -->
-<button id="orderCta" class="order-cta-round" aria-label="Commander">
-  <img src="assets/cta-commander.svg" alt="">
-</button>
-
-<!-- FAB avec image custom -->
-<button id="orderCta" class="order-cta-round" aria-label="Commander">
-  <img src="assets/cta-commander.svg" alt="">
-</button>
+  <!-- Tabbar -->
+  <nav class="tabbar">
+    <button data-tab="home" class="active">Accueil</button>
+    <button data-tab="loyalty">Fidélité</button>
+    <span class="tabbar-gap"></span>
+    <button data-tab="orders">Historique</button>
+    <button data-tab="profile">Profil</button>
+  </nav>
 </body>
 </html>
