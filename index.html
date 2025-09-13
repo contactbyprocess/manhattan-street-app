@@ -11,8 +11,8 @@
 
   <title>Manhattan Street — Commande</title>
 
-  <link rel="stylesheet" href="styles.css?v=40" />
-  <script defer src="app.js?v=40"></script>
+  <link rel="stylesheet" href="styles.css?v=41" />
+  <script defer src="app.js?v=41"></script>
 </head>
 <body>
   <!-- toast -->
@@ -21,9 +21,9 @@
   <!-- ===== Bannière (collée sous l’overlay, hauteur validée) ===== -->
   <section class="banner">
     <div class="banner-track" id="bannerTrack">
-      <img src="assets/banner1.jpg" alt="Bannière 1" />
-      <img src="assets/banner2.jpg" alt="Bannière 2" />
-      <img src="assets/banner3.jpg" alt="Bannière 3" />
+      <img src="assets/banner1.jpg?v=41" alt="Bannière 1" />
+      <img src="assets/banner2.jpg?v=41" alt="Bannière 2" />
+      <img src="assets/banner3.jpg?v=41" alt="Bannière 3" />
     </div>
     <div class="banner-dots" id="bannerDots"></div>
   </section>
@@ -157,23 +157,45 @@
     </div>
   </div>
 
-  <!-- ===== Tabbar (nouvelle structure) ===== -->
-<nav class="tabbar">
-  <button data-tab="home" class="active">
-    <img class="tab-ic" src="assets/tab-home.svg" alt="Accueil">
-  </button>
-  <button data-tab="loyalty">
-    <img class="tab-ic" src="assets/tab-fidelite.svg" alt="Fidélité">
-  </button>
+  <!-- ===== Tabbar (nouvelle structure images + CTA centré) ===== -->
+  <nav class="tabbar">
+    <div class="tabbar-inner">
+      <!-- gauche -->
+      <div class="tabgroup left">
+        <button class="tabbtn" data-tab="home" aria-label="Accueil">
+          <img class="tab-ico" src="assets/tab-accueil.svg?v=41" alt="" />
+        </button>
+        <button class="tabbtn" data-tab="loyalty" aria-label="Fidélité">
+          <img class="tab-ico" src="assets/tab-fidelite.svg?v=41" alt="" />
+        </button>
+      </div>
 
-  <!-- espace central réservé au CTA, ne pas mettre de contenu ici -->
+      <!-- CTA central (moitié au-dessus de la barre) -->
+      <button id="orderCtaCta" class="cta-img" aria-label="Commander">
+        <img src="assets/cta-commander.svg?v=41" alt="" />
+      </button>
 
-  <button data-tab="orders">
-    <img class="tab-ic" src="assets/tab-historique.svg" alt="Historique">
-  </button>
-  <button data-tab="profile">
-    <img class="tab-ic" src="assets/tab-profil.svg" alt="Profil">
-  </button>
-</nav>
+      <!-- droite -->
+      <div class="tabgroup right">
+        <button class="tabbtn" data-tab="orders" aria-label="Historique">
+          <img class="tab-ico" src="assets/tab-historique.svg?v=41" alt="" />
+        </button>
+        <button class="tabbtn" data-tab="profile" aria-label="Profil">
+          <img class="tab-ico" src="assets/tab-profil.svg?v=41" alt="" />
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <script>
+    /* Optionnel : faire pointer le nouveau CTA image vers l'action existante */
+    (function(){
+      const newCta = document.getElementById('orderCtaCta');
+      const legacyCta = document.getElementById('orderCta'); // bouton masqué
+      if(newCta && legacyCta){
+        newCta.addEventListener('click', ()=> legacyCta.click());
+      }
+    })();
+  </script>
 </body>
 </html>
