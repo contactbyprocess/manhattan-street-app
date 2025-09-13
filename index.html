@@ -157,32 +157,36 @@
     </div>
   </div>
 
-<!-- TABBAR -->
+<!-- Tabbar -->
 <nav class="tabbar">
-  <button data-tab="home" aria-label="Accueil">
-    <img class="tab-ico" src="assets/tab-accueil.svg" alt="">
-  </button>
+  <div class="tabbar-inner">
+    <!-- Groupe gauche -->
+    <div class="tabgroup left">
+      <button class="tabbtn active" data-tab="home" aria-label="Accueil">
+        <img class="tab-ico" src="assets/tab-home.svg?v=32" alt="">
+      </button>
+      <button class="tabbtn" data-tab="loyalty" aria-label="Fidélité">
+        <img class="tab-ico" src="assets/tab-loyalty.svg?v=32" alt="">
+      </button>
+    </div>
 
-  <button data-tab="loyalty" aria-label="Fidélité">
-    <img class="tab-ico" src="assets/tab-fidelite.svg" alt="">
-  </button>
+    <!-- CTA central (image seule, sans cercle) -->
+    <button id="orderCta" class="cta-img" aria-label="Commander">
+      <img src="assets/cta-commander.svg?v=32" alt="">
+    </button>
 
-  <!-- espace central réservé au bouton -->
-  <span class="tabbar-spacer" aria-hidden="true"></span>
-
-  <button data-tab="orders" aria-label="Historique">
-    <img class="tab-ico" src="assets/tab-historique.svg" alt="">
-  </button>
-
-  <button data-tab="profile" aria-label="Profil">
-    <img class="tab-ico" src="assets/tab-profil.svg" alt="">
-  </button>
+    <!-- Groupe droit -->
+    <div class="tabgroup right">
+      <button class="tabbtn" data-tab="orders" aria-label="Historique">
+        <img class="tab-ico" src="assets/tab-orders.svg?v=32" alt="">
+      </button>
+      <button class="tabbtn" data-tab="profile" aria-label="Profil">
+        <img class="tab-ico" src="assets/tab-profile.svg?v=32" alt="">
+      </button>
+    </div>
+  </div>
 </nav>
 
-<!-- FAB (bouton central) -->
-<button id="orderCta" class="order-cta-round" aria-label="Commander">
-  <img src="assets/cta-commander.svg" alt="">
-</button>
   
 </body>
 </html>
