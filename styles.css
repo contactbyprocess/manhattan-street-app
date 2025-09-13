@@ -14,10 +14,11 @@
   /* Tabbar (validée + derniers ajustements) */
   --tabbar-bg:#A64027;
   --tabbar-h:43px;      /* gardée identique */
-  --icon-sz:64px;       /* +20% */
-  --icon-shift-y:4px;   /* léger abaissement visuel */
-  --cta-size:90px;      /* +25% */
+  --icon-sz:24px;       /* +20% */
+  --icon-shift-y:10px;   /* léger abaissement visuel */
+  --cta-size:40px;      /* +25% */
   --cta-lift:12px;      /* dépassement vers le haut */
+  --tabgroup{ gap:28px; }
 }
 
 /* ===== Document ===== */
