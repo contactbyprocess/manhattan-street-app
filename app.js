@@ -134,3 +134,21 @@ document.addEventListener('DOMContentLoaded',()=>{
   renderLoyalty();
   initBannerCarousel();
 });
+// --- Onglets via la tabbar (images cliquables) ---
+document.querySelectorAll('.tabbar [data-tab]').forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    const target = btn.getAttribute('data-tab');
+    document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+    document.getElementById(`tab-${target}`).classList.add('active');
+    // optionnel : scroll en haut à chaque changement d’onglet
+    window.scrollTo({top:0, behavior:'smooth'});
+  });
+});
+
+// Le FAB ouvre directement l’onglet Commande
+document.getElementById('orderCta')?.addEventListener('click', ()=>{
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById('tab-order').classList.add('active');
+  window.scrollTo({top:0, behavior:'smooth'});
+});
+
