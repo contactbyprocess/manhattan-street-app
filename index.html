@@ -158,12 +158,31 @@
   </div>
 
   <!-- Tabbar -->
-  <nav class="tabbar">
-    <button data-tab="home" class="active">Accueil</button>
-    <button data-tab="loyalty">Fidélité</button>
-    <span class="tabbar-gap"></span>
-    <button data-tab="orders">Historique</button>
-    <button data-tab="profile">Profil</button>
-  </nav>
+<nav class="tabbar">
+  <button data-tab="home" aria-label="Accueil">
+    <img src="assets/tab-accueil.svg" alt="">
+  </button>
+
+  <button data-tab="loyalty" aria-label="Fidélité">
+    <img src="assets/tab-fidelite.svg" alt="">
+  </button>
+
+  <span class="tabbar-gap"></span>
+
+  <button data-tab="orders" aria-label="Historique">
+    <img src="assets/tab-historique.svg" alt="">
+  </button>
+
+  <button data-tab="profile" aria-label="Profil">
+    <img src="assets/tab-profil.svg" alt="">
+  </button>
+</nav>
+
+<!-- Bouton central (image facultative) -->
+<button id="orderCta" class="order-cta-round" aria-label="Commander">
+  <img src="assets/cta-commander.svg" alt="">
+</button>
+
+  
 </body>
 </html>
