@@ -15,7 +15,7 @@
   --tabbar-bg:#A64027;
   --tabbar-h:43px;      /* on garde cette hauteur */
   --icon-sz:32px;       /* AVANT 24px -> +33% */
-  --icon-shift-y:6px;   /* léger abaissement visuel */
+  --icon-shift-y:2px;   /* léger abaissement visuel */
   --cta-size:72px;      /* CTA bien visible */
   --cta-lift:18px;      /* dépassement au-dessus de la barre */
 }
