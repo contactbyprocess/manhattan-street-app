@@ -90,34 +90,42 @@ h1,h2,h3{margin:0 0 8px 0}
 .client-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
 .client-tile{background:#fff;border:1px solid var(--line);border-radius:16px;padding:26px 12px;font-weight:800;cursor:pointer}
 
-/* ===== Tabbar + Bouton central (seule modif) ===== */
+/* ===== TABBAR — centrée, sans débordement, couleur #A64027 ===== */
 :root{
-  --tabbar-h: 72px;     /* -25% vs 96px */
-  --icon: 64px;         /* taille des icônes dans la barre */
-  --fab: 108px;         /* diamètre du bouton central (peut être 96–120) */
+  --tabbar-h: 72px;         /* -25% vs 96px */
+  --icon: 56px;             /* taille icônes (augmente si tu veux) */
+  --fab: 108px;             /* diamètre du bouton central */
+  --tabbar-spacer: calc(var(--fab) * 0.85);  /* largeur de la colonne centrale */
 }
 
-/* Barre du bas */
 .tabbar{
   position: fixed; left: 0; right: 0; bottom: 0; z-index: 30;
-  display: grid; grid-template-columns: 1fr 1fr 120px 1fr 1fr;
-  justify-items: center; align-items: center;
+  display: grid;
+  grid-template-columns: 1fr 1fr var(--tabbar-spacer) 1fr 1fr;
+  align-items: center; justify-items: center;
   height: var(--tabbar-h);
-  padding-bottom: var(--safe-bottom);
+  padding: 0 env(safe-area-inset-left) calc(var(--safe-bottom)) env(safe-area-inset-right);
   background: #A64027;                 /* couleur demandée */
-  border-top: 2px solid #214D4A;       /* fin liseré (optionnel) */
+  border-top: 2px solid #214D4A;       /* léger liseré (optionnel) */
+  max-width: 100vw; overflow: hidden;  /* empêche tout débordement horizontal */
 }
+
 .tabbar button{
+  background: transparent; border: 0; cursor: pointer;
   width: 100%; height: 100%;
   display: grid; place-items: center;
-  background: transparent; border: 0; cursor: pointer;
+  min-width: 0;                        /* évite de pousser hors écran */
 }
-.tabbar img{
-  width: var(--icon); height: var(--icon); display: block;
-}
-.tabbar-gap{ height: 1px; } /* colonne vide sous le bouton central */
 
-/* Bouton central à cheval (moitié dans la tabbar) */
+.tabbar img{
+  width: var(--icon); height: var(--icon);
+  display: block;
+}
+
+/* Colonne centrale vide pour laisser passer le FAB */
+.tabbar-spacer{ width: var(--tabbar-spacer); height: 1px; }
+
+/* ===== FAB — à cheval (moitié dans la tabbar) ===== */
 .order-cta-round{
   position: fixed; left: 50%; transform: translateX(-50%);
   bottom: calc(var(--tabbar-h) - (var(--fab) / 2) + var(--safe-bottom));
