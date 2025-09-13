@@ -11,8 +11,8 @@
 
   <title>Manhattan Street — Commande</title>
 
-  <link rel="stylesheet" href="styles.css?v=41" />
-  <script defer src="app.js?v=41"></script>
+  <link rel="stylesheet" href="styles.css?v=50" />
+  <script defer src="app.js?v=50"></script>
 </head>
 <body>
   <!-- toast -->
@@ -21,9 +21,9 @@
   <!-- ===== Bannière (collée sous l’overlay, hauteur validée) ===== -->
   <section class="banner">
     <div class="banner-track" id="bannerTrack">
-      <img src="assets/banner1.jpg?v=41" alt="Bannière 1" />
-      <img src="assets/banner2.jpg?v=41" alt="Bannière 2" />
-      <img src="assets/banner3.jpg?v=41" alt="Bannière 3" />
+      <img src="assets/banner1.jpg" alt="Bannière 1" />
+      <img src="assets/banner2.jpg" alt="Bannière 2" />
+      <img src="assets/banner3.jpg" alt="Bannière 3" />
     </div>
     <div class="banner-dots" id="bannerDots"></div>
   </section>
@@ -131,80 +131,41 @@
     </section>
   </main>
 
-  <!-- Ancien CTA rond : neutralisé via CSS (on le garde pour ne rien casser côté JS) -->
+  <!-- Ancien CTA rond : on le garde mais caché par CSS -->
   <button id="orderCta" class="order-cta-round" aria-label="Commander">🛍️</button>
 
-  <!-- Modal type de commande -->
-  <div id="orderTypeModal" class="modal" aria-hidden="true">
-    <div class="modal-bg"></div>
-    <div class="modal-card">
-      <div class="modal-header"><h3>Choisis ton type de commande</h3></div>
-      <div class="pad">
-        <div class="order-type-grid">
-          <button class="order-type" id="otClickCollect"><div class="ot-emoji">🛍️</div><div>Click & Collect</div></button>
-          <button class="order-type" id="otDelivery"><div class="ot-emoji">🚚</div><div>Livraison</div></button>
-          <button class="order-type" id="otDineIn"><div class="ot-emoji">🍽️</div><div>Sur place</div></button>
-        </div>
-        <div id="dineInExtras" class="dinein-form" style="display:none">
-          <label>Numéro de table
-            <input id="tableNumberModal" inputmode="numeric" pattern="[0-9]*" placeholder="Ex : 12" />
-          </label>
-        </div>
-      </div>
-      <div class="modal-footer">
-        <button class="btn ghost" id="orderTypeClose">Fermer</button>
-      </div>
-    </div>
-  </div>
+  <!-- ===== Tabbar (structure MAJ pour le CSS actuel) ===== -->
+  <nav class="tabbar" role="tablist" aria-label="Navigation principale">
+    <!-- côté gauche -->
+    <button data-tab="home" aria-label="Accueil" class="tabbtn active">
+      <img class="tab-ic" src="assets/tab-home.svg" alt="Accueil">
+    </button>
+    <button data-tab="loyalty" aria-label="Fidélité" class="tabbtn">
+      <img class="tab-ic" src="assets/tab-loyalty.svg" alt="Fidélité">
+    </button>
 
-  <!-- ===== Tabbar (nouvelle structure images + CTA centré) ===== -->
- 
-<nav class="tabbar">
-  <div class="tabbar-inner">
-    <!-- groupe gauche -->
-    <div class="tabgroup left">
-      <button class="tabbtn active" data-tab="home" aria-label="Accueil">
-        <img class="tab-ic" src="assets/tab-home.svg" alt="">
-      </button>
-      <button class="tabbtn" data-tab="loyalty" aria-label="Fidélité">
-        <img class="tab-ic" src="assets/tab-loyalty.svg" alt="">
-      </button>
-    </div>
-
-    <!-- bouton central (CTA) -->
-    <button id="orderCtaImg" class="cta-img" aria-label="Commander">
+    <!-- CTA centré -->
+    <button class="cta-img" id="orderCtaImg" aria-label="Commander">
       <img src="assets/cta-commander.svg" alt="">
     </button>
 
-    <!-- groupe droit -->
-    <div class="tabgroup right">
-      <button class="tabbtn" data-tab="orders" aria-label="Historique">
-        <img class="tab-ic" src="assets/tab-orders.svg" alt="">
-      </button>
-      <button class="tabbtn" data-tab="profile" aria-label="Profil">
-        <img class="tab-ic" src="assets/tab-profile.svg" alt="">
-      </button>
-    </div>
-  </div>
-</nav>
-<script>
-  // Le nouveau CTA utilise l'action existante du bouton masqué #orderCta
-  (function () {
-    const newCta = document.getElementById('orderCtaCta');
-    const legacy = document.getElementById('orderCta');
-    if (newCta && legacy) newCta.addEventListener('click', () => legacy.click());
-  })();
-</script>
+    <!-- côté droit -->
+    <button data-tab="orders" aria-label="Historique" class="tabbtn">
+      <img class="tab-ic" src="assets/tab-orders.svg" alt="Historique">
+    </button>
+    <button data-tab="profile" aria-label="Profil" class="tabbtn">
+      <img class="tab-ic" src="assets/tab-profile.svg" alt="Profil">
+    </button>
+  </nav>
 
+  <!-- Petit pont pour réutiliser la logique existante du bouton de commande -->
   <script>
-    /* Optionnel : faire pointer le nouveau CTA image vers l'action existante */
-    (function(){
-      const newCta = document.getElementById('orderCtaCta');
-      const legacyCta = document.getElementById('orderCta'); // bouton masqué
-      if(newCta && legacyCta){
-        newCta.addEventListener('click', ()=> legacyCta.click());
-      }
-    })();
+    // Si ton JS écoute encore #orderCta (l'ancien bouton), on relaye le clic
+    document.addEventListener('DOMContentLoaded', () => {
+      const ctaImg = document.getElementById('orderCtaImg');
+      const legacy = document.getElementById('orderCta'); // caché par CSS
+      if (ctaImg && legacy) ctaImg.addEventListener('click', () => legacy.click());
+    });
   </script>
 </body>
-</html>
+</html> 
