@@ -178,9 +178,13 @@ document.querySelectorAll('.tabbar [data-tab]').forEach(btn=>{
   });
 });
 
+
 // Bouton central -> onglet Commande
 document.getElementById('orderCta')?.addEventListener('click', ()=>{
   document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
   document.getElementById('tab-order').classList.add('active');
   window.scrollTo({top:0, behavior:'smooth'});
 });
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.getRegistrations().then(list => list.forEach(reg => reg.update()));
+}
