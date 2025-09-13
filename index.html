@@ -133,23 +133,33 @@
   </button>
 
   <!-- TABBAR (icônes = images cliquables) -->
-  <nav class="tabbar">
-    <button data-tab="home" aria-label="Accueil">
-      <img src="assets/tab-home.svg" alt="Accueil">
-    </button>
-    <button data-tab="loyalty" aria-label="Fidélité">
-      <img src="assets/tab-loyalty.svg" alt="Fidélité">
-    </button>
+ <nav class="tabbar">
+  <button data-tab="home">
+    <img src="assets/tab-accueil.svg" alt="Accueil">
+    <span class="label">ACCUEIL</span>
+  </button>
 
-    <span class="tabbar-gap"></span>
+  <button data-tab="loyalty">
+    <img src="assets/tab-fidelite.svg" alt="Fidélité">
+    <span class="label">FIDÉLITÉ</span>
+  </button>
 
-    <button data-tab="orders" aria-label="Historique">
-      <img src="assets/tab-orders.svg" alt="Historique">
-    </button>
-    <button data-tab="profile" aria-label="Profil">
-      <img src="assets/tab-profile.svg" alt="Profil">
-    </button>
-  </nav>
+  <span class="tabbar-gap"></span>
 
+  <button data-tab="orders">
+    <img src="assets/tab-historique.svg" alt="Historique">
+    <span class="label">HISTORIQUE</span>
+  </button>
+
+  <button data-tab="profile">
+    <img src="assets/tab-profil.svg" alt="Profil">
+    <span class="label">PROFIL</span>
+  </button>
+</nav>
+
+<!-- FAB avec image custom -->
+<button id="orderCta" class="order-cta-round" aria-label="Commander">
+  <img src="assets/cta-commander.svg" alt="">
+</button>
 </body>
 </html>
