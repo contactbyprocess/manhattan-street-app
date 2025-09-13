@@ -168,3 +168,19 @@ document.getElementById('orderCta')?.addEventListener('click', ()=>{
   document.getElementById('tab-order').classList.add('active');
   window.scrollTo({top:0, behavior:'smooth'});
 });
+// Navigation par onglets (tabbar)
+document.querySelectorAll('.tabbar [data-tab]').forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    const target = btn.getAttribute('data-tab');
+    document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+    document.getElementById(`tab-${target}`).classList.add('active');
+    window.scrollTo({top:0, behavior:'smooth'});
+  });
+});
+
+// Bouton central -> onglet Commande
+document.getElementById('orderCta')?.addEventListener('click', ()=>{
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById('tab-order').classList.add('active');
+  window.scrollTo({top:0, behavior:'smooth'});
+});
