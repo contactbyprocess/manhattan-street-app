@@ -90,53 +90,70 @@ h1,h2,h3{margin:0 0 8px 0}
 .client-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
 .client-tile{background:#fff;border:1px solid var(--line);border-radius:16px;padding:26px 12px;font-weight:800;cursor:pointer}
 
-/* ===== TABBAR — centrée, sans débordement, couleur #A64027 ===== */
+/* ===== TABBAR (SVG visibles, pas de débordement, couleur #A64027) ===== */
 :root{
-  --tabbar-h: 72px;         /* -25% vs 96px */
-  --icon: 56px;             /* taille icônes (augmente si tu veux) */
-  --fab: 108px;             /* diamètre du bouton central */
-  --tabbar-spacer: calc(var(--fab) * 0.85);  /* largeur de la colonne centrale */
+  --tabbar-h: 72px;           /* -25% vs 96px */
+  --icon: 64px;               /* taille des icônes */
+  --fab: 108px;               /* diamètre du bouton central */
+  --tabbar-spacer: calc(var(--fab) * 0.85);  /* largeur colonne centrale */
 }
 
 .tabbar{
-  position: fixed; left: 0; right: 0; bottom: 0; z-index: 30;
+  position: fixed;
+  left: 0; right: 0; bottom: 0;
+  z-index: 30;
   display: grid;
   grid-template-columns: 1fr 1fr var(--tabbar-spacer) 1fr 1fr;
   align-items: center; justify-items: center;
   height: var(--tabbar-h);
-  padding: 0 env(safe-area-inset-left) calc(var(--safe-bottom)) env(safe-area-inset-right);
-  background: #A64027;                 /* couleur demandée */
-  border-top: 2px solid #214D4A;       /* léger liseré (optionnel) */
-  max-width: 100vw; overflow: hidden;  /* empêche tout débordement horizontal */
+  /* padding safe-area et centrage strict */
+  padding-left: env(safe-area-inset-left);
+  padding-right: env(safe-area-inset-right);
+  padding-bottom: var(--safe-bottom);
+
+  background: #A64027;
+  border-top: 2px solid #214D4A;
+
+  max-width: 100vw;
+  overflow: hidden;          /* empêche tout débordement horizontal */
+  box-sizing: border-box;
 }
 
 .tabbar button{
   background: transparent; border: 0; cursor: pointer;
   width: 100%; height: 100%;
   display: grid; place-items: center;
-  min-width: 0;                        /* évite de pousser hors écran */
+  min-width: 0;              /* clé: évite de pousser la grille hors écran */
+  justify-self: center;      /* recentre chaque cellule */
 }
 
-.tabbar img{
+.tabbar .tab-ico{
   width: var(--icon); height: var(--icon);
   display: block;
+  object-fit: contain;
 }
 
-/* Colonne centrale vide pour laisser passer le FAB */
+/* colonne vide pour laisser “passer” le bouton central */
 .tabbar-spacer{ width: var(--tabbar-spacer); height: 1px; }
 
-/* ===== FAB — à cheval (moitié dans la tabbar) ===== */
+/* ===== FAB — moitié “dans” la tabbar ===== */
 .order-cta-round{
-  position: fixed; left: 50%; transform: translateX(-50%);
+  position: fixed;
+  left: 50%; transform: translateX(-50%);
   bottom: calc(var(--tabbar-h) - (var(--fab) / 2) + var(--safe-bottom));
   z-index: 36;
-  width: var(--fab); height: var(--fab); border-radius: 50%;
+
+  width: var(--fab); height: var(--fab);
+  border-radius: 50%;
   display: grid; place-items: center;
-  background: #c24d2c; color: #fff; border: 4px solid #1F5A57;
+
+  background: #c24d2c; color: #fff;
+  border: 4px solid #1F5A57;
   box-shadow: 0 12px 26px rgba(0,0,0,.22);
 }
 .order-cta-round img{
-  width: 100%; height: 100%; object-fit: contain; display: block;
+  width: 100%; height: 100%;
+  object-fit: contain; display: block;
 }
 
 /* ===== Modals ===== */
