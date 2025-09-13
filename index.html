@@ -159,33 +159,42 @@
 
   <!-- ===== Tabbar (nouvelle structure images + CTA centré) ===== -->
   <nav class="tabbar">
-    <div class="tabbar-inner">
-      <!-- gauche -->
-      <div class="tabgroup left">
-        <button class="tabbtn" data-tab="home" aria-label="Accueil">
-          <img class="tab-ico" src="assets/tab-accueil.svg?v=41" alt="" />
-        </button>
-        <button class="tabbtn" data-tab="loyalty" aria-label="Fidélité">
-          <img class="tab-ico" src="assets/tab-fidelite.svg?v=41" alt="" />
-        </button>
-      </div>
-
-      <!-- CTA central (moitié au-dessus de la barre) -->
-      <button id="orderCtaCta" class="cta-img" aria-label="Commander">
-        <img src="assets/cta-commander.svg?v=41" alt="" />
+  <div class="tabbar-inner">
+    <!-- Groupe gauche -->
+    <div class="tabgroup left">
+      <button class="tabbtn" data-tab="home" aria-label="Accueil">
+        <img class="tab-ico" src="assets/tab-home.svg?v=42" alt="">
       </button>
-
-      <!-- droite -->
-      <div class="tabgroup right">
-        <button class="tabbtn" data-tab="orders" aria-label="Historique">
-          <img class="tab-ico" src="assets/tab-historique.svg?v=41" alt="" />
-        </button>
-        <button class="tabbtn" data-tab="profile" aria-label="Profil">
-          <img class="tab-ico" src="assets/tab-profil.svg?v=41" alt="" />
-        </button>
-      </div>
+      <button class="tabbtn" data-tab="loyalty" aria-label="Fidélité">
+        <img class="tab-ico" src="assets/tab-loyalty.svg?v=42" alt="">
+      </button>
     </div>
-  </nav>
+
+    <!-- CTA centré (dépasse vers le haut) -->
+    <button id="orderCtaCta" class="cta-img" aria-label="Commander">
+      <img src="assets/cta-commander.svg?v=42" alt="">
+    </button>
+
+    <!-- Groupe droit -->
+    <div class="tabgroup right">
+      <button class="tabbtn" data-tab="orders" aria-label="Historique">
+        <img class="tab-ico" src="assets/tab-orders.svg?v=42" alt="">
+      </button>
+      <button class="tabbtn" data-tab="profile" aria-label="Profil">
+        <img class="tab-ico" src="assets/tab-profile.svg?v=42" alt="">
+      </button>
+    </div>
+  </div>
+</nav>
+
+<script>
+  // Le nouveau CTA utilise l'action existante du bouton masqué #orderCta
+  (function () {
+    const newCta = document.getElementById('orderCtaCta');
+    const legacy = document.getElementById('orderCta');
+    if (newCta && legacy) newCta.addEventListener('click', () => legacy.click());
+  })();
+</script>
 
   <script>
     /* Optionnel : faire pointer le nouveau CTA image vers l'action existante */
