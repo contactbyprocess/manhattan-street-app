@@ -14,10 +14,10 @@
   /* Tabbar (VALIDÉE + upsize icônes/CTA) */
   --tabbar-bg:#A64027;
   --tabbar-h:43px;      /* on garde cette hauteur */
-  --icon-sz:42px;       /* AVANT 24px -> +33% */
-  --icon-shift-y:5px;   /* léger abaissement visuel */
-  --cta-size:82px;      /* CTA bien visible */
-  --cta-lift:20px;      /* dépassement au-dessus de la barre */
+  --icon-sz:52px;       /* AVANT 24px -> +33% */
+  --icon-shift-y:8px;   /* léger abaissement visuel */
+  --cta-size:92px;      /* CTA bien visible */
+  --cta-lift:30px;      /* dépassement au-dessus de la barre */
 }
 
 /* ===== Document ===== */
