@@ -1,12 +1,23 @@
-/* ===== Variables ===== */
+/* ===== Variables globales ===== */
 *{box-sizing:border-box}
 :root{
-  --bg:#ffffff; --text:#111;
-  --line:#e7e7e7; --muted:#6d6d6d;
+  --bg:#ffffff; 
+  --text:#111;
+  --line:#e7e7e7; 
+  --muted:#6d6d6d;
   --accent-cta:#c24d2c;
   --safe-top: env(safe-area-inset-top, 0px);
   --safe-bottom: env(safe-area-inset-bottom, 0px);
-  --banner-h: 22vh;                 /* 18–22vh si tu veux ajuster */
+
+  /* Bannière */
+  --banner-h: 25vh;
+
+  /* Tabbar */
+  --tabbar-bg:#A64027;
+  --tabbar-h:72px;       /* hauteur barre */
+  --icon-sz:34px;        /* taille icônes onglets */
+  --cta-size:84px;       /* taille image CTA */
+  --cta-lift:18px;       /* dépassement vers le haut */
 }
 
 /* ===== Document ===== */
@@ -20,14 +31,17 @@ body{
 h1,h2,h3{margin:0 0 8px 0}
 
 /* ===== Toast ===== */
-.toast{position:fixed;left:50%;transform:translateX(-50%);top:16px;background:rgba(0,0,0,.85);color:#fff;padding:10px 14px;border-radius:12px;z-index:90;opacity:0;pointer-events:none;transition:opacity .2s}
+.toast{
+  position:fixed;left:50%;transform:translateX(-50%);top:16px;
+  background:rgba(0,0,0,.85);color:#fff;padding:10px 14px;border-radius:12px;
+  z-index:90;opacity:0;pointer-events:none;transition:opacity .2s
+}
 .toast.show{opacity:1}
 
-/* ===== Bannière : collée sous overlay SANS liseré ===== */
+/* ===== Bannière ===== */
 .banner{
   position:relative;
   margin:0; padding:0; border:0; background:#000;
-  /* le conteneur inclut la safe-top pour éviter la micro-coupure */
   margin-top: calc(-1 * var(--safe-top));
   padding-top: var(--safe-top);
   height: calc(var(--banner-h) + var(--safe-top));
@@ -54,11 +68,18 @@ h1,h2,h3{margin:0 0 8px 0}
   position:absolute; left:50%; transform:translateX(-50%);
   bottom:8px; display:flex; gap:6px; z-index:2;
 }
-.banner-dots .dot{width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,.5)}
+.banner-dots .dot{
+  width:6px;height:6px;border-radius:50%;
+  background:rgba(255,255,255,.5)
+}
 .banner-dots .dot.active{background:var(--accent-cta)}
 
 /* ===== Contenu ===== */
-.layout{max-width:1100px;margin:12px auto calc(124px + var(--safe-bottom)) auto;padding:0 12px}
+.layout{
+  max-width:1100px;
+  margin:12px auto calc(var(--tabbar-h) + 28px + var(--safe-bottom)) auto;
+  padding:0 12px
+}
 .card{background:#fff;border:1px solid var(--line);border-radius:16px;padding:16px;margin:10px 0}
 .hint{color:var(--muted);font-size:12px}
 
@@ -69,7 +90,10 @@ h1,h2,h3{margin:0 0 8px 0}
 .home-card{background:#fff;border:1px solid var(--line);border-radius:16px;padding:12px 14px;margin:8px 0 10px}
 .prog-row{display:flex;align-items:center;justify-content:space-between;gap:12px}
 .home-title{font-size:20px}
-.points-badge{display:inline-flex;align-items:center;gap:6px;padding:7px 12px;border:1.5px dashed #d0d0d0;border-radius:999px;font-weight:800;background:#fff}
+.points-badge{
+  display:inline-flex;align-items:center;gap:6px;padding:7px 12px;
+  border:1.5px dashed #d0d0d0;border-radius:999px;font-weight:800;background:#fff
+}
 
 .home-block{margin:10px 0 6px}
 .home-block-head{display:flex;align-items:center;justify-content:space-between}
@@ -90,162 +114,93 @@ h1,h2,h3{margin:0 0 8px 0}
 .client-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
 .client-tile{background:#fff;border:1px solid var(--line);border-radius:16px;padding:26px 12px;font-weight:800;cursor:pointer}
 
-/* ===== TABBAR (SVG visibles, pas de débordement, couleur #A64027) ===== */
-:root{
-  --tabbar-h: 72px;           /* -25% vs 96px */
-  --icon: 64px;               /* taille des icônes */
-  --fab: 108px;               /* diamètre du bouton central */
-  --tabbar-spacer: calc(var(--fab) * 0.85);  /* largeur colonne centrale */
-}
+/* ===== Tabs ===== */
+.tab{display:none}
+.tab.active{display:block}
 
+/* ===== TABBAR v2 ===== */
 .tabbar{
-  position: fixed;
-  left: 0; right: 0; bottom: 0;
-  z-index: 30;
-  display: grid;
-  grid-template-columns: 1fr 1fr var(--tabbar-spacer) 1fr 1fr;
-  align-items: center; justify-items: center;
-  height: var(--tabbar-h);
-  /* padding safe-area et centrage strict */
-  padding-left: env(safe-area-inset-left);
-  padding-right: env(safe-area-inset-right);
-  padding-bottom: var(--safe-bottom);
+  position:fixed; left:0; right:0; bottom:0; z-index:30;
+  background:var(--tabbar-bg);
+  height:calc(var(--tabbar-h) + env(safe-area-inset-bottom));
+  padding-bottom:env(safe-area-inset-bottom);
+}
+.tabbar-inner{
+  position:relative;
+  height:var(--tabbar-h);
+  display:flex; align-items:center; justify-content:space-between;
+  padding:0 14px;
+}
+.tabgroup{
+  display:flex; align-items:center; gap:22px;
+}
+.tabgroup.left{  padding-right:calc(var(--cta-size)/2 + 18px); }
+.tabgroup.right{ padding-left: calc(var(--cta-size)/2 + 18px); }
 
-  background: #A64027;
-  border-top: 2px solid #214D4A;
-
-  max-width: 100vw;
-  overflow: hidden;          /* empêche tout débordement horizontal */
-  box-sizing: border-box;
+.tabbtn{
+  background:transparent; border:0; padding:0; cursor:pointer;
+  width:var(--icon-sz); height:var(--icon-sz); display:grid; place-items:center;
+}
+.tabbtn .tab-ico{
+  width:100%; height:100%; object-fit:contain; display:block;
 }
 
-.tabbar button{
-  background: transparent; border: 0; cursor: pointer;
-  width: 100%; height: 100%;
-  display: grid; place-items: center;
-  min-width: 0;              /* clé: évite de pousser la grille hors écran */
-  justify-self: center;      /* recentre chaque cellule */
+/* CTA central */
+.cta-img{
+  position:absolute; left:50%; transform:translateX(-50%);
+  top:calc(-1 * var(--cta-lift));
+  width:var(--cta-size); height:var(--cta-size);
+  background:transparent; border:0; padding:0; cursor:pointer;
+  display:grid; place-items:center; z-index:31;
 }
+.cta-img img{ width:100%; height:100%; object-fit:contain; display:block; }
 
-.tabbar .tab-ico{
-  width: var(--icon); height: var(--icon);
-  display: block;
-  object-fit: contain;
-}
-
-/* colonne vide pour laisser “passer” le bouton central */
-.tabbar-spacer{ width: var(--tabbar-spacer); height: 1px; }
-
-/* ===== FAB — moitié “dans” la tabbar ===== */
-.order-cta-round{
-  position: fixed;
-  left: 50%; transform: translateX(-50%);
-  bottom: calc(var(--tabbar-h) - (var(--fab) / 2) + var(--safe-bottom));
-  z-index: 36;
-
-  width: var(--fab); height: var(--fab);
-  border-radius: 50%;
-  display: grid; place-items: center;
-
-  background: #c24d2c; color: #fff;
-  border: 4px solid #1F5A57;
-  box-shadow: 0 12px 26px rgba(0,0,0,.22);
-}
-.order-cta-round img{
-  width: 100%; height: 100%;
-  object-fit: contain; display: block;
-}
+/* neutralise anciens éléments */
+.tabbar-gap,.order-cta-round{ display:none !important; }
 
 /* ===== Modals ===== */
 .modal{position:fixed; inset:0; z-index:50; display:none}
 .modal.show{display:block}
 .modal-bg{position:absolute; inset:0; background:rgba(17,17,17,.35); backdrop-filter:blur(2px)}
-.modal-card{position:absolute; left:50%; top:50%; transform:translate(-50%,-50%); width:min(640px,92vw); max-height:85vh; overflow:auto; background:#fff; border:1px solid var(--line); border-radius:18px; box-shadow:0 12px 48px rgba(0,0,0,.25)}
-.modal-header,.modal-footer{display:flex; align-items:center; gap:12px; padding:14px 16px; border-bottom:1px solid var(--line)}
+.modal-card{
+  position:absolute; left:50%; top:50%; transform:translate(-50%,-50%);
+  width:min(640px,92vw); max-height:85vh; overflow:auto;
+  background:#fff; border:1px solid var(--line); border-radius:18px;
+  box-shadow:0 12px 48px rgba(0,0,0,.25)
+}
+.modal-header,.modal-footer{
+  display:flex; align-items:center; gap:12px; padding:14px 16px; border-bottom:1px solid var(--line)
+}
 .modal-footer{border-top:1px solid var(--line); border-bottom:0; justify-content:space-between}
 .pad{padding:14px 16px}
 .grid{display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:12px}
-input,select{width:100%; padding:12px; border-radius:12px; border:1px solid #d7d7d7; background:#fff; color:#111; font-size:16px}
+input,select{
+  width:100%; padding:12px; border-radius:12px;
+  border:1px solid #d7d7d7; background:#fff; color:#111; font-size:16px
+}
 .order-type-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:12px; margin-bottom:10px}
-.order-type{background:#fff; border:1px solid var(--line); border-radius:16px; padding:18px 10px; display:grid; gap:6px; place-items:center; font-weight:800}
+.order-type{
+  background:#fff; border:1px solid var(--line); border-radius:16px;
+  padding:18px 10px; display:grid; gap:6px; place-items:center; font-weight:800
+}
 .ot-emoji{font-size:26px}
 
 /* ===== Carte & fidélité ===== */
 .map-wrap{margin:10px 0; border:1px solid var(--line); border-radius:16px; overflow:hidden; background:#fff}
 #mapFrame{display:block; width:100%; height:220px; border:0}
-.loyalty-card{margin:6px auto 0; width:100%; max-width:380px; height:200px; border-radius:16px; overflow:hidden; box-shadow:0 12px 30px rgba(0,0,0,.1); background:linear-gradient(135deg,#1b1b1b,#444); color:#fff; border:1px solid #000}
+.loyalty-card{
+  margin:6px auto 0; width:100%; max-width:380px; height:200px;
+  border-radius:16px; overflow:hidden; box-shadow:0 12px 30px rgba(0,0,0,.1);
+  background:linear-gradient(135deg,#1b1b1b,#444); color:#fff; border:1px solid #000
+}
 .lc-header{padding:10px 14px; font-weight:900; letter-spacing:.6px}
 .lc-body{display:grid; gap:6px; padding:10px 14px}
 .lc-name{font-size:22px; font-weight:900}
 .lc-id{font-size:12px; opacity:.9}
 .lc-points{margin-top:auto; font-weight:800}
 .qr-wrap{display:grid; place-items:center; gap:8px; margin:10px 0}
-.qr-canvas{width:200px; height:200px; background:#fff; border:1px solid var(--line); border-radius:16px; display:grid; place-items:center; overflow:hidden}
+.qr-canvas{
+  width:200px; height:200px; background:#fff; border:1px solid var(--line);
+  border-radius:16px; display:grid; place-items:center; overflow:hidden
+}
 .qr-code-text{font-size:12px; color:#777; word-break:break-all; max-width:280px; text-align:center}
-
-/* ===== TABBAR v2 (fond #A64027, CTA image centrée) ===== */
-:root{
-  --tabbar-bg: #A64027;
-  --tabbar-h: 72px;      /* hauteur barre */
-  --cta-size: 88px;      /* taille de l'image CTA */
-  --cta-pop: 18px;       /* sort légèrement au-dessus de la barre */
-  --icon: 64px;          /* taille des icônes onglets */
-}
-
-/* barre fixe en bas */
-.tabbar{
-  position: fixed; left: 0; right: 0; bottom: 0; z-index: 30;
-  background: var(--tabbar-bg);
-  height: calc(var(--tabbar-h) + env(safe-area-inset-bottom));
-  padding-bottom: env(safe-area-inset-bottom);
-}
-
-/* grille gauche / centre (vide) / droite, pour symétrie parfaite */
-.tabbar-inner{
-  position: relative;
-  height: var(--tabbar-h);
-  display: grid;
-  grid-template-columns: 1fr 0 1fr;
-  align-items: center;
-}
-
-/* groupes gauche/droite : 2 boutons espacés régulièrement */
-.tabgroup{
-  display: flex;
-  justify-content: space-evenly;
-  align-items: center;
-  gap: 10px;
-  padding: 0 12px;
-}
-
-/* boutons d’onglet = icône SVG clickable */
-.tabbtn{
-  background: transparent; border: 0; padding: 0;
-  width: var(--icon); height: var(--icon);
-  display: grid; place-items: center; cursor: pointer;
-}
-.tabbtn .tab-ico{
-  width: 100%; height: 100%; object-fit: contain; display: block;
-}
-
-/* état actif : (si tu veux un halo) */
-/* .tabbtn.active { filter: drop-shadow(0 2px 6px rgba(0,0,0,.25)); } */
-
-/* CTA image centrée, qui dépasse un peu vers le haut */
-.cta-img{
-  position: absolute; left: 50%; transform: translateX(-50%);
-  top: calc(-1 * var(--cta-pop));        /* remonte légèrement */
-  width: var(--cta-size); height: var(--cta-size);
-  background: transparent; border: 0; padding: 0; cursor: pointer;
-  display: grid; place-items: center; z-index: 31; /* au-dessus de la barre */
-}
-.cta-img img{ width: 100%; height: 100%; object-fit: contain; display: block; }
-
-/* espace en bas du contenu pour ne pas passer sous la tabbar */
-.layout{
-  margin: 12px auto calc(var(--tabbar-h) + 24px + env(safe-area-inset-bottom)) auto;
-}
-
-/* nettoie les anciens styles (au cas où) */
-.tabbar-gap{ display:none !important; }
-.order-cta-round{ display:none !important; }
