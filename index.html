@@ -11,14 +11,14 @@
 
   <title>Manhattan Street — Commande</title>
 
-  <link rel="stylesheet" href="styles.css?v=30" />
-  <script defer src="app.js?v=30"></script>
+  <link rel="stylesheet" href="styles.css?v=40" />
+  <script defer src="app.js?v=40"></script>
 </head>
 <body>
   <!-- toast -->
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
 
-  <!-- ===== Bannière (collée sous l’overlay, hauteur limitée) ===== -->
+  <!-- ===== Bannière (collée sous l’overlay, hauteur validée) ===== -->
   <section class="banner">
     <div class="banner-track" id="bannerTrack">
       <img src="assets/banner1.jpg" alt="Bannière 1" />
@@ -131,7 +131,7 @@
     </section>
   </main>
 
-  <!-- CTA rond -->
+  <!-- Ancien CTA rond : neutralisé via CSS (on le garde pour ne rien casser côté JS) -->
   <button id="orderCta" class="order-cta-round" aria-label="Commander">🛍️</button>
 
   <!-- Modal type de commande -->
@@ -156,35 +156,33 @@
       </div>
     </div>
   </div>
-<!-- Tabbar -->
-<nav class="tabbar">
-  <div class="tabbar-inner">
-    <!-- Groupe gauche -->
-    <div class="tabgroup left">
-      <button class="tabbtn active" data-tab="home" aria-label="Accueil">
-        <img class="tab-ico" src="assets/tab-home.svg?v=33" alt="">
-      </button>
-      <button class="tabbtn" data-tab="loyalty" aria-label="Fidélité">
-        <img class="tab-ico" src="assets/tab-loyalty.svg?v=33" alt="">
-      </button>
-    </div>
 
-    <!-- CTA central (image seule) -->
-    <button id="orderCta" class="cta-img" aria-label="Commander">
-      <img src="assets/cta-commander.svg?v=33" alt="">
-    </button>
+  <!-- ===== Tabbar (nouvelle structure) ===== -->
+  <nav class="tabbar">
+    <div class="tabbar-inner">
+      <div class="tabgroup left">
+        <button class="tabbtn" data-tab="home" aria-label="Accueil">
+          <img class="tab-ico" src="assets/tab-home.svg" alt="">
+        </button>
+        <button class="tabbtn" data-tab="loyalty" aria-label="Fidélité">
+          <img class="tab-ico" src="assets/tab-loyalty.svg" alt="">
+        </button>
+      </div>
 
-    <!-- Groupe droit -->
-    <div class="tabgroup right">
-      <button class="tabbtn" data-tab="orders" aria-label="Historique">
-        <img class="tab-ico" src="assets/tab-orders.svg?v=33" alt="">
+      <!-- CTA image centré (dépasse légèrement) -->
+      <button id="orderCtaImg" class="cta-img" aria-label="Commander">
+        <img src="assets/tab-cta.svg" alt="">
       </button>
-      <button class="tabbtn" data-tab="profile" aria-label="Profil">
-        <img class="tab-ico" src="assets/tab-profile.svg?v=33" alt="">
-      </button>
+
+      <div class="tabgroup right">
+        <button class="tabbtn" data-tab="orders" aria-label="Historique">
+          <img class="tab-ico" src="assets/tab-orders.svg" alt="">
+        </button>
+        <button class="tabbtn" data-tab="profile" aria-label="Profil">
+          <img class="tab-ico" src="assets/tab-profile.svg" alt="">
+        </button>
+      </div>
     </div>
-  </div>
-</nav>
-  
+  </nav>
 </body>
 </html>
