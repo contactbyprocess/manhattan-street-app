@@ -144,13 +144,13 @@ input,select{ width:100%; padding:12px; border-radius:12px; border:1px solid #d7
   display:flex; align-items:center; justify-content:space-between;
   padding:0 20px;
 }
-.tabgroup{ display:flex; align-items:center; gap:10px; }              /* <— ESPACEMENT 10px */
-.tabgroup.left{  padding-right: calc(var(--cta-size)/2 + 10px); }      /* symétrie autour du CTA */
-.tabgroup.right{ padding-left:  calc(var(--cta-size)/2 + 10px); }
+.tabgroup{ display:flex; align-items:center; gap:3px; }              /* <— ESPACEMENT 10px */
+.tabgroup.left{  padding-right: calc(var(--cta-size)/2 + 3px); }      /* symétrie autour du CTA */
+.tabgroup.right{ padding-left:  calc(var(--cta-size)/2 + 3px); }
 
 /* — fallback si tes 4 boutons sont directement dans <nav class="tabbar"> */
 .tabbar > button{
-  margin:0 10px;                                /* <— ESPACEMENT 10px */
+  margin:0 3px;                                /* <— ESPACEMENT 10px */
   width:var(--icon-sz); height:var(--icon-sz);
   background:transparent; border:0; padding:0; cursor:pointer;
   display:grid; place-items:center;
