@@ -18,7 +18,7 @@
   --icon-shift-y:8px;   /* léger abaissement visuel */
   --cta-size:102px;      /* CTA bien visible */
   --cta-lift:50px;      /* dépassement au-dessus de la barre */
-  --tabgroup{ display:flex; align-items:center; gap:20px; }
+  --tabgroup{ display:flex; align-items:center; gap:10px; }
 }
 
 /* ===== Document ===== */
