@@ -2,23 +2,23 @@
 <html lang="fr">
 <head>
   <meta charset="utf-8" />
-  <!-- PWA plein écran sous encoche -->
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="Manhattan Street" />
   <meta name="theme-color" content="#000000" />
   <link rel="manifest" href="manifest.json" />
-
   <title>Manhattan Street — Commande</title>
 
-  <link rel="stylesheet" href="styles.css?v=40" />
-  <script defer src="app.js?v=40"></script>
+  <link rel="stylesheet" href="styles.css?v=23" />
+  <script defer src="app.js?v=23"></script>
 </head>
 <body>
-  <!-- toast -->
+
+  <!-- Toast -->
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
 
-  <!-- ===== Bannière ===== -->
+  <!-- BANNIÈRES -->
   <section class="banner">
     <div class="banner-track" id="bannerTrack">
       <img src="assets/banner1.jpg" alt="Bannière 1" />
@@ -28,7 +28,7 @@
     <div class="banner-dots" id="bannerDots"></div>
   </section>
 
-  <!-- ===== Contenu ===== -->
+  <!-- CONTENU -->
   <main class="layout">
     <!-- Accueil -->
     <section class="tab tab-home active" id="tab-home">
@@ -37,7 +37,6 @@
         <p class="hero-tag">TON INCONTOURNABLE 🗽🔥</p>
       </section>
 
-      <!-- Mon programme -->
       <section class="home-card">
         <div class="prog-row">
           <h2 class="home-title">Mon Programme</h2>
@@ -45,7 +44,6 @@
         </div>
       </section>
 
-      <!-- Hype du moment -->
       <section class="home-block">
         <div class="home-block-head">
           <h2>La hype du moment ✨</h2>
@@ -54,7 +52,6 @@
         <div class="hscroll compact3" id="featured"></div>
       </section>
 
-      <!-- Espace client -->
       <section class="home-block">
         <h2>Mon espace client</h2>
         <div class="client-grid">
@@ -91,7 +88,6 @@
     <section class="tab" id="tab-loyalty">
       <div class="card">
         <h2>Ma carte de fidélité</h2>
-
         <div class="loyalty-card">
           <div class="lc-header">MANHATTAN STREET</div>
           <div class="lc-body">
@@ -131,28 +127,29 @@
     </section>
   </main>
 
-  <!-- CTA rond (icône image) -->
+  <!-- FAB “Commander” (image personnalisée) -->
   <button id="orderCta" class="order-cta-round" aria-label="Commander">
-    <img src="assets/tab-order.svg" alt="" />
+    <img src="assets/fab-commander.svg" alt="">
   </button>
 
-  <!-- Tabbar avec icônes+texte (images) -->
-  <nav class="tabbar" role="tablist" aria-label="Navigation principale">
-    <button data-tab="home" class="active" role="tab" aria-selected="true">
-      <img src="assets/tab-home.svg" alt="Accueil" />
+  <!-- TABBAR (icônes = images cliquables) -->
+  <nav class="tabbar">
+    <button data-tab="home" aria-label="Accueil">
+      <img src="assets/tab-home.svg" alt="Accueil">
     </button>
-    <button data-tab="loyalty" role="tab" aria-selected="false">
-      <img src="assets/tab-loyalty.svg" alt="Fidélité" />
+    <button data-tab="loyalty" aria-label="Fidélité">
+      <img src="assets/tab-loyalty.svg" alt="Fidélité">
     </button>
 
-    <span class="tabbar-gap" aria-hidden="true"></span>
+    <span class="tabbar-gap"></span>
 
-    <button data-tab="orders" role="tab" aria-selected="false">
-      <img src="assets/tab-orders.svg" alt="Historique" />
+    <button data-tab="orders" aria-label="Historique">
+      <img src="assets/tab-orders.svg" alt="Historique">
     </button>
-    <button data-tab="profile" role="tab" aria-selected="false">
-      <img src="assets/tab-profile.svg" alt="Profil" />
+    <button data-tab="profile" aria-label="Profil">
+      <img src="assets/tab-profile.svg" alt="Profil">
     </button>
   </nav>
+
 </body>
 </html>
