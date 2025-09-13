@@ -1,5 +1,3 @@
-/* ===== Variables ===== */
-*{box-sizing:border-box}
 :root{
   --bg:#ffffff; --text:#111;
   --line:#e7e7e7; --muted:#6d6d6d;
@@ -7,6 +5,13 @@
   --safe-top: env(safe-area-inset-top, 0px);
   --safe-bottom: env(safe-area-inset-bottom, 0px);
 
+  /* Tabbar */
+  --tabbar-h:43px;      /* validé, on ne change plus */
+  --icon-sz:53px;       /* icônes +15% */
+  --icon-shift-y:4px;   /* petit décalage vertical */
+  --cta-size:72px;      /* bouton central */
+  --cta-lift:12px;      /* dépassement par le haut */
+}
   /* Bannière validée */
   --banner-h: 25vh;
 
