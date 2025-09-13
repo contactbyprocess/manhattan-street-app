@@ -8,17 +8,16 @@
   --safe-top: env(safe-area-inset-top, 0px);
   --safe-bottom: env(safe-area-inset-bottom, 0px);
 
-  /* Bannière (validée) */
+  /* Bannière (VALIDÉE) */
   --banner-h: 25vh;
 
-  /* Tabbar (validée + derniers ajustements) */
+  /* Tabbar (VALIDÉE + upsize icônes/CTA) */
   --tabbar-bg:#A64027;
-  --tabbar-h:43px;      /* gardée identique */
-  --icon-sz:24px;       /* +20% */
-  --icon-shift-y:10px;   /* léger abaissement visuel */
-  --cta-size:40px;      /* +25% */
-  --cta-lift:12px;      /* dépassement vers le haut */
-  --tabgroup{ gap:28px; }
+  --tabbar-h:43px;      /* on garde cette hauteur */
+  --icon-sz:32px;       /* AVANT 24px -> +33% */
+  --icon-shift-y:6px;   /* léger abaissement visuel */
+  --cta-size:72px;      /* CTA bien visible */
+  --cta-lift:18px;      /* dépassement au-dessus de la barre */
 }
 
 /* ===== Document ===== */
@@ -125,7 +124,7 @@ input,select{ width:100%; padding:12px; border-radius:12px; border:1px solid #d7
 .order-type{ background:#fff; border:1px solid var(--line); border-radius:16px; padding:18px 10px; display:grid; gap:6px; place-items:center; font-weight:800 }
 .ot-emoji{ font-size:26px }
 
-/* Ancien CTA rond masqué (on n’utilise plus ce composant) */
+/* Ancien CTA rond masqué */
 .order-cta-round{ display:none !important; }
 
 /* ===== TABBAR ===== */
@@ -143,9 +142,10 @@ input,select{ width:100%; padding:12px; border-radius:12px; border:1px solid #d7
   display:flex; align-items:center; justify-content:space-between;
   padding:0 20px;
 }
-.tabgroup{ display:flex; align-items:center; gap:32px; }
-.tabgroup.left{  padding-right: calc(var(--cta-size)/2 + 16px); }
-.tabgroup.right{ padding-left:  calc(var(--cta-size)/2 + 16px); }
+/* groupes de 2 onglets, répartis symétriquement */
+.tabgroup{ display:flex; align-items:center; gap:38px; }
+.tabgroup.left{  padding-right: calc(var(--cta-size)/2 + 18px); }
+.tabgroup.right{ padding-left:  calc(var(--cta-size)/2 + 18px); }
 
 .tabbtn{
   background:transparent; border:0; padding:0; cursor:pointer;
@@ -153,11 +153,11 @@ input,select{ width:100%; padding:12px; border-radius:12px; border:1px solid #d7
   display:grid; place-items:center;
   transform: translateY(var(--icon-shift-y));
 }
-.tabbtn .tab-ico{
+.tabbtn .tab-ic{       /* <img class="tab-ic" …> */
   width:100%; height:100%;
   object-fit:contain; display:block; pointer-events:none;
 }
-.tabbtn.active .tab-ico{
+.tabbtn.active .tab-ic{
   filter:drop-shadow(0 1px 0 rgba(0,0,0,.15));
   transform: translateY(calc(var(--icon-shift-y) - 1px));
 }
