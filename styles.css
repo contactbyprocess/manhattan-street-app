@@ -1,24 +1,16 @@
-/* ===== Variables globales ===== */
-
+/* ===== Variables ===== */
+*{box-sizing:border-box}
 :root{
   --bg:#ffffff; --text:#111;
   --line:#e7e7e7; --muted:#6d6d6d;
   --accent-cta:#c24d2c;
   --safe-top: env(safe-area-inset-top, 0px);
   --safe-bottom: env(safe-area-inset-bottom, 0px);
-
-  /* tailles */
-  --banner-h: 25vh;        /* hauteur des bannières */
-  --tabbar-h: 72px;        /* hauteur barre (25% plus basse qu'avant ~96px→72px) */
-  --icon: 44px;            /* taille des icônes de la tabbar */
-  --fab: 96px;             /* diamètre du bouton central */
+  --banner-h: 20vh;                 /* 18–22vh si tu veux ajuster */
 }
-.banner{ margin-top:calc(-1 * var(--safe-top)); height:var(--banner-h); overflow:hidden;}
-.banner-track>*, .banner img{ height:var(--banner-h); }
 
-/* ===== Document / base ===== */
-*{box-sizing:border-box}
-html{background:#000; height:100%}
+/* ===== Document ===== */
+html{background:#000;height:100%}
 body{
   margin:0; background:var(--bg); color:var(--text);
   font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;
@@ -31,23 +23,31 @@ h1,h2,h3{margin:0 0 8px 0}
 .toast{position:fixed;left:50%;transform:translateX(-50%);top:16px;background:rgba(0,0,0,.85);color:#fff;padding:10px 14px;border-radius:12px;z-index:90;opacity:0;pointer-events:none;transition:opacity .2s}
 .toast.show{opacity:1}
 
-/* ===== Bannière (collée sous l’overlay, hauteur limitée) ===== */
+/* ===== Bannière : collée sous overlay SANS liseré ===== */
 .banner{
-  position:relative; margin:0; padding:0; border:0; background:#000;
-  margin-top: calc(-1 * var(--safe-top));     /* colle sous l’encoche */
-  height: var(--banner-h);
+  position:relative;
+  margin:0; padding:0; border:0; background:#000;
+  /* le conteneur inclut la safe-top pour éviter la micro-coupure */
+  margin-top: calc(-1 * var(--safe-top));
+  padding-top: var(--safe-top);
+  height: calc(var(--banner-h) + var(--safe-top));
   overflow:hidden;
 }
 .banner-track{
-  display:flex; overflow-x:auto; scroll-snap-type:x mandatory;
-  -webkit-overflow-scrolling:touch; gap:0; padding:0; margin:0;
+  position:relative; height:100%;
+  display:flex; overflow-x:auto;
+  scroll-snap-type:x mandatory; -webkit-overflow-scrolling:touch;
+  gap:0; margin:0; padding:0;
+  scrollbar-width:none;
 }
 .banner-track::-webkit-scrollbar{display:none}
 .banner-track > *{
-  flex:0 0 100vw; height:var(--banner-h); scroll-snap-align:center;
+  flex:0 0 100vw; height:100%;
+  scroll-snap-align:center;
 }
-.banner-track img{
-  width:100%; height:100%; object-fit:cover; object-position:center top;
+.banner img{
+  width:100%; height:100%;
+  object-fit:cover; object-position:center top;
   display:block; border:0; pointer-events:none;
 }
 .banner-dots{
@@ -58,11 +58,7 @@ h1,h2,h3{margin:0 0 8px 0}
 .banner-dots .dot.active{background:var(--accent-cta)}
 
 /* ===== Contenu ===== */
-.layout{
-  max-width:1100px;
-  margin:12px auto calc(var(--tabbar-h) + 36px + var(--safe-bottom)) auto; /* place pour tabbar + chevauchement du FAB */
-  padding:0 12px;
-}
+.layout{max-width:1100px;margin:12px auto calc(124px + var(--safe-bottom)) auto;padding:0 12px}
 .card{background:#fff;border:1px solid var(--line);border-radius:16px;padding:16px;margin:10px 0}
 .hint{color:var(--muted);font-size:12px}
 
@@ -82,7 +78,7 @@ h1,h2,h3{margin:0 0 8px 0}
 .btn.outline{background:transparent;border:1.5px solid var(--accent-cta);color:var(--accent-cta);font-weight:800}
 .btn.small{padding:9px 14px;border-radius:999px}
 
-/* Hscroll cartes produits */
+/* Hscroll cartes */
 .hscroll{display:grid;grid-auto-flow:column;gap:10px;overflow-x:auto;scroll-snap-type:x mandatory;padding:4px 2px}
 .hscroll.compact3{grid-auto-columns:30.5%}
 .hcard{scroll-snap-align:start;background:#fff;border:1px solid var(--line);border-radius:16px;overflow:hidden;cursor:pointer}
@@ -94,39 +90,29 @@ h1,h2,h3{margin:0 0 8px 0}
 .client-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
 .client-tile{background:#fff;border:1px solid var(--line);border-radius:16px;padding:26px 12px;font-weight:800;cursor:pointer}
 
-/* ===== Tabs ===== */
+/* ===== Tabs & Tabbar ===== */
 .tab{display:none}
 .tab.active{display:block}
-
 .tabbar{
   position:fixed; left:0; right:0; bottom:0; z-index:30;
-  display:grid; grid-template-columns:1fr 1fr 110px 1fr 1fr;
-  justify-items:center; align-items:center;
-  height:var(--tabbar-h);
-  padding-bottom:var(--safe-bottom);
-  background:#A64027;             /* ta couleur */
-  border-top:2px solid #214D4A;    /* option: liseré foncé comme ton visuel */
+  display:grid; grid-template-columns:1fr 1fr 108px 1fr 1fr; justify-items:center; align-items:center;
+  background:#fff; border-top:1px solid var(--line); padding-bottom:var(--safe-bottom); height:96px;
 }
-.tabbar button{
-  background:transparent; border:0; cursor:pointer;
-  width:100%; height:100%;
-  display:flex; flex-direction:column; align-items:center; justify-content:center;
-}
-.tabbar img{ width:var(--icon); height:var(--icon); display:block; }
-.tabbar .label{ color:#fff; font-weight:800; font-size:12px; margin-top:4px; }
+.tabbar button{background:transparent;color:#111;border:none;padding:14px 8px;font-weight:800;cursor:pointer;font-size:16px}
+.tabbar button.active{color:#fff;background:var(--accent-cta);border-radius:14px;margin:0 8px}
+.tabbar-gap{height:1px}
 
-/* ===== FAB (superposition au-dessus de la tabbar, centré) ===== */
+/* ===== CTA rond ===== */
 .order-cta-round{
   position:fixed; left:50%; transform:translateX(-50%);
-  bottom: calc(var(--tabbar-h) - 36px + var(--safe-bottom));  /* chevauchement */
-  z-index:36;
-  width:96px; height:96px; border-radius:50%;
-  display:grid; place-items:center; background:#A64027; color:#fff; border:4px solid #0E4A45;
-  box-shadow:0 12px 32px rgba(0,0,0,.25);
+  bottom:110px; z-index:36;
+  width:78px; height:78px; border-radius:50%;
+  display:grid; place-items:center; font-size:26px;
+  background:var(--accent-cta); color:#fff; border:0;
+  box-shadow:0 10px 26px rgba(0,0,0,.18);
 }
-.order-cta-round img{ width:70%; height:auto; display:block }
 
-/* ===== Modals / formulaires / carte / fidélité (identiques) ===== */
+/* ===== Modals ===== */
 .modal{position:fixed; inset:0; z-index:50; display:none}
 .modal.show{display:block}
 .modal-bg{position:absolute; inset:0; background:rgba(17,17,17,.35); backdrop-filter:blur(2px)}
@@ -140,63 +126,15 @@ input,select{width:100%; padding:12px; border-radius:12px; border:1px solid #d7d
 .order-type{background:#fff; border:1px solid var(--line); border-radius:16px; padding:18px 10px; display:grid; gap:6px; place-items:center; font-weight:800}
 .ot-emoji{font-size:26px}
 
+/* ===== Carte & fidélité ===== */
 .map-wrap{margin:10px 0; border:1px solid var(--line); border-radius:16px; overflow:hidden; background:#fff}
 #mapFrame{display:block; width:100%; height:220px; border:0}
-
 .loyalty-card{margin:6px auto 0; width:100%; max-width:380px; height:200px; border-radius:16px; overflow:hidden; box-shadow:0 12px 30px rgba(0,0,0,.1); background:linear-gradient(135deg,#1b1b1b,#444); color:#fff; border:1px solid #000}
 .lc-header{padding:10px 14px; font-weight:900; letter-spacing:.6px}
 .lc-body{display:grid; gap:6px; padding:10px 14px}
 .lc-name{font-size:22px; font-weight:900}
 .lc-id{font-size:12px; opacity:.9}
 .lc-points{margin-top:auto; font-weight:800}
-
-/* Sécurité : neutraliser tout ancien spacer */
-.safe-spacer{ height:0 !important; }
-
-.order-cta-round{
-  position:fixed; left:50%; transform:translateX(-50%);
-  /* Le bas du bouton = hauteur tabbar - (moitié du bouton) */
-  bottom: calc(var(--tabbar-h) - (var(--fab) / 2) + var(--safe-bottom));
-  z-index:36;
-  width:var(--fab); height:var(--fab); border-radius:50%;
-  display:grid; place-items:center; background:#c24d2c; color:#fff; border:4px solid #1F5A57;
-  box-shadow:0 12px 26px rgba(0,0,0,.22);
-}
-.order-cta-round img{ width:100%; height:100%; object-fit:contain; }
-/* ===== Tabbar + bouton central (ajouts) ===== */
-:root{
-  --tabbar-h: 72px;   /* ~25% plus bas que 96px */
-  --icon: 52px;       /* taille icônes */
-  --fab: 96px;        /* diamètre du bouton central */
-}
-
-.tabbar{
-  position:fixed; left:0; right:0; bottom:0; z-index:30;
-  display:grid; grid-template-columns:1fr 1fr 110px 1fr 1fr;
-  justify-items:center; align-items:center;
-  height:var(--tabbar-h);
-  padding-bottom:var(--safe-bottom);
-  background:#A64027;                 /* couleur demandée */
-  border-top:2px solid #214D4A;       /* optionnel: fin liseré */
-}
-
-.tabbar button{
-  background:transparent; border:0; cursor:pointer;
-  width:100%; height:100%;
-  display:flex; flex-direction:column; align-items:center; justify-content:center;
-}
-
-.tabbar img{ width:var(--icon); height:var(--icon); display:block; }
-.tabbar .label{ color:#fff; font-weight:800; font-size:12px; margin-top:4px; }
-.tabbar-gap{ height:1px; } /* placeholder pour la colonne centrale */
-
-.order-cta-round{
-  position:fixed; left:50%; transform:translateX(-50%);
-  bottom: calc(var(--tabbar-h) - (var(--fab) / 2) + var(--safe-bottom)); /* moitié dans la tabbar */
-  z-index:36;
-  width:var(--fab); height:var(--fab); border-radius:50%;
-  display:grid; place-items:center;
-  background:#c24d2c; color:#fff; border:4px solid #1F5A57;
-  box-shadow:0 12px 26px rgba(0,0,0,.22);
-}
-.order-cta-round img{ width:100%; height:100%; object-fit:contain; }
+.qr-wrap{display:grid; place-items:center; gap:8px; margin:10px 0}
+.qr-canvas{width:200px; height:200px; background:#fff; border:1px solid var(--line); border-radius:16px; display:grid; place-items:center; overflow:hidden}
+.qr-code-text{font-size:12px; color:#777; word-break:break-all; max-width:280px; text-align:center}
