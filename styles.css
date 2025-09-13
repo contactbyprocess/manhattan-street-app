@@ -1,17 +1,20 @@
 /* ===== Variables globales ===== */
+
 :root{
   --bg:#ffffff; --text:#111;
   --line:#e7e7e7; --muted:#6d6d6d;
   --accent-cta:#c24d2c;
-  --brand-tab:#A64027;
-
   --safe-top: env(safe-area-inset-top, 0px);
   --safe-bottom: env(safe-area-inset-bottom, 0px);
 
-  /* Hauteurs */
-  --banner-h: 22vh;          /* <<< bannières validées à 22% d’écran */
-  --tabbar-h: 72px;          /* 96px * 0.75 ≈ 72px  (–25%) */
+  /* tailles */
+  --banner-h: 25vh;        /* hauteur des bannières */
+  --tabbar-h: 72px;        /* hauteur barre (25% plus basse qu'avant ~96px→72px) */
+  --icon: 44px;            /* taille des icônes de la tabbar */
+  --fab: 96px;             /* diamètre du bouton central */
 }
+.banner{ margin-top:calc(-1 * var(--safe-top)); height:var(--banner-h); overflow:hidden;}
+.banner-track>*, .banner img{ height:var(--banner-h); }
 
 /* ===== Document / base ===== */
 *{box-sizing:border-box}
@@ -95,23 +98,22 @@ h1,h2,h3{margin:0 0 8px 0}
 .tab{display:none}
 .tab.active{display:block}
 
-/* ===== Tabbar (–25%, couleur #A64027, icônes image, pas de texte) ===== */
 .tabbar{
   position:fixed; left:0; right:0; bottom:0; z-index:30;
-  display:grid; grid-template-columns:1fr 1fr 96px 1fr 1fr; /* colonne centrale “trou” */
+  display:grid; grid-template-columns:1fr 1fr 110px 1fr 1fr;
   justify-items:center; align-items:center;
-  background:var(--brand-tab); border-top:1px solid #11443d20;
-  padding-bottom:var(--safe-bottom);
   height:var(--tabbar-h);
+  padding-bottom:var(--safe-bottom);
+  background:#A64027;             /* ta couleur */
+  border-top:2px solid #214D4A;    /* option: liseré foncé comme ton visuel */
 }
 .tabbar button{
-  background:transparent; border:none; padding:0; margin:0;
-  width:100%; height:100%; display:grid; place-items:center; cursor:pointer;
+  background:transparent; border:0; cursor:pointer;
+  width:100%; height:100%;
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
 }
-.tabbar button img{
-  height:28px; width:auto; display:block;    /* icône + libellé déjà dans le SVG/PNG */
-}
-.tabbar-gap{height:1px} /* juste pour garder la grille */
+.tabbar img{ width:var(--icon); height:var(--icon); display:block; }
+.tabbar .label{ color:#fff; font-weight:800; font-size:12px; margin-top:4px; }
 
 /* ===== FAB (superposition au-dessus de la tabbar, centré) ===== */
 .order-cta-round{
@@ -150,3 +152,14 @@ input,select{width:100%; padding:12px; border-radius:12px; border:1px solid #d7d
 
 /* Sécurité : neutraliser tout ancien spacer */
 .safe-spacer{ height:0 !important; }
+
+.order-cta-round{
+  position:fixed; left:50%; transform:translateX(-50%);
+  /* Le bas du bouton = hauteur tabbar - (moitié du bouton) */
+  bottom: calc(var(--tabbar-h) - (var(--fab) / 2) + var(--safe-bottom));
+  z-index:36;
+  width:var(--fab); height:var(--fab); border-radius:50%;
+  display:grid; place-items:center; background:#c24d2c; color:#fff; border:4px solid #1F5A57;
+  box-shadow:0 12px 26px rgba(0,0,0,.22);
+}
+.order-cta-round img{ width:100%; height:100%; object-fit:contain; }
