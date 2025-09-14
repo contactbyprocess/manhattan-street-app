@@ -4,20 +4,21 @@
   --bg:#ffffff; --text:#111;
   --line:#e7e7e7; --muted:#6d6d6d;
   --accent-cta:#c24d2c;
+
   --safe-top: env(safe-area-inset-top, 0px);
   --safe-bottom: env(safe-area-inset-bottom, 0px);
 
   /* Bannière (VALIDÉE) */
   --banner-h: 25vh;
 
-  /* Tabbar */
+  /* Tabbar (CTA inchangé, focus onglets) */
   --tabbar-bg:#A64027;
-  --tabbar-h:43px;          /* validé */
-  --tabs-gap:28px;          /* espace entre onglets (symétrique) */
-  --icon-sz:72px;           /* taille icônes onglets */
-  --icon-shift-y:8px;       /* petit abaissement visuel */
-  --cta-size:102px;         /* CTA */
-  --cta-lift:50px;          /* dépassement */
+  --tabbar-h:43px;
+  --tabs-gap:22px;        /* ← espace régulier entre onglets */
+  --icon-sz:72px;         /* taille icônes (inchangé) */
+  --icon-shift-y:-2px;    /* ← remonte légèrement les icônes */
+  --cta-size:102px;       /* CTA inchangé */
+  --cta-lift:50px;        /* CTA inchangé */
 }
 
 /* ===== Document ===== */
@@ -127,25 +128,27 @@ input,select{ width:100%; padding:12px; border-radius:12px; border:1px solid #d7
 /* Ancien CTA rond masqué */
 .order-cta-round{ display:none !important; }
 
-/* ===== TABBAR ===== */
+/* ===== TABBAR (focus ONGLET) ===== */
 .tabbar{
   position:fixed; left:0; right:0; bottom:0; z-index:30;
   background:var(--tabbar-bg);
   height: calc(var(--tabbar-h) + var(--safe-bottom));
   padding-bottom: var(--safe-bottom);
-  /* on réserve de l’espace au centre pour le CTA avec un padding égal de chaque côté */
+  /* on réserve le même espace de chaque côté pour le CTA */
   padding-left:  calc((var(--cta-size) / 2) + 20px);
   padding-right: calc((var(--cta-size) / 2) + 20px);
-  /* grille 4 colonnes = 4 onglets (2 de chaque côté du CTA) */
+
   display:grid; grid-template-columns: repeat(4, 1fr);
-  align-items:center; column-gap: var(--tabs-gap);
+  align-items:center;
+  column-gap: var(--tabs-gap);
   box-shadow:0 -2px 8px rgba(0,0,0,.08);
   overflow:visible;
 }
 .tabbtn{
   background:transparent; border:0; padding:0; cursor:pointer;
   width:var(--icon-sz); height:var(--icon-sz);
-  justify-self:center; display:grid; place-items:center;
+  justify-self:center; align-self:center;
+  display:grid; place-items:center;
   transform: translateY(var(--icon-shift-y));
 }
 .tabbtn .tab-ic{
@@ -157,7 +160,7 @@ input,select{ width:100%; padding:12px; border-radius:12px; border:1px solid #d7
   transform: translateY(calc(var(--icon-shift-y) - 1px));
 }
 
-/* CTA image centrée (moitié au-dessus de la barre) */
+/* CTA (inchangé) */
 .cta-img{
   position:absolute; left:50%;
   transform:translateX(-50%);
