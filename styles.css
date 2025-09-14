@@ -4,7 +4,6 @@
   --bg:#ffffff; --text:#111;
   --line:#e7e7e7; --muted:#6d6d6d;
   --accent-cta:#c24d2c;
-
   --safe-top: env(safe-area-inset-top, 0px);
   --safe-bottom: env(safe-area-inset-bottom, 0px);
 
