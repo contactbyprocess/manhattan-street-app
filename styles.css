@@ -11,13 +11,14 @@
   /* Bannière (VALIDÉE) */
   --banner-h: 25vh;
 
-  /* Tabbar (VALIDÉE + upsize icônes/CTA) */
+  /* Tabbar */
   --tabbar-bg:#A64027;
-  --tabbar-h:43px;      /* hauteur validée */
-  --icon-sz:72px;       /* taille icônes */
-  --icon-shift-y:8px;   /* léger abaissement */
-  --cta-size:102px;     /* CTA bien visible */
-  --cta-lift:50px;      /* dépassement au-dessus */
+  --tabbar-h:43px;          /* validé */
+  --tabs-gap:28px;          /* espace entre onglets (symétrique) */
+  --icon-sz:72px;           /* taille icônes onglets */
+  --icon-shift-y:8px;       /* petit abaissement visuel */
+  --cta-size:102px;         /* CTA */
+  --cta-lift:50px;          /* dépassement */
 }
 
 /* ===== Document ===== */
@@ -38,7 +39,7 @@ h1,h2,h3{ margin:0 0 8px 0 }
 }
 .toast.show{ opacity:1 }
 
-/* ===== Bannière ===== */
+/* ===== Bannière (VALIDÉE) ===== */
 .banner{
   position:relative; margin:0; padding:0; border:0; background:#000;
   margin-top: calc(-1 * var(--safe-top));
@@ -127,42 +128,40 @@ input,select{ width:100%; padding:12px; border-radius:12px; border:1px solid #d7
 /* Ancien CTA rond masqué */
 .order-cta-round{ display:none !important; }
 
-/* ===== TABBAR (alignement corrigé) ===== */
+/* ===== TABBAR ===== */
 .tabbar{
   position:fixed; left:0; right:0; bottom:0; z-index:30;
   background:var(--tabbar-bg);
   height: calc(var(--tabbar-h) + var(--safe-bottom));
   padding-bottom: var(--safe-bottom);
-
-  /* espace symétrique réservé au CTA */
-  padding-inline: calc(var(--cta-size)/2 + 12px);
-
-  display:flex; align-items:center; justify-content:space-between;
+  /* on réserve de l’espace au centre pour le CTA avec un padding égal de chaque côté */
+  padding-left:  calc((var(--cta-size) / 2) + 20px);
+  padding-right: calc((var(--cta-size) / 2) + 20px);
+  /* grille 4 colonnes = 4 onglets (2 de chaque côté du CTA) */
+  display:grid; grid-template-columns: repeat(4, 1fr);
+  align-items:center; column-gap: var(--tabs-gap);
   box-shadow:0 -2px 8px rgba(0,0,0,.08);
   overflow:visible;
 }
-
-.tabbar > button{
-  flex:0 0 auto;
-  margin:0;
-  width:var(--icon-sz); 
-  height:var(--icon-sz);
+.tabbtn{
   background:transparent; border:0; padding:0; cursor:pointer;
-  display:grid; place-items:center;
+  width:var(--icon-sz); height:var(--icon-sz);
+  justify-self:center; display:grid; place-items:center;
   transform: translateY(var(--icon-shift-y));
 }
-.tabbar > button .tab-ic{
+.tabbtn .tab-ic{
   width:100%; height:100%;
   object-fit:contain; display:block; pointer-events:none;
 }
-.tabbar > button.active .tab-ic{
+.tabbtn.active .tab-ic{
   filter:drop-shadow(0 1px 0 rgba(0,0,0,.15));
   transform: translateY(calc(var(--icon-shift-y) - 1px));
 }
 
-/* CTA image centrée */
+/* CTA image centrée (moitié au-dessus de la barre) */
 .cta-img{
-  position:absolute; left:50%; transform:translateX(-50%);
+  position:absolute; left:50%;
+  transform:translateX(-50%);
   top: calc(-1 * var(--cta-lift));
   width: var(--cta-size); height: var(--cta-size);
   background:transparent; border:0; padding:0; cursor:pointer;
