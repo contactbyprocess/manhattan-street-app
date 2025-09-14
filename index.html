@@ -11,8 +11,8 @@
 
   <title>Manhattan Street — Commande</title>
 
-  <link rel="stylesheet" href="styles.css?v=50" />
-  <script defer src="app.js?v=50"></script>
+  <link rel="stylesheet" href="styles.css?v=51" />
+  <script defer src="app.js?v=51"></script>
 </head>
 <body>
   <!-- toast -->
@@ -131,7 +131,7 @@
     </section>
   </main>
 
-  <!-- Ancien CTA rond (neutralisé par CSS, on le garde pour compat JS) -->
+  <!-- Ancien CTA rond (neutralisé par CSS) -->
   <button id="orderCta" class="order-cta-round" aria-label="Commander">🛍️</button>
 
   <!-- Modal type de commande -->
@@ -157,29 +157,25 @@
     </div>
   </div>
 
-  <!-- ===== Tabbar (2 | CTA | 2) ===== -->
+  <!-- ===== Tabbar (2 | CTA | 2) avec mapping par classes ===== -->
   <nav class="tabbar" aria-label="Navigation">
-    <!-- 1 = Accueil (ira colonne 4 via CSS) -->
-    <button class="tabbtn" data-tab="home" aria-label="Accueil">
+    <!-- DROITE du CTA -->
+    <button class="tabbtn btn-home" data-tab="home" aria-label="Accueil">
       <img class="tab-ic" src="assets/tab-home.svg" alt="" />
     </button>
-
-    <!-- 2 = Fidélité (ira colonne 5 via CSS) -->
-    <button class="tabbtn" data-tab="loyalty" aria-label="Fidélité">
+    <button class="tabbtn btn-loyalty" data-tab="loyalty" aria-label="Fidélité">
       <img class="tab-ic" src="assets/tab-loyalty.svg" alt="" />
     </button>
 
-    <!-- 3 = Historique (ira colonne 1 via CSS) -->
-    <button class="tabbtn" data-tab="orders" aria-label="Historique">
+    <!-- GAUCHE du CTA -->
+    <button class="tabbtn btn-orders" data-tab="orders" aria-label="Historique">
       <img class="tab-ic" src="assets/tab-orders.svg" alt="" />
     </button>
-
-    <!-- 4 = Profil (ira colonne 2 via CSS) -->
-    <button class="tabbtn" data-tab="profile" aria-label="Profil">
+    <button class="tabbtn btn-profile" data-tab="profile" aria-label="Profil">
       <img class="tab-ic" src="assets/tab-profile.svg" alt="" />
     </button>
 
-    <!-- 5 = CTA centré (absolu, n'affecte pas la grille) -->
+    <!-- CTA centré -->
     <button class="cta-img" id="ctaOrder" aria-label="Commander">
       <img src="assets/cta-commander.svg" alt="" />
     </button>
