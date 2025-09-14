@@ -11,14 +11,13 @@
   /* Bannière (VALIDÉE) */
   --banner-h: 25vh;
 
-  /* Tabbar (CTA inchangé, focus onglets) */
+  /* Tabbar */
   --tabbar-bg:#A64027;
-  --tabbar-h:43px;
-  --tabs-gap:22px;        /* espace régulier entre onglets */
-  --icon-sz:72px;         /* taille icônes */
-  --icon-shift-y:-2px;    /* remonte un peu les icônes */
-  --cta-size:102px;       /* taille CTA */
-  --cta-lift:50px;        /* dépassement CTA */
+  --tabbar-h:43px;       /* hauteur validée */
+  --icon-sz:72px;        /* taille des icônes */
+  --icon-shift-y:-2px;   /* micro-ajustement vertical icônes */
+  --cta-size:102px;      /* taille du CTA central */
+  --cta-lift:50px;       /* dépassement du CTA au-dessus de la barre */
 }
 
 /* ===== Document ===== */
@@ -125,47 +124,42 @@ input,select{ width:100%; padding:12px; border-radius:12px; border:1px solid #d7
 .order-type{ background:#fff; border:1px solid var(--line); border-radius:16px; padding:18px 10px; display:grid; gap:6px; place-items:center; font-weight:800 }
 .ot-emoji{ font-size:26px }
 
-/* Ancien CTA rond masqué */
+/* Ancien CTA rond masqué (sécurité) */
 .order-cta-round{ display:none !important; }
 
-/* ===== TABBAR (2 | CTA | 2) ===== */
+/* ===== TABBAR (répartition 2 | CTA | 2) ===== */
 .tabbar{
   position:fixed; left:0; right:0; bottom:0; z-index:30;
   background:var(--tabbar-bg);
   height: calc(var(--tabbar-h) + var(--safe-bottom));
   padding-bottom: var(--safe-bottom);
-  padding-left:  max(20px, env(safe-area-inset-left));
-  padding-right: max(20px, env(safe-area-inset-right));
-
-  --cta-gap: calc(var(--cta-size) + 24px);
-  display:grid;
-  grid-template-columns: minmax(0,1fr) minmax(0,1fr) var(--cta-gap) minmax(0,1fr) minmax(0,1fr);
-  align-items:center; justify-items:center;
-  column-gap: var(--tabs-gap);
   box-shadow:0 -2px 8px rgba(0,0,0,.08);
   overflow:visible;
+
+  /* grille à 5 colonnes : 2 icônes | espace CTA | 2 icônes */
+  --cta-gap: calc(var(--cta-size) + 16px); /* espace réservé sous le CTA */
+  display:grid;
+  grid-template-columns: 1fr 1fr var(--cta-gap) 1fr 1fr;
+  align-items:center;
 }
 
-/* Boutons onglets (hors CTA) */
-.tabbar button:not(.cta-img){
+/* Boutons onglets (icônes SVG) */
+.tabbtn{
   background:transparent; border:0; padding:0; cursor:pointer;
   width:var(--icon-sz); height:var(--icon-sz);
+  justify-self:center; align-self:center;
   display:grid; place-items:center;
   transform: translateY(var(--icon-shift-y));
 }
-.tabbar button:not(.cta-img) .tab-ic{
-  width:100%; height:100%; object-fit:contain; display:block; pointer-events:none;
-}
-.tabbar button:not(.cta-img).active .tab-ic{
-  filter:drop-shadow(0 1px 0 rgba(0,0,0,.15));
-  transform: translateY(calc(var(--icon-shift-y) - 1px));
-}
+.tabbtn .tab-ic{ width:100%; height:100%; object-fit:contain; display:block; pointer-events:none; }
+.tabbtn.active .tab-ic{ filter:drop-shadow(0 1px 0 rgba(0,0,0,.15)); transform: translateY(calc(var(--icon-shift-y) - 1px)); }
 
-/* Placement explicite par onglet (indépendant de l’ordre dans le HTML) */
-.tabbar [data-tab="orders"]   { grid-column:1; } /* à gauche du CTA */
-.tabbar [data-tab="profile"]  { grid-column:2; } /* à gauche du CTA */
-.tabbar [data-tab="home"]     { grid-column:4; } /* à droite du CTA */
-.tabbar [data-tab="loyalty"]  { grid-column:5; } /* à droite du CTA */
+/* Mapping EXACT correspondant à ton HTML actuel :
+   1 = Accueil, 2 = Fidélité, 3 = Historique, 4 = Profil */
+.tabbar button:nth-child(1){ grid-column:4; } /* Accueil -> à droite du CTA */
+.tabbar button:nth-child(2){ grid-column:5; } /* Fidélité -> tout à droite */
+.tabbar button:nth-child(3){ grid-column:1; } /* Historique -> tout à gauche */
+.tabbar button:nth-child(4){ grid-column:2; } /* Profil -> à gauche du CTA */
 
 /* CTA image centrée (moitié au-dessus de la barre) */
 .cta-img{
