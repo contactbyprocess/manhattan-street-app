@@ -136,8 +136,8 @@ input,select{ width:100%; padding:12px; border-radius:12px; border:1px solid #d7
   box-shadow:0 -2px 8px rgba(0,0,0,.08);
   overflow:visible;
 
-  /* grille à 5 colonnes : 2 icônes | espace CTA | 2 icônes */
-  --cta-gap: calc(var(--cta-size) + 16px); /* espace réservé sous le CTA */
+  /* Grille : 2 icônes | espace CTA | 2 icônes */
+  --cta-gap: calc(var(--cta-size) + 16px);
   display:grid;
   grid-template-columns: 1fr 1fr var(--cta-gap) 1fr 1fr;
   align-items:center;
@@ -154,12 +154,11 @@ input,select{ width:100%; padding:12px; border-radius:12px; border:1px solid #d7
 .tabbtn .tab-ic{ width:100%; height:100%; object-fit:contain; display:block; pointer-events:none; }
 .tabbtn.active .tab-ic{ filter:drop-shadow(0 1px 0 rgba(0,0,0,.15)); transform: translateY(calc(var(--icon-shift-y) - 1px)); }
 
-/* Mapping EXACT correspondant à ton HTML actuel :
-   1 = Accueil, 2 = Fidélité, 3 = Historique, 4 = Profil */
-.tabbar button:nth-child(1){ grid-column:4; } /* Accueil -> à droite du CTA */
-.tabbar button:nth-child(2){ grid-column:5; } /* Fidélité -> tout à droite */
-.tabbar button:nth-child(3){ grid-column:1; } /* Historique -> tout à gauche */
-.tabbar button:nth-child(4){ grid-column:2; } /* Profil -> à gauche du CTA */
+/* Mapping explicite par classe (robuste sur iOS/Safari) */
+.btn-orders  { grid-column: 1; } /* GAUCHE extrême  */
+.btn-profile { grid-column: 2; } /* GAUCHE proche CTA */
+.btn-home    { grid-column: 4; } /* DROITE proche CTA */
+.btn-loyalty { grid-column: 5; } /* DROITE extrême   */
 
 /* CTA image centrée (moitié au-dessus de la barre) */
 .cta-img{
