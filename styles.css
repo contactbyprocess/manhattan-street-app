@@ -128,7 +128,6 @@ input,select{ width:100%; padding:12px; border-radius:12px; border:1px solid #d7
 /* Ancien CTA rond masqué */
 .order-cta-round{ display:none !important; }
 
-
 /* ===== TABBAR (répartition 2 | CTA | 2) ===== */
 .tabbar{
   position:fixed; left:0; right:0; bottom:0; z-index:30;
