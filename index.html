@@ -18,7 +18,7 @@
   <!-- toast -->
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
 
-  <!-- ===== Bannière (validée) ===== -->
+  <!-- ===== Bannière ===== -->
   <section class="banner">
     <div class="banner-track" id="bannerTrack">
       <img src="assets/banner1.jpg" alt="Bannière 1" />
@@ -28,7 +28,7 @@
     <div class="banner-dots" id="bannerDots"></div>
   </section>
 
-  <!-- ===== Contenu ===== -->
+  <!-- ===== Contenu principal ===== -->
   <main class="layout">
     <!-- Accueil -->
     <section class="tab tab-home active" id="tab-home">
@@ -131,10 +131,10 @@
     </section>
   </main>
 
-  <!-- Ancien CTA rond (neutralisé par CSS) -->
+  <!-- Ancien CTA rond (neutralisé en CSS) -->
   <button id="orderCta" class="order-cta-round" aria-label="Commander">🛍️</button>
 
-  <!-- Modal type de commande -->
+  <!-- Modal commande -->
   <div id="orderTypeModal" class="modal" aria-hidden="true">
     <div class="modal-bg"></div>
     <div class="modal-card">
@@ -157,25 +157,29 @@
     </div>
   </div>
 
-  <!-- ===== Tabbar (2 | CTA | 2) avec mapping par classes ===== -->
+  <!-- ===== Tabbar (2 | CTA | 2) ===== -->
   <nav class="tabbar" aria-label="Navigation">
-    <!-- DROITE du CTA -->
-    <button class="tabbtn btn-home" data-tab="home" aria-label="Accueil">
+    <!-- 1 = Accueil (placé colonne 1 via CSS) -->
+    <button class="tabbtn" data-tab="home" aria-label="Accueil">
       <img class="tab-ic" src="assets/tab-home.svg" alt="" />
     </button>
-    <button class="tabbtn btn-loyalty" data-tab="loyalty" aria-label="Fidélité">
+
+    <!-- 2 = Fidélité (placé colonne 5 via CSS) -->
+    <button class="tabbtn" data-tab="loyalty" aria-label="Fidélité">
       <img class="tab-ic" src="assets/tab-loyalty.svg" alt="" />
     </button>
 
-    <!-- GAUCHE du CTA -->
-    <button class="tabbtn btn-orders" data-tab="orders" aria-label="Historique">
+    <!-- 3 = Historique (placé colonne 2 via CSS) -->
+    <button class="tabbtn" data-tab="orders" aria-label="Historique">
       <img class="tab-ic" src="assets/tab-orders.svg" alt="" />
     </button>
-    <button class="tabbtn btn-profile" data-tab="profile" aria-label="Profil">
+
+    <!-- 4 = Profil (placé colonne 4 via CSS) -->
+    <button class="tabbtn" data-tab="profile" aria-label="Profil">
       <img class="tab-ic" src="assets/tab-profile.svg" alt="" />
     </button>
 
-    <!-- CTA centré -->
+    <!-- 5 = CTA centré -->
     <button class="cta-img" id="ctaOrder" aria-label="Commander">
       <img src="assets/cta-commander.svg" alt="" />
     </button>
