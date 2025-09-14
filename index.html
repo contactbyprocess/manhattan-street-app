@@ -8,17 +8,16 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="theme-color" content="#000000" />
   <link rel="manifest" href="manifest.json" />
-
   <title>Manhattan Street — Commande</title>
 
-  <link rel="stylesheet" href="styles.css?v=60" />
-  <script defer src="app.js?v=60"></script>
+  <link rel="stylesheet" href="styles.css?v=43" />
+  <script defer src="app.js?v=43"></script>
 </head>
 <body>
-  <!-- toast -->
+  <!-- Toast -->
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
 
-  <!-- ===== Bannière (VALIDÉE) ===== -->
+  <!-- ===== Bannière (validée) ===== -->
   <section class="banner">
     <div class="banner-track" id="bannerTrack">
       <img src="assets/banner1.jpg" alt="Bannière 1" />
@@ -131,38 +130,44 @@
     </section>
   </main>
 
-  <!-- Ancien CTA rond : gardé mais masqué par CSS -->
+  <!-- Ancien CTA rond (neutralisé en CSS) -->
   <button id="orderCta" class="order-cta-round" aria-label="Commander">🛍️</button>
 
-  <!-- ===== Tabbar ===== -->
-  <nav class="tabbar" role="tablist" aria-label="Navigation principale">
-    <!-- 4 boutons dans la grille -->
-    <button data-tab="home"     aria-label="Accueil"    class="tabbtn active">
-      <img class="tab-ic" src="assets/tab-home.svg"     alt="Accueil">
-    </button>
-    <button data-tab="loyalty"  aria-label="Fidélité"   class="tabbtn">
-      <img class="tab-ic" src="assets/tab-loyalty.svg"  alt="Fidélité">
-    </button>
-    <button data-tab="orders"   aria-label="Historique" class="tabbtn">
-      <img class="tab-ic" src="assets/tab-orders.svg"   alt="Historique">
-    </button>
-    <button data-tab="profile"  aria-label="Profil"     class="tabbtn">
-      <img class="tab-ic" src="assets/tab-profile.svg"  alt="Profil">
-    </button>
+  <!-- Modal type de commande -->
+  <div id="orderTypeModal" class="modal" aria-hidden="true">
+    <div class="modal-bg"></div>
+    <div class="modal-card">
+      <div class="modal-header"><h3>Choisis ton type de commande</h3></div>
+      <div class="pad">
+        <div class="order-type-grid">
+          <button class="order-type" id="otClickCollect"><div class="ot-emoji">🛍️</div><div>Click & Collect</div></button>
+          <button class="order-type" id="otDelivery"><div class="ot-emoji">🚚</div><div>Livraison</div></button>
+          <button class="order-type" id="otDineIn"><div class="ot-emoji">🍽️</div><div>Sur place</div></button>
+        </div>
+        <div id="dineInExtras" class="dinein-form" style="display:none">
+          <label>Numéro de table
+            <input id="tableNumberModal" inputmode="numeric" pattern="[0-9]*" placeholder="Ex : 12" />
+          </label>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn ghost" id="orderTypeClose">Fermer</button>
+      </div>
+    </div>
+  </div>
 
-    <!-- CTA centré en superposition -->
-    <button class="cta-img" id="orderCtaImg" aria-label="Commander">
-      <img src="assets/cta-commander.svg" alt="">
+  <!-- ===== Tabbar ===== -->
+  <nav class="tabbar">
+    <!-- l’ordre n’a pas d’importance, le CSS place par data-tab -->
+    <button data-tab="home"><img class="tab-ic" src="assets/tab-home.svg" alt="Accueil"></button>
+    <button data-tab="loyalty"><img class="tab-ic" src="assets/tab-loyalty.svg" alt="Fidélité"></button>
+    <button data-tab="orders"><img class="tab-ic" src="assets/tab-orders.svg" alt="Historique"></button>
+    <button data-tab="profile"><img class="tab-ic" src="assets/tab-profile.svg" alt="Profil"></button>
+
+    <!-- CTA centré -->
+    <button class="cta-img" id="ctaTab">
+      <img src="assets/cta-commander.svg" alt="Commander">
     </button>
   </nav>
-
-  <!-- Relai du clic CTA vers l’ancien bouton si ton JS l’écoute encore -->
-  <script>
-    document.addEventListener('DOMContentLoaded', () => {
-      const ctaImg = document.getElementById('orderCtaImg');
-      const legacy = document.getElementById('orderCta');
-      if (ctaImg && legacy) ctaImg.addEventListener('click', () => legacy.click());
-    });
-  </script>
 </body>
 </html>
