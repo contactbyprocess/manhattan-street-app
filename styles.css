@@ -224,3 +224,19 @@ input,select{ width:100%; padding:12px; border-radius:12px; border:1px solid #d7
 @media (max-width: 360px){
   :root{ --icon-sz: 68px; }
 }
+/* Tabbar : hauteur strictement 43px, plus de remontée visuelle */
+.tabbar{
+  height: var(--tabbar-h) !important;
+  padding-bottom: 0 !important;
+}
+
+/* Peindre la safe area *sous* la tabbar, sans changer sa hauteur */
+.tabbar::before{
+  content:"";
+  position:fixed;           /* clé : hors flux de la tabbar */
+  left:0; right:0; bottom:0;
+  height: var(--safe-bottom);
+  background: var(--tabbar-bg);
+  pointer-events:none;
+  z-index:-1;               /* derrière la tabbar */
+}
