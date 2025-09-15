@@ -136,7 +136,7 @@ input,select{ width:100%; padding:12px; border-radius:12px; border:1px solid #d7
   position:fixed; left:0; right:0; bottom:0; z-index:30;
   background:var(--tabbar-bg);
   height: calc(var(--tabbar-h) + var(--safe-bottom));
-  padding:0 10px;
+  padding: 0 16px;                /* padding latéral pour éviter toute coupe */
   padding-bottom: var(--safe-bottom);
   box-shadow:0 -2px 8px rgba(0,0,0,.08);
   overflow:visible;
@@ -146,8 +146,16 @@ input,select{ width:100%; padding:12px; border-radius:12px; border:1px solid #d7
   grid-template-columns: 1fr 1fr var(--cta-gap) 1fr 1fr;
   align-items:center;
 }
+/* Peindre la zone sous la tabbar (home indicator iOS) */
+.tabbar::before{
+  content:"";
+  position:absolute; left:0; right:0; bottom:0;
+  height: var(--safe-bottom);
+  background: var(--tabbar-bg);
+  pointer-events:none;
+}
 
-/* Boutons onglets */
+/* Boutons onglets (désactive tout effet visuel au tap) */
 .tabbtn{
   -webkit-appearance:none; appearance:none;
   background:transparent; border:0; padding:0; cursor:pointer;
@@ -182,7 +190,7 @@ input,select{ width:100%; padding:12px; border-radius:12px; border:1px solid #d7
 .tabbar .tabbtn:nth-of-type(3){ grid-column:4; justify-self:center; } /* Historique */
 .tabbar .tabbtn:nth-of-type(4){ grid-column:5; justify-self:center; } /* Profil */
 
-/* CTA centré */
+/* CTA centré (inchangé) */
 .cta-img{
   position:absolute; left:50%; transform:translateX(-50%);
   top: calc(-1 * var(--cta-lift));
