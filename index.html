@@ -2,24 +2,21 @@
 <html lang="fr">
 <head>
   <meta charset="utf-8" />
-  <!-- PWA plein écran sous encoche -->
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="theme-color" content="#000000" />
   <link rel="manifest" href="manifest.json" />
-
   <title>Manhattan Street — Commande</title>
 
   <!-- bump versions pour casser le cache -->
-  <link rel="stylesheet" href="styles.css?v=55" />
-  <script defer src="app.js?v=55"></script>
+  <link rel="stylesheet" href="styles.css?v=56" />
+  <script defer src="app.js?v=56"></script>
 </head>
 <body>
-  <!-- toast -->
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
 
-  <!-- ===== Bannière (validée) ===== -->
+  <!-- ===== Bannière (VALIDÉE) ===== -->
   <section class="banner">
     <div class="banner-track" id="bannerTrack">
       <img src="assets/banner1.jpg" alt="Bannière 1" />
@@ -38,15 +35,13 @@
         <p class="hero-tag">TON INCONTOURNABLE 🗽🔥</p>
       </section>
 
-      <!-- Mon programme -->
       <section class="home-card">
         <div class="prog-row">
           <h2 class="home-title">Mon Programme</h2>
-        <div class="points-badge">Points : <strong id="pointsCountTop">0</strong></div>
+          <div class="points-badge">Points : <strong id="pointsCountTop">0</strong></div>
         </div>
       </section>
 
-      <!-- Hype du moment -->
       <section class="home-block">
         <div class="home-block-head">
           <h2>La hype du moment ✨</h2>
@@ -55,7 +50,6 @@
         <div class="hscroll compact3" id="featured"></div>
       </section>
 
-      <!-- Espace client -->
       <section class="home-block">
         <h2>Mon espace client</h2>
         <div class="client-grid">
@@ -160,64 +154,21 @@
 
   <!-- ===== Tabbar (2 | CTA | 2) ===== -->
   <nav class="tabbar" aria-label="Navigation">
-    <!-- 1 = Accueil -->
     <button class="tabbtn" data-tab="home" aria-label="Accueil">
       <img class="tab-ic" src="assets/tab-home.svg" alt="" />
     </button>
-
-    <!-- 2 = Fidélité -->
     <button class="tabbtn" data-tab="loyalty" aria-label="Fidélité">
       <img class="tab-ic" src="assets/tab-loyalty.svg" alt="" />
     </button>
-
-    <!-- 3 = Historique -->
     <button class="tabbtn" data-tab="orders" aria-label="Historique">
       <img class="tab-ic" src="assets/tab-orders.svg" alt="" />
     </button>
-
-    <!-- 4 = Profil -->
     <button class="tabbtn" data-tab="profile" aria-label="Profil">
       <img class="tab-ic" src="assets/tab-profile.svg" alt="" />
     </button>
-
-    <!-- 5 = CTA centré -->
     <button class="cta-img" id="ctaOrder" aria-label="Commander">
       <img src="assets/cta-commander.svg" alt="" />
     </button>
   </nav>
-
-  <!-- ===== HOTFIX CSS inline (écrase l'ancien cache) ===== -->
-  <style id="hotfix-tabbar">
-    /* Visibilité des onglets */
-    .tab{display:none}.tab.active{display:block}
-
-    /* Tabbar peinte jusqu’au bas + centrage parfait */
-    .tabbar{
-      padding:0 16px;
-      height: calc(var(--tabbar-h) + var(--safe-bottom));
-      background:var(--tabbar-bg);
-    }
-    .tabbar::before{
-      content:""; position:absolute; left:0; right:0; bottom:0;
-      height:var(--safe-bottom); background:var(--tabbar-bg); pointer-events:none;
-    }
-
-    /* Placement symétrique : Accueil | Fidélité | [CTA] | Historique | Profil */
-    .tabbar .tabbtn:nth-of-type(1){ grid-column:1; justify-self:center }
-    .tabbar .tabbtn:nth-of-type(2){ grid-column:2; justify-self:center }
-    .tabbar .tabbtn:nth-of-type(3){ grid-column:4; justify-self:center }
-    .tabbar .tabbtn:nth-of-type(4){ grid-column:5; justify-self:center }
-
-    /* Pas d’effet “tap/ombre” */
-    .tabbtn{
-      -webkit-appearance:none; appearance:none; background:transparent; border:0; padding:0;
-      width:var(--icon-sz); height:var(--icon-sz); display:grid; place-items:center;
-      transform:translateY(var(--icon-shift-y)); outline:none; box-shadow:none;
-      -webkit-tap-highlight-color:transparent;
-    }
-    .tabbtn:focus,.tabbtn:active{outline:none; box-shadow:none; background:transparent}
-    .tabbtn .tab-ic{width:100%; height:100%; object-fit:contain; display:block; pointer-events:none}
-    .tabbtn.active .tab-ic{filter:none !important; transform:translateY(var(--icon-shift-y)) !important}
-  </style>
 </body>
 </html>
