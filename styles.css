@@ -14,7 +14,7 @@
   /* Tabbar (tailles VALIDÉES) */
   --tabbar-bg:#A64027;
   --tabbar-h:43px;
-  --icon-sz:72px;
+  --icon-sz:72px;          /* taille validée (downscale ONLY si trop étroit) */
   --icon-shift-y:-2px;
   --cta-size:102px;
   --cta-lift:50px;
@@ -28,6 +28,15 @@ body{
   min-height:100%; overflow:auto;
   -webkit-overflow-scrolling:touch; overscroll-behavior-y:none;
 }
+
+/* Peindre la safe area du bas au cas où (remplit tout gap résiduel) */
+body::after{
+  content:""; position:fixed; left:0; right:0; bottom:0;
+  height: var(--safe-bottom);
+  background: var(--tabbar-bg);
+  z-index: 1; pointer-events:none;
+}
+
 h1,h2,h3{ margin:0 0 8px 0 }
 
 /* ===== Toast ===== */
@@ -136,30 +145,40 @@ input,select{ width:100%; padding:12px; border-radius:12px; border:1px solid #d7
   position:fixed; left:0; right:0; bottom:0; z-index:30;
   background:var(--tabbar-bg);
   height: calc(var(--tabbar-h) + var(--safe-bottom));
-  padding: 0 16px;                /* padding latéral pour éviter toute coupe */
+  padding: 0 16px;                                 /* pas de coupe sur les bords */
   padding-bottom: var(--safe-bottom);
   box-shadow:0 -2px 8px rgba(0,0,0,.08);
   overflow:visible;
 
+  /* grilles avec largeur mini = pas de coupe des onglets */
   --cta-gap: calc(var(--cta-size) + 16px);
   display:grid;
-  grid-template-columns: 1fr 1fr var(--cta-gap) 1fr 1fr;
+  grid-template-columns:
+    minmax(64px,1fr)
+    minmax(64px,1fr)
+    var(--cta-gap)
+    minmax(64px,1fr)
+    minmax(64px,1fr);
   align-items:center;
+
+  /* évite les gaps sub-pixel sur iOS */
+  transform: translateZ(0);
 }
-/* Peindre la zone sous la tabbar (home indicator iOS) */
+/* Peindre la safe area sous la tabbar (home indicator iOS) */
 .tabbar::before{
   content:"";
   position:absolute; left:0; right:0; bottom:0;
   height: var(--safe-bottom);
   background: var(--tabbar-bg);
   pointer-events:none;
+  z-index:-1;
 }
 
 /* Boutons onglets (désactive tout effet visuel au tap) */
 .tabbtn{
   -webkit-appearance:none; appearance:none;
   background:transparent; border:0; padding:0; cursor:pointer;
-  width:var(--icon-sz); height:var(--icon-sz);
+  width:100%; height:var(--icon-sz);
   justify-self:center; align-self:center;
   display:grid; place-items:center;
   transform: translateY(var(--icon-shift-y));
@@ -171,7 +190,8 @@ input,select{ width:100%; padding:12px; border-radius:12px; border:1px solid #d7
 
 /* Icônes d’onglets */
 .tabbtn .tab-ic{
-  width:100%; height:100%;
+  width: min(var(--icon-sz), 100%);   /* s’adapte si la colonne est plus étroite */
+  height: auto;
   object-fit:contain; display:block; pointer-events:none;
   -webkit-user-select:none; user-select:none;
   -webkit-touch-callout:none;
@@ -199,3 +219,8 @@ input,select{ width:100%; padding:12px; border-radius:12px; border:1px solid #d7
   display:grid; place-items:center; z-index:101; pointer-events:auto;
 }
 .cta-img img{ width:100%; height:100%; object-fit:contain; display:block; }
+
+/* Sécurité : très petits écrans -> léger downscale des icônes */
+@media (max-width: 360px){
+  :root{ --icon-sz: 68px; }
+}
