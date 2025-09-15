@@ -66,15 +66,32 @@ function renderFeatured(){
 
 /* ===== Tabs ===== */
 function switchTab(tab){
+  // Active/désactive les boutons d’onglets
   qsa('.tabbar [data-tab]').forEach(b=>{
     b.classList.toggle('active', b.dataset.tab===tab);
   });
-  qsa('.tab').forEach(s=>s.classList.toggle('active', s.id===`tab-${tab}`));
+  // Affiche/masque les sections
+  let found = false;
+  qsa('.tab').forEach(s=>{
+    const isTarget = (s.id===`tab-${tab}`);
+    s.classList.toggle('active', isTarget);
+    if(isTarget) found = true;
+  });
+  // Fallback sécurité si id introuvable
+  if(!found){ qsa('.tab').forEach(s=>s.classList.remove('active')); qs('#tab-home')?.classList.add('active'); }
+  // Remonter en haut à chaque changement d’onglet
   window.scrollTo({top:0, behavior:'smooth'});
 }
+
 function bindTabbar(){
+  // Cible uniquement les boutons avec data-tab (pas le CTA)
   qsa('.tabbar [data-tab]').forEach(btn=>{
-    btn.addEventListener('click',()=> switchTab(btn.dataset.tab));
+    // Empêche tout focus/scroll parasite
+    btn.addEventListener('click', (e)=>{
+      e.preventDefault();
+      e.stopPropagation();
+      switchTab(btn.dataset.tab);
+    }, {passive:false});
   });
 }
 
@@ -83,10 +100,18 @@ function bindCTA(){
   const openSel=()=>openModal('#orderTypeModal');
 
   // CTA central de la tabbar
-  qs('#ctaOrder')?.addEventListener('click', openSel);
+  qs('#ctaOrder')?.addEventListener('click', (e)=>{
+    e.preventDefault();
+    e.stopPropagation();
+    openSel();
+  }, {passive:false});
 
   // CTA “Commander” dans la home
-  qs('#goOrderTop')?.addEventListener('click', openSel);
+  qs('#goOrderTop')?.addEventListener('click', (e)=>{
+    e.preventDefault();
+    e.stopPropagation();
+    openSel();
+  }, {passive:false});
 
   // Choix du mode de commande
   qs('#otClickCollect')?.addEventListener('click',()=>{closeModal('#orderTypeModal');openOrderTab('takeaway');});
