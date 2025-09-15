@@ -11,13 +11,13 @@
   /* Bannière (VALIDÉE) */
   --banner-h: 25vh;
 
-  /* Tabbar */
+  /* Tabbar (tailles VALIDÉES) */
   --tabbar-bg:#A64027;
-  --tabbar-h:43px;       /* hauteur validée */
-  --icon-sz:72px;        /* taille des icônes */
-  --icon-shift-y:-2px;   /* micro-ajustement vertical icônes */
-  --cta-size:102px;      /* taille du CTA central */
-  --cta-lift:50px;       /* dépassement du CTA au-dessus de la barre */
+  --tabbar-h:43px;
+  --icon-sz:72px;
+  --icon-shift-y:-2px;
+  --cta-size:102px;
+  --cta-lift:50px;
 }
 
 /* ===== Document ===== */
@@ -153,17 +153,12 @@ input,select{ width:100%; padding:12px; border-radius:12px; border:1px solid #d7
 .tabbtn .tab-ic{ width:100%; height:100%; object-fit:contain; display:block; pointer-events:none; }
 .tabbtn.active .tab-ic{ filter:drop-shadow(0 1px 0 rgba(0,0,0,.15)); transform: translateY(calc(var(--icon-shift-y) - 1px)); }
 
-/* Placement temporaire pour tester : ACCUEIL en tout à gauche */
-.tabbar button:nth-child(1){ grid-column:1; }
-
-/* Fidélité -> colonne 5 */
-.tabbar button:nth-child(2){ grid-column:5; }
-
-/* Historique -> colonne 2 (proche gauche CTA) */
-.tabbar button:nth-child(3){ grid-column:2; }
-
-/* Profil -> colonne 4 (proche droite CTA) */
-.tabbar button:nth-child(4){ grid-column:4; }
+/* ===== Placement onglets (Accueil | Fidélité | [CTA] | Historique | Profil) ===== */
+/* IMPORTANT : cibler uniquement .tabbtn avec :nth-of-type() */
+.tabbar .tabbtn:nth-of-type(1){ grid-column:1; } /* Accueil */
+.tabbar .tabbtn:nth-of-type(2){ grid-column:2; } /* Fidélité */
+.tabbar .tabbtn:nth-of-type(3){ grid-column:4; } /* Historique */
+.tabbar .tabbtn:nth-of-type(4){ grid-column:5; } /* Profil */
 
 /* CTA centré */
 .cta-img{
