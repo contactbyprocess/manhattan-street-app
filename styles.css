@@ -127,11 +127,16 @@ input,select{ width:100%; padding:12px; border-radius:12px; border:1px solid #d7
 /* Ancien CTA rond masqué */
 .order-cta-round{ display:none !important; }
 
+/* ===== Onglets: visibilité ===== */
+.tab{ display:none; }
+.tab.active{ display:block; }
+
 /* ===== TABBAR (2 | CTA | 2) ===== */
 .tabbar{
   position:fixed; left:0; right:0; bottom:0; z-index:30;
   background:var(--tabbar-bg);
   height: calc(var(--tabbar-h) + var(--safe-bottom));
+  padding: 0 10px;                 /* padding horizontal léger (ne change pas la hauteur) */
   padding-bottom: var(--safe-bottom);
   box-shadow:0 -2px 8px rgba(0,0,0,.08);
   overflow:visible;
@@ -142,39 +147,41 @@ input,select{ width:100%; padding:12px; border-radius:12px; border:1px solid #d7
   align-items:center;
 }
 
-/* Boutons onglets */
+/* Boutons onglets (pas d'effet visuel au tap) */
 .tabbtn{
+  -webkit-appearance: none;
+  appearance:none;
   background:transparent; border:0; padding:0; cursor:pointer;
   width:var(--icon-sz); height:var(--icon-sz);
   justify-self:center; align-self:center;
   display:grid; place-items:center;
   transform: translateY(var(--icon-shift-y));
-
-  /* Stop ombre/effets natifs au tap */
-  outline:none;
-  box-shadow:none;
-  -webkit-tap-highlight-color: transparent;
+  outline:none; box-shadow:none;
+  -webkit-tap-highlight-color: rgba(0,0,0,0);
 }
 .tabbtn:focus,
-.tabbtn:active{ outline:none; box-shadow:none; }
+.tabbtn:active{ outline:none; box-shadow:none; background:transparent; }
 
 /* Icônes d’onglets */
 .tabbtn .tab-ic{
   width:100%; height:100%;
   object-fit:contain; display:block; pointer-events:none;
+  -webkit-user-select:none; user-select:none;
+  -webkit-touch-callout:none;
 }
 
-/* Supprimer tout effet visuel “actif” */
+/* AUCUN effet “actif” visuel */
 .tabbtn.active .tab-ic{
-  filter:none; transform: translateY(var(--icon-shift-y));
+  filter:none !important;
+  transform: translateY(var(--icon-shift-y)) !important;
 }
 
-/* ===== Placement & symétrie autour du CTA ===== */
-/* Ordre voulu : Accueil | Fidélité | [CTA] | Historique | Profil */
-.tabbar .tabbtn:nth-of-type(1){ grid-column:1; justify-self:start; }   /* Accueil, bord gauche */
-.tabbar .tabbtn:nth-of-type(2){ grid-column:2; justify-self:end; }     /* Fidélité rapproché du CTA */
-.tabbar .tabbtn:nth-of-type(3){ grid-column:4; justify-self:start; }   /* Historique rapproché du CTA */
-.tabbar .tabbtn:nth-of-type(4){ grid-column:5; justify-self:end; }     /* Profil, bord droit */
+/* ===== Placement & parfaite symétrie autour du CTA ===== */
+/* Ordre visuel : Accueil | Fidélité | [CTA] | Historique | Profil */
+.tabbar .tabbtn:nth-of-type(1){ grid-column:1; justify-self:start; }  /* Accueil bord gauche */
+.tabbar .tabbtn:nth-of-type(2){ grid-column:2; justify-self:end; }    /* Fidélité vers CTA */
+.tabbar .tabbtn:nth-of-type(3){ grid-column:4; justify-self:start; }  /* Historique vers CTA */
+.tabbar .tabbtn:nth-of-type(4){ grid-column:5; justify-self:end; }    /* Profil bord droit */
 
 /* CTA centré (inchangé) */
 .cta-img{
