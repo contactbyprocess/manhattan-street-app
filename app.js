@@ -66,17 +66,13 @@ function renderFeatured(){
 
 /* ===== Tabs ===== */
 function switchTab(tab){
-  // activer l’onglet côté tabbar (uniquement ceux qui ont data-tab)
   qsa('.tabbar [data-tab]').forEach(b=>{
     b.classList.toggle('active', b.dataset.tab===tab);
   });
-  // afficher la section correspondante
   qsa('.tab').forEach(s=>s.classList.toggle('active', s.id===`tab-${tab}`));
-  // remonter en haut
   window.scrollTo({top:0, behavior:'smooth'});
 }
 function bindTabbar(){
-  // IMPORTANT: ne cible que les boutons d’onglets, pas le CTA
   qsa('.tabbar [data-tab]').forEach(btn=>{
     btn.addEventListener('click',()=> switchTab(btn.dataset.tab));
   });
