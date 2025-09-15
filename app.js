@@ -20,12 +20,13 @@ function getProfile(){return get(KEY.PROFILE,{firstName:'',email:'',phone:''});}
 function setProfile(p){set(KEY.PROFILE,p);}
 function getPoints(email){const u=getUsers();return u[email]?.points||0;}
 
+/* ===== Bannière ===== */
 function initBannerCarousel(){
   const track = document.querySelector('#bannerTrack');
   const dots  = document.querySelector('#bannerDots');
   if(!track || !dots) return;
 
-  const slides = [...track.children];         // marche avec <img> ou <div>
+  const slides = [...track.children];
   dots.innerHTML = slides.map((_,i)=>`<span class="dot ${i===0?'active':''}" data-i="${i}"></span>`).join('');
 
   let i = 0;
@@ -48,7 +49,6 @@ function initBannerCarousel(){
 
   window.addEventListener('resize', ()=> { track.scrollLeft = i * slideW(); });
 }
-}
 
 /* ===== Featured ===== */
 function renderFeatured(){
@@ -65,30 +65,66 @@ function renderFeatured(){
 }
 
 /* ===== Tabs ===== */
-function switchTab(tab){qsa('.tabbar button').forEach(b=>b.classList.toggle('active',b.dataset.tab===tab));qsa('.tab').forEach(s=>s.classList.toggle('active',s.id===`tab-${tab}`));}
-function bindTabbar(){qsa('.tabbar button').forEach(btn=>btn.addEventListener('click',()=>switchTab(btn.dataset.tab)));}
+function switchTab(tab){
+  // activer l’onglet côté tabbar (uniquement ceux qui ont data-tab)
+  qsa('.tabbar [data-tab]').forEach(b=>{
+    b.classList.toggle('active', b.dataset.tab===tab);
+  });
+  // afficher la section correspondante
+  qsa('.tab').forEach(s=>s.classList.toggle('active', s.id===`tab-${tab}`));
+  // remonter en haut
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+function bindTabbar(){
+  // IMPORTANT: ne cible que les boutons d’onglets, pas le CTA
+  qsa('.tabbar [data-tab]').forEach(btn=>{
+    btn.addEventListener('click',()=> switchTab(btn.dataset.tab));
+  });
+}
 
 /* ===== CTA & commandes ===== */
 function bindCTA(){
   const openSel=()=>openModal('#orderTypeModal');
-  qs('#orderCta')?.addEventListener('click',openSel);
-  qs('#goOrderTop')?.addEventListener('click',openSel);
 
+  // CTA central de la tabbar
+  qs('#ctaOrder')?.addEventListener('click', openSel);
+
+  // CTA “Commander” dans la home
+  qs('#goOrderTop')?.addEventListener('click', openSel);
+
+  // Choix du mode de commande
   qs('#otClickCollect')?.addEventListener('click',()=>{closeModal('#orderTypeModal');openOrderTab('takeaway');});
   qs('#otDelivery')?.addEventListener('click',()=>{closeModal('#orderTypeModal');openOrderTab('delivery');});
-  qs('#otDineIn')?.addEventListener('click',()=>{const n=(qs('#tableNumberModal')?.value||'').trim();closeModal('#orderTypeModal');openOrderTab('dinein',n);});
+  qs('#otDineIn')?.addEventListener('click',()=>{
+    const n=(qs('#tableNumberModal')?.value||'').trim();
+    closeModal('#orderTypeModal');
+    openOrderTab('dinein',n);
+  });
   qs('#orderTypeClose')?.addEventListener('click',()=>closeModal('#orderTypeModal'));
 
+  // Raccourcis espace client
   qs('#tileOrders')?.addEventListener('click',()=>switchTab('orders'));
   qs('#tileProfile')?.addEventListener('click',()=>switchTab('profile'));
 }
+
 function openOrderTab(mode, tableNo=null){
   switchTab('order');
   const title=qs('#orderModeTitle'), info=qs('#orderInfo'), dine=qs('#dineInBlock');
   const fn=(getProfile().firstName||'chef');
-  if(mode==='takeaway'){title.textContent='Click & Collect'; info.textContent=`${fn}, passe ta commande et viens la récupérer.`; dine.style.display='none';}
-  else if(mode==='delivery'){title.textContent='Livraison'; info.textContent=`${fn}, la livraison arrive bientôt.`; dine.style.display='none';}
-  else {title.textContent='Sur place'; info.textContent=`${fn}, indique ton numéro de table.`; dine.style.display='grid'; if(tableNo) qs('#tableNumber').value=tableNo;}
+  if(mode==='takeaway'){
+    title.textContent='Click & Collect';
+    info.textContent=`${fn}, passe ta commande et viens la récupérer.`;
+    dine.style.display='none';
+  } else if(mode==='delivery'){
+    title.textContent='Livraison';
+    info.textContent=`${fn}, la livraison arrive bientôt.`;
+    dine.style.display='none';
+  } else {
+    title.textContent='Sur place';
+    info.textContent=`${fn}, indique ton numéro de table.`;
+    dine.style.display='grid';
+    if(tableNo) qs('#tableNumber').value=tableNo;
+  }
   qs('#orderStart').onclick=()=>showToast(`Flux commande (${mode}) à brancher`);
 }
 
@@ -133,58 +169,12 @@ document.addEventListener('DOMContentLoaded',()=>{
   bindProfile();
   renderLoyalty();
   initBannerCarousel();
-});
-// --- Onglets via la tabbar (images cliquables) ---
-document.querySelectorAll('.tabbar [data-tab]').forEach(btn=>{
-  btn.addEventListener('click', ()=>{
-    const target = btn.getAttribute('data-tab');
-    document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
-    document.getElementById(`tab-${target}`).classList.add('active');
-    // optionnel : scroll en haut à chaque changement d’onglet
-    window.scrollTo({top:0, behavior:'smooth'});
-  });
+
+  // Onglet par défaut : Accueil
+  switchTab('home');
 });
 
-// Le FAB ouvre directement l’onglet Commande
-document.getElementById('orderCta')?.addEventListener('click', ()=>{
-  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
-  document.getElementById('tab-order').classList.add('active');
-  window.scrollTo({top:0, behavior:'smooth'});
-});
-
-// Onglets via la tabbar
-document.querySelectorAll('.tabbar [data-tab]').forEach(btn=>{
-  btn.addEventListener('click', ()=>{
-    const target = btn.getAttribute('data-tab');
-    document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
-    document.getElementById(`tab-${target}`).classList.add('active');
-    window.scrollTo({top:0, behavior:'smooth'});
-  });
-});
-
-// Le bouton central ouvre l’onglet Commande
-document.getElementById('orderCta')?.addEventListener('click', ()=>{
-  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
-  document.getElementById('tab-order').classList.add('active');
-  window.scrollTo({top:0, behavior:'smooth'});
-});
-// Navigation par onglets (tabbar)
-document.querySelectorAll('.tabbar [data-tab]').forEach(btn=>{
-  btn.addEventListener('click', ()=>{
-    const target = btn.getAttribute('data-tab');
-    document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
-    document.getElementById(`tab-${target}`).classList.add('active');
-    window.scrollTo({top:0, behavior:'smooth'});
-  });
-});
-
-
-// Bouton central -> onglet Commande
-document.getElementById('orderCta')?.addEventListener('click', ()=>{
-  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
-  document.getElementById('tab-order').classList.add('active');
-  window.scrollTo({top:0, behavior:'smooth'});
-});
+/* ===== PWA: keep SW fresh ===== */
 if ('serviceWorker' in navigator) {
   navigator.serviceWorker.getRegistrations().then(list => list.forEach(reg => reg.update()));
 }
