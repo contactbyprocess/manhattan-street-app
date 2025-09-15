@@ -11,8 +11,9 @@
 
   <title>Manhattan Street — Commande</title>
 
-  <link rel="stylesheet" href="styles.css?v=54" />
-  <script defer src="app.js?v=54"></script>
+  <!-- bump versions pour casser le cache -->
+  <link rel="stylesheet" href="styles.css?v=55" />
+  <script defer src="app.js?v=55"></script>
 </head>
 <body>
   <!-- toast -->
@@ -41,7 +42,7 @@
       <section class="home-card">
         <div class="prog-row">
           <h2 class="home-title">Mon Programme</h2>
-          <div class="points-badge">Points : <strong id="pointsCountTop">0</strong></div>
+        <div class="points-badge">Points : <strong id="pointsCountTop">0</strong></div>
         </div>
       </section>
 
@@ -184,5 +185,39 @@
       <img src="assets/cta-commander.svg" alt="" />
     </button>
   </nav>
+
+  <!-- ===== HOTFIX CSS inline (écrase l'ancien cache) ===== -->
+  <style id="hotfix-tabbar">
+    /* Visibilité des onglets */
+    .tab{display:none}.tab.active{display:block}
+
+    /* Tabbar peinte jusqu’au bas + centrage parfait */
+    .tabbar{
+      padding:0 16px;
+      height: calc(var(--tabbar-h) + var(--safe-bottom));
+      background:var(--tabbar-bg);
+    }
+    .tabbar::before{
+      content:""; position:absolute; left:0; right:0; bottom:0;
+      height:var(--safe-bottom); background:var(--tabbar-bg); pointer-events:none;
+    }
+
+    /* Placement symétrique : Accueil | Fidélité | [CTA] | Historique | Profil */
+    .tabbar .tabbtn:nth-of-type(1){ grid-column:1; justify-self:center }
+    .tabbar .tabbtn:nth-of-type(2){ grid-column:2; justify-self:center }
+    .tabbar .tabbtn:nth-of-type(3){ grid-column:4; justify-self:center }
+    .tabbar .tabbtn:nth-of-type(4){ grid-column:5; justify-self:center }
+
+    /* Pas d’effet “tap/ombre” */
+    .tabbtn{
+      -webkit-appearance:none; appearance:none; background:transparent; border:0; padding:0;
+      width:var(--icon-sz); height:var(--icon-sz); display:grid; place-items:center;
+      transform:translateY(var(--icon-shift-y)); outline:none; box-shadow:none;
+      -webkit-tap-highlight-color:transparent;
+    }
+    .tabbtn:focus,.tabbtn:active{outline:none; box-shadow:none; background:transparent}
+    .tabbtn .tab-ic{width:100%; height:100%; object-fit:contain; display:block; pointer-events:none}
+    .tabbtn.active .tab-ic{filter:none !important; transform:translateY(var(--icon-shift-y)) !important}
+  </style>
 </body>
 </html>
