@@ -240,3 +240,19 @@ input,select{ width:100%; padding:12px; border-radius:12px; border:1px solid #d7
   pointer-events:none;
   z-index:-1;               /* derrière la tabbar */
 }
+/* Force la zone du home indicator à être peinte en rouge tabbar */
+body {
+  background-color: var(--tabbar-bg);
+}
+
+/* Tabbar collée en bas, sans bande blanche */
+.tabbar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: var(--tabbar-h);
+  background: var(--tabbar-bg);
+  padding-bottom: env(safe-area-inset-bottom, 0px); /* remplit la zone blanche */
+  box-shadow: 0 -2px 8px rgba(0,0,0,.08);
+}
