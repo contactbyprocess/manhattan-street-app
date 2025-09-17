@@ -9,7 +9,7 @@
   --safe-bottom: env(safe-area-inset-bottom, 0px);
 
   /* Bannière */
-  --banner-h: 25vh;
+  --banner-h: 22vh;
 
   /* Tabbar */
   --tabbar-bg:#ffffff;   /* tabbar blanche */
