@@ -121,3 +121,26 @@ h1,h2,h3{ margin:0 0 8px 0 }
 @media (max-width: 360px){
   :root{ --icon-sz: 68px; }
 }
+/* === Forçage identique sur tous les onglets === */
+
+/* 1) Chaque onglet remplit au moins la hauteur de l'écran
+      moins la barre (43px + safe-area) → pas de "marche" visuelle */
+.tab{
+  min-height: calc(100vh - (var(--tabbar-h) + env(safe-area-inset-bottom, 0px)));
+}
+
+/* 2) Le wrapper de contenu garde juste l'espace nécessaire
+      pour ne pas passer sous la tabbar unifiée */
+.layout{
+  margin: 12px auto calc(var(--tabbar-h) + env(safe-area-inset-bottom, 0px)) auto !important;
+}
+
+/* 3) Sécurité : la tabbar reste blanche, fixe et identique partout */
+.tabbar{
+  position: fixed !important;
+  left: 0 !important; right: 0 !important; bottom: 0 !important;
+  background: #fff !important;
+  height: calc(var(--tabbar-h) + env(safe-area-inset-bottom, 0px)) !important;
+  padding-bottom: env(safe-area-inset-bottom, 0px) !important;
+  z-index: 30 !important;
+}
