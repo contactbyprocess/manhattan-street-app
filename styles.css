@@ -3,19 +3,22 @@
 :root{
   --bg:#ffffff; --text:#111;
   --line:#e7e7e7; --muted:#6d6d6d;
+  --brand:#A64027;                /* couleur marque */
   --accent-cta:#c24d2c;
 
   --safe-top: env(safe-area-inset-top, 0px);
-  /* valeur robuste de safe-area bottom (env + constant) */
   --safeB: calc(max(env(safe-area-inset-bottom,0px), constant(safe-area-inset-bottom,0px)));
 
   /* Bannière (VALIDÉE) */
   --banner-h: 25vh;
 
-  /* Tabbar (tailles VALIDÉES) */
-  --tabbar-bg:#A64027;
-  --tabbar-h:43px;
-  --icon-sz:72px;        /* taille validée (downscale ONLY si trop étroit) */
+  /* Tabbar (VALIDÉE) */
+  --tabbar-bg:#ffffff;            /* barre BLANCHE (unifiée avec safe-area) */
+  --tabbar-h:43px;                /* hauteur utile (hors safe-area) */
+  --tab-fg:#2B2B2B;               /* icône inactif foncé */
+  --tab-active:var(--brand);      /* icône actif = marque */
+
+  --icon-sz:72px;                 /* taille validée (downscale ONLY si trop étroit) */
   --icon-shift-y:-2px;
   --cta-size:102px;
   --cta-lift:50px;
@@ -70,7 +73,7 @@ h1,h2,h3{ margin:0 0 8px 0 }
 /* ===== Contenu ===== */
 .layout{
   max-width:1100px;
-  margin:12px auto calc(var(--tabbar-h) + 14px) auto; /* la safe-area est peinte hors flux */
+  margin:12px auto calc(var(--tabbar-h) + var(--safeB) + 14px) auto; /* espace réel sous le contenu */
   padding:0 12px;
 }
 .card{ background:#fff; border:1px solid var(--line); border-radius:16px; padding:16px; margin:10px 0 }
@@ -132,30 +135,25 @@ input,select{ width:100%; padding:12px; border-radius:12px; border:1px solid #d7
 .tab{ display:none; }
 .tab.active{ display:block; }
 
-/* ===== Bas d’écran : wrapper + safe-area ===== */
+/* ===== Bas d’écran : (si présent) wrapper + safe-area ===== */
 .tabbar-wrap{
   position:fixed; left:0; right:0; bottom:0;
   display:flex; flex-direction:column;
-  z-index:30; pointer-events:none;           /* la tabbar prend les events */
+  z-index:30; pointer-events:none;       /* la tabbar prend les events */
 }
-/* bande peinte de la safe-area (derrière la tabbar) */
-.safe-bottom{
-  height: var(--safeB);
-  background: var(--tabbar-bg);
-  pointer-events:none;
-}
+.safe-bottom{ display:none; }            /* désactivée : on intègre la safe-area */
 
-/* ===== TABBAR (2 | CTA | 2) — propre ===== */
+/* ===== TABBAR (2 | CTA | 2) — UNIFIÉE ===== */
 .tabbar{
-  position:relative;                           /* ancre le CTA absolu */
+  position:fixed; left:0; right:0; bottom:0; z-index:30;
   background:var(--tabbar-bg);
-  height: var(--tabbar-h);                     /* 43px validés */
+  height: calc(var(--tabbar-h) + var(--safeB));  /* 43px + safe-area */
   padding: 0 16px;
-  box-shadow:0 -2px 8px rgba(0,0,0,.08);
+  padding-bottom: var(--safeB);                  /* intègre la safe-area */
+  box-shadow:0 -2px 8px rgba(0,0,0,.06);
   overflow:visible;
   pointer-events:auto;
 
-  /* grille symétrique avec largeur mini pour éviter la coupe */
   --cta-gap: calc(var(--cta-size) + 16px);
   display:grid;
   grid-template-columns:
@@ -166,44 +164,38 @@ input,select{ width:100%; padding:12px; border-radius:12px; border:1px solid #d7
     minmax(64px,1fr);
   align-items:center;
 }
-/* On neutralise tout pseudo-élément qui viendrait peindre par-dessus */
+/* neutralise tout pseudo-élément hérité */
 .tabbar::before, .tabbar::after{ display:none !important; }
 
-/* Boutons onglets (pas d'effet au tap) */
+/* Boutons onglets (sans effet de tap/ombre) */
 .tabbtn{
   -webkit-appearance:none; appearance:none;
   background:transparent; border:0; padding:0; cursor:pointer;
   width:100%; height:var(--icon-sz);
-  justify-self:center; align-self:center;
-  display:grid; place-items:center;
+  display:grid; place-items:center; justify-self:center;
   transform: translateY(var(--icon-shift-y));
-  outline:none; box-shadow:none;
-  -webkit-tap-highlight-color: transparent;
+  outline:none; box-shadow:none; -webkit-tap-highlight-color:transparent;
 }
-.tabbtn:focus,
-.tabbtn:active{ outline:none; box-shadow:none; background:transparent; }
+.tabbtn:focus, .tabbtn:active{ outline:none; box-shadow:none; background:transparent }
 
-/* Icônes d’onglets */
+/* Icônes : inactif foncé / actif marque (via filter pour images non currentColor) */
 .tabbtn .tab-ic{
-  width: min(var(--icon-sz), 100%);   /* s’adapte si la colonne est plus étroite */
-  height: auto;
-  object-fit:contain; display:block; pointer-events:none;
-  -webkit-user-select:none; user-select:none;
-  -webkit-touch-callout:none;
+  width:min(var(--icon-sz),100%); height:auto; object-fit:contain; display:block; pointer-events:none;
+  /* foncé */
+  filter: brightness(0) saturate(100%) invert(20%) sepia(0%) saturate(0%) hue-rotate(0deg);
+  opacity:.9;
 }
-
-/* Pas d’effet “actif” */
 .tabbtn.active .tab-ic{
-  filter:none !important;
-  transform: translateY(var(--icon-shift-y)) !important;
+  /* teinte proche #A64027 */
+  filter: brightness(0) saturate(100%) invert(27%) sepia(56%) saturate(753%) hue-rotate(342deg) brightness(88%) contrast(94%);
+  opacity:1;
 }
 
-/* ===== Placement symétrique autour du CTA ===== */
-/* Ordre : Accueil | Fidélité | [CTA] | Historique | Profil */
-.tabbar .tabbtn:nth-of-type(1){ grid-column:1; justify-self:center; } /* Accueil */
-.tabbar .tabbtn:nth-of-type(2){ grid-column:2; justify-self:center; } /* Fidélité */
-.tabbar .tabbtn:nth-of-type(3){ grid-column:4; justify-self:center; } /* Historique */
-.tabbar .tabbtn:nth-of-type(4){ grid-column:5; justify-self:center; } /* Profil */
+/* Placement symétrique autour du CTA */
+.tabbar .tabbtn:nth-of-type(1){ grid-column:1 }
+.tabbar .tabbtn:nth-of-type(2){ grid-column:2 }
+.tabbar .tabbtn:nth-of-type(3){ grid-column:4 }
+.tabbar .tabbtn:nth-of-type(4){ grid-column:5 }
 
 /* CTA centré (inchangé) */
 .cta-img{
@@ -215,7 +207,7 @@ input,select{ width:100%; padding:12px; border-radius:12px; border:1px solid #d7
 }
 .cta-img img{ width:100%; height:100%; object-fit:contain; display:block; }
 
-/* Sécurité : très petits écrans -> léger downscale des icônes */
+/* Sécurité très petits écrans */
 @media (max-width: 360px){
   :root{ --icon-sz: 68px; }
 }
