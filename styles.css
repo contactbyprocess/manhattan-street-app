@@ -92,13 +92,18 @@ h1,h2,h3{ margin:0 0 8px 0 }
   transform: translateY(var(--icon-shift-y));
   -webkit-tap-highlight-color: transparent;
 }
-.tabbtn .tab-ic{
+.tabbtn .tab-ic {
   width: min(var(--icon-sz), 100%);
-  height:auto; object-fit:contain;
-  display:block;
+  height: auto;
+  object-fit: contain;
+  display: block;
+  color: #6d6d6d; /* gris inactif */
 }
-.tabbtn.active .tab-ic{
-  filter: invert(29%) sepia(85%) saturate(450%) hue-rotate(340deg) brightness(95%) contrast(95%);
+
+.tabbtn.active .tab-ic {
+  color: #A64027; /* ta couleur marque */
+}
+
 }
 
 /* Placement symétrique + ajustements fins */
