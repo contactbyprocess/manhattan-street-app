@@ -6,7 +6,8 @@
   --accent-cta:#c24d2c;
 
   --safe-top: env(safe-area-inset-top, 0px);
-  --safe-bottom: env(safe-area-inset-bottom, 0px);
+  /* valeur robuste de safe-area bottom (env + constant) */
+  --safeB: calc(max(env(safe-area-inset-bottom,0px), constant(safe-area-inset-bottom,0px)));
 
   /* Bannière (VALIDÉE) */
   --banner-h: 25vh;
@@ -14,7 +15,7 @@
   /* Tabbar (tailles VALIDÉES) */
   --tabbar-bg:#A64027;
   --tabbar-h:43px;
-  --icon-sz:72px;          /* taille validée (downscale ONLY si trop étroit) */
+  --icon-sz:72px;        /* taille validée (downscale ONLY si trop étroit) */
   --icon-shift-y:-2px;
   --cta-size:102px;
   --cta-lift:50px;
@@ -69,7 +70,7 @@ h1,h2,h3{ margin:0 0 8px 0 }
 /* ===== Contenu ===== */
 .layout{
   max-width:1100px;
-  margin:12px auto calc(var(--tabbar-h) + 14px) auto; /* tabbar fine; la safe-area est peinte hors flux */
+  margin:12px auto calc(var(--tabbar-h) + 14px) auto; /* la safe-area est peinte hors flux */
   padding:0 12px;
 }
 .card{ background:#fff; border:1px solid var(--line); border-radius:16px; padding:16px; margin:10px 0 }
@@ -131,17 +132,28 @@ input,select{ width:100%; padding:12px; border-radius:12px; border:1px solid #d7
 .tab{ display:none; }
 .tab.active{ display:block; }
 
+/* ===== Bas d’écran : wrapper + safe-area ===== */
+.tabbar-wrap{
+  position:fixed; left:0; right:0; bottom:0;
+  display:flex; flex-direction:column;
+  z-index:30; pointer-events:none;           /* la tabbar prend les events */
+}
+/* bande peinte de la safe-area (derrière la tabbar) */
+.safe-bottom{
+  height: var(--safeB);
+  background: var(--tabbar-bg);
+  pointer-events:none;
+}
+
 /* ===== TABBAR (2 | CTA | 2) — propre ===== */
 .tabbar{
-  position:fixed; left:0; right:0;
-  /* clé : posée juste au-dessus du home indicator, sans l’englober */
-  bottom: env(safe-area-inset-bottom, 0px);
-  z-index:30;
+  position:relative;                           /* ancre le CTA absolu */
   background:var(--tabbar-bg);
-  height: var(--tabbar-h);         /* hauteur validée */
+  height: var(--tabbar-h);                     /* 43px validés */
   padding: 0 16px;
   box-shadow:0 -2px 8px rgba(0,0,0,.08);
   overflow:visible;
+  pointer-events:auto;
 
   /* grille symétrique avec largeur mini pour éviter la coupe */
   --cta-gap: calc(var(--cta-size) + 16px);
@@ -154,16 +166,8 @@ input,select{ width:100%; padding:12px; border-radius:12px; border:1px solid #d7
     minmax(64px,1fr);
   align-items:center;
 }
-
-/* Peindre la zone du home indicator DERRIÈRE la tabbar (sans l’épaissir) */
-.tabbar::after{
-  content:"";
-  position:fixed; left:0; right:0; bottom:0;
-  height: env(safe-area-inset-bottom, 0px);
-  background: var(--tabbar-bg);
-  pointer-events:none;
-  z-index: 20; /* la tabbar (30) passe au-dessus */
-}
+/* On neutralise tout pseudo-élément qui viendrait peindre par-dessus */
+.tabbar::before, .tabbar::after{ display:none !important; }
 
 /* Boutons onglets (pas d'effet au tap) */
 .tabbtn{
