@@ -9,12 +9,12 @@
   --safe-bottom: env(safe-area-inset-bottom, 0px);
 
   /* Bannière */
-  --banner-h: 22vh;
+  --banner-h: 21vh;
 
   /* Tabbar */
   --tabbar-bg:#ffffff;   /* tabbar blanche */
   --tabbar-h:50px;
-  --icon-sz:300px;
+  --icon-sz:400px;
   --icon-shift-y:-125px;
   --cta-size:102px;
   --cta-lift:50px;
