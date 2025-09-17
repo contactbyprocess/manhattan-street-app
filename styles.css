@@ -14,8 +14,8 @@
   /* Tabbar */
   --tabbar-bg:#ffffff;   /* tabbar blanche */
   --tabbar-h:50px;
-  --icon-sz:380px;
-  --icon-shift-y:-150px;
+  --icon-sz:400px;
+  --icon-shift-y:-200px;
   --cta-size:102px;
   --cta-lift:50px;
 }
@@ -109,14 +109,14 @@ h1,h2,h3{ margin:0 0 8px 0 }
 .tabbar .tabbtn:nth-of-type(3){ 
   grid-column:4; 
   justify-self:start;   
-  margin-left:-11px;  /* +5px par rapport à avant */
+  margin-left:-15px;  /* +5px par rapport à avant */
 }
 
 /* Profil rapproché d’Historique (vers l’intérieur) */
 .tabbar .tabbtn:nth-of-type(4){ 
   grid-column:5; 
   justify-self:end; 
-  margin-right:12px;
+  margin-right:10px;
 }
 
 /* CTA central */
