@@ -14,8 +14,8 @@
   /* Tabbar */
   --tabbar-bg:#ffffff;   /* tabbar blanche */
   --tabbar-h:50px;
-  --icon-sz:132px;
-  --icon-shift-y:-25px;
+  --icon-sz:170px;
+  --icon-shift-y:-35px;
   --cta-size:102px;
   --cta-lift:50px;
 }
