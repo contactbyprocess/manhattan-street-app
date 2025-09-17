@@ -105,7 +105,6 @@ h1,h2,h3{ margin:0 0 8px 0 }
   display:block;
   background: currentColor;
   transform: translateY(var(--icon-shift-y));
-  /* mask = icône */
   -webkit-mask: var(--ic) center / contain no-repeat;
           mask: var(--ic) center / contain no-repeat;
 }
@@ -164,3 +163,6 @@ h1,h2,h3{ margin:0 0 8px 0 }
   padding-bottom: env(safe-area-inset-bottom, 0px) !important;
   z-index: 30 !important;
 }
+
+/* ===== Masquer uniquement la liste d'items "Hype du moment" ===== */
+#featured{ display:none !important; }
