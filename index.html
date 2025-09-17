@@ -9,15 +9,90 @@
   <link rel="manifest" href="manifest.json" />
   <title>Manhattan Street — Commande</title>
 
-  <!-- bump versions pour casser le cache -->
-  <link rel="stylesheet" href="styles.css?v=61" />
-  <script defer src="app.js?v=61"></script>
+  <link rel="stylesheet" href="styles.css?v=62" />
+  <script defer src="app.js?v=62"></script>
+
+  <style>
+    /* ===== Bas d’écran : wrapper + safe-area robustes ===== */
+    .tabbar-wrap{
+      position:fixed; left:0; right:0; bottom:0;
+      display:flex; flex-direction:column;
+      z-index:30; pointer-events:none;
+    }
+    /* valeur robuste de la safe-area bottom (env + constant + max) */
+    :root{
+      --safeB: calc(max(
+        env(safe-area-inset-bottom, 0px),
+        constant(safe-area-inset-bottom, 0px)
+      ));
+    }
+    .safe-bottom{
+      height: var(--safeB);
+      background:#A64027;
+      pointer-events:none;
+    }
+    /* fallback global (au cas où) : peint la safe-area tout en bas */
+    #safe-area-bg{
+      position:fixed; left:0; right:0; bottom:0;
+      height: var(--safeB);
+      background:#A64027;
+      pointer-events:none; z-index:20;
+    }
+
+    /* Tabbar fine posée au-dessus de la safe-area */
+    .tabbar{
+      position:relative; height:43px;
+      background:#A64027; padding:0 16px;
+      box-shadow:0 -2px 8px rgba(0,0,0,.08);
+      pointer-events:auto;
+
+      display:grid;
+      grid-template-columns:
+        minmax(64px,1fr)
+        minmax(64px,1fr)
+        calc(102px + 16px)
+        minmax(64px,1fr)
+        minmax(64px,1fr);
+      align-items:center;
+    }
+    .tabbar::before, .tabbar::after{ display:none !important; }
+
+    /* Boutons/icônes (inchangé) */
+    .tabbtn{
+      -webkit-appearance:none; appearance:none; background:transparent;
+      border:0; padding:0; cursor:pointer; width:100%; height:72px;
+      display:grid; place-items:center; transform:translateY(-2px);
+      outline:none; box-shadow:none; -webkit-tap-highlight-color:transparent;
+      justify-self:center;
+    }
+    .tabbtn .tab-ic{ width:min(72px,100%); height:auto; object-fit:contain; display:block; }
+    .tabbtn:focus,.tabbtn:active{ outline:none; box-shadow:none; background:transparent }
+    .tabbtn.active .tab-ic{ filter:none; transform:translateY(-2px) }
+
+    /* Placement symétrique autour du CTA */
+    .tabbar .tabbtn:nth-of-type(1){ grid-column:1 }
+    .tabbar .tabbtn:nth-of-type(2){ grid-column:2 }
+    .tabbar .tabbtn:nth-of-type(3){ grid-column:4 }
+    .tabbar .tabbtn:nth-of-type(4){ grid-column:5 }
+
+    /* CTA centré */
+    .cta-img{
+      position:absolute; left:50%; transform:translateX(-50%);
+      top: calc(-1 * 50px); /* var(--cta-lift) = 50px */
+      width: 102px; height: 102px;
+      background:transparent; border:0; padding:0; cursor:pointer;
+      display:grid; place-items:center; z-index:101; pointer-events:auto;
+    }
+    .cta-img img{ width:100%; height:100%; object-fit:contain; display:block; }
+
+    /* Sécurité visibilité onglets */
+    .tab{display:none}.tab.active{display:block}
+  </style>
 </head>
 <body>
-  <!-- toast -->
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
 
-  <!-- ===== Bannière (validée) ===== -->
+  <!-- ===== Bannière ===== -->
   <section class="banner">
     <div class="banner-track" id="bannerTrack">
       <img src="assets/banner1.jpg" alt="Bannière 1" />
@@ -29,7 +104,6 @@
 
   <!-- ===== Contenu principal ===== -->
   <main class="layout">
-    <!-- Accueil -->
     <section class="tab tab-home active" id="tab-home">
       <section class="hero-min">
         <h1 class="hero-hash">#ManhattanStreet</h1>
@@ -60,7 +134,6 @@
       </section>
     </section>
 
-    <!-- Commande -->
     <section class="tab" id="tab-order">
       <div class="card">
         <h2 id="orderModeTitle">Commande</h2>
@@ -83,11 +156,9 @@
       </div>
     </section>
 
-    <!-- Fidélité -->
     <section class="tab" id="tab-loyalty">
       <div class="card">
         <h2>Ma carte de fidélité</h2>
-
         <div class="loyalty-card">
           <div class="lc-header">MANHATTAN STREET</div>
           <div class="lc-body">
@@ -96,7 +167,6 @@
             <div class="lc-points">Points : <span id="lcPoints">0</span></div>
           </div>
         </div>
-
         <p class="hint" style="margin-top:8px">Présente ce QR en caisse :</p>
         <div class="qr-wrap">
           <div id="qrCanvas" class="qr-canvas" aria-label="QR code"></div>
@@ -105,7 +175,6 @@
       </div>
     </section>
 
-    <!-- Historique -->
     <section class="tab" id="tab-orders">
       <div class="card">
         <h2>Mon historique</h2>
@@ -113,7 +182,6 @@
       </div>
     </section>
 
-    <!-- Profil -->
     <section class="tab" id="tab-profile">
       <div class="card">
         <h2>Mon profil</h2>
@@ -127,10 +195,9 @@
     </section>
   </main>
 
-  <!-- Ancien CTA rond (neutralisé en CSS) -->
   <button id="orderCta" class="order-cta-round" aria-label="Commander">🛍️</button>
 
-  <!-- Modal commande -->
+  <!-- Modal -->
   <div id="orderTypeModal" class="modal" aria-hidden="true">
     <div class="modal-bg"></div>
     <div class="modal-card">
@@ -153,8 +220,8 @@
     </div>
   </div>
 
-  <!-- ===== Bas d’écran : wrapper fixe ===== -->
-  <div class="tabbar-wrap" aria-hidden="false">
+  <!-- ===== Bas d’écran : wrapper + safe-area ===== -->
+  <div class="tabbar-wrap">
     <nav class="tabbar" aria-label="Navigation">
       <button class="tabbtn" data-tab="home" aria-label="Accueil">
         <img class="tab-ic" src="assets/tab-home.svg" alt="" />
@@ -172,83 +239,10 @@
         <img src="assets/cta-commander.svg" alt="" />
       </button>
     </nav>
-    <!-- bandeau safe-area peint derrière la tabbar -->
     <div class="safe-bottom" aria-hidden="true"></div>
   </div>
 
-  <!-- ===== Overrides garantis (pas de conflit) ===== -->
-  <style id="fix-bottom-ui">
-    /* 0) Sécurité : pas d’onglet fantôme */
-    .tab{display:none}.tab.active{display:block}
-
-    /* 1) Wrapper fixe qui gère la position et la safe-area */
-    .tabbar-wrap{
-      position:fixed; left:0; right:0; bottom:0;
-      display:flex; flex-direction:column;
-      z-index:30; pointer-events:none;           /* la tabbar reprend les events */
-    }
-    .safe-bottom{
-      height: env(safe-area-inset-bottom, 0px);
-      background: #A64027;
-      pointer-events:none;
-    }
-
-    /* 2) Tabbar FINE posée au-dessus de la safe-area (43px), clique active */
-    .tabbar{
-      position:relative !important;              /* pour ancrer le CTA absolu */
-      height: 43px !important;
-      background: #A64027 !important;
-      padding: 0 16px !important;
-      box-shadow: 0 -2px 8px rgba(0,0,0,.08) !important;
-      pointer-events:auto !important;
-
-      /* neutralise les anciens styles */
-      left:auto !important; right:auto !important; bottom:auto !important;
-      transform:none !important;
-      padding-bottom:0 !important;
-      overflow:visible !important;
-
-      /* grille symétrique */
-      display:grid !important;
-      grid-template-columns:
-        minmax(64px,1fr)
-        minmax(64px,1fr)
-        calc(var(--cta-size) + 16px)
-        minmax(64px,1fr)
-        minmax(64px,1fr) !important;
-      align-items:center !important;
-    }
-    /* supprimer tout pseudo-élément hérité qui peindrait par-dessus */
-    .tabbar::before, .tabbar::after{ display:none !important; }
-
-    /* 3) Boutons d’onglets : pas d’ombre/active, icônes adaptatives */
-    .tabbtn{
-      -webkit-appearance:none; appearance:none; background:transparent;
-      border:0; padding:0; cursor:pointer;
-      width:100%; height:72px; display:grid; place-items:center;
-      transform: translateY(-2px);               /* micro-shift validé */
-      outline:none; box-shadow:none; -webkit-tap-highlight-color:transparent;
-      justify-self:center;
-    }
-    .tabbtn .tab-ic{ width:min(72px,100%); height:auto; object-fit:contain; display:block; pointer-events:none; }
-    .tabbtn:focus,.tabbtn:active{ outline:none; box-shadow:none; background:transparent }
-    .tabbtn.active .tab-ic{ filter:none; transform:translateY(-2px) }
-
-    /* 4) Placement symétrique autour du CTA */
-    .tabbar .tabbtn:nth-of-type(1){ grid-column:1 }
-    .tabbar .tabbtn:nth-of-type(2){ grid-column:2 }
-    .tabbar .tabbtn:nth-of-type(3){ grid-column:4 }
-    .tabbar .tabbtn:nth-of-type(4){ grid-column:5 }
-
-    /* 5) CTA centré (inchangé, ancré sur .tabbar relative) */
-    .cta-img{
-      position:absolute; left:50%; transform:translateX(-50%);
-      top: calc(-1 * var(--cta-lift));
-      width: var(--cta-size); height: var(--cta-size);
-      background:transparent; border:0; padding:0; cursor:pointer;
-      display:grid; place-items:center; z-index:101; pointer-events:auto;
-    }
-    .cta-img img{ width:100%; height:100%; object-fit:contain; display:block; }
-  </style>
+  <!-- Fallback global de peinture (au cas où iOS renvoie 0) -->
+  <div id="safe-area-bg" aria-hidden="true"></div>
 </body>
 </html>
