@@ -256,3 +256,30 @@ body {
   padding-bottom: env(safe-area-inset-bottom, 0px); /* remplit la zone blanche */
   box-shadow: 0 -2px 8px rgba(0,0,0,.08);
 }
+
+/* === PLAN B : tabbar fine + peinture derrière le home indicator === */
+
+/* 1) La tabbar garde la hauteur validée et NE prend PAS la safe-area */
+.tabbar{
+  height: var(--tabbar-h) !important;
+  padding-bottom: 0 !important;
+  bottom: env(safe-area-inset-bottom, 0px) !important; /* posée juste au-dessus du home indicator */
+  background: var(--tabbar-bg) !important;
+  z-index: 30 !important;  /* au-dessus du fond peint */
+}
+
+/* 2) On peint la zone du home indicator DERRIÈRE la tabbar (ne couvre rien) */
+body::after{
+  content:"";
+  position: fixed;
+  left: 0; right: 0; bottom: 0;
+  height: env(safe-area-inset-bottom, 0px);
+  background: var(--tabbar-bg);
+  pointer-events: none;
+  z-index: 10;              /* plus bas que la tabbar (30), plus haut que le fond */
+}
+
+/* (Sécurité) on remet le fond du site en blanc */
+body{ background: #fff !important; }
+
+/* Rien d’autre ne change : placement symétrique, icônes adaptatives, etc. */
