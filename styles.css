@@ -3,29 +3,25 @@
 :root{
   --bg:#ffffff; --text:#111;
   --line:#e7e7e7; --muted:#6d6d6d;
-  --brand:#A64027;                /* couleur marque */
   --accent-cta:#c24d2c;
 
   --safe-top: env(safe-area-inset-top, 0px);
-  --safeB: calc(max(env(safe-area-inset-bottom,0px), constant(safe-area-inset-bottom,0px)));
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
 
-  /* Bannière (VALIDÉE) */
+  /* Bannière */
   --banner-h: 25vh;
 
-  /* Tabbar (VALIDÉE) */
-  --tabbar-bg:#ffffff;            /* barre BLANCHE (unifiée avec safe-area) */
-  --tabbar-h:43px;                /* hauteur utile (hors safe-area) */
-  --tab-fg:#2B2B2B;               /* icône inactif foncé */
-  --tab-active:var(--brand);      /* icône actif = marque */
-
-  --icon-sz:72px;                 /* taille validée (downscale ONLY si trop étroit) */
+  /* Tabbar */
+  --tabbar-bg:#ffffff;   /* <<< tabbar blanche */
+  --tabbar-h:43px;
+  --icon-sz:72px;
   --icon-shift-y:-2px;
   --cta-size:102px;
   --cta-lift:50px;
 }
 
 /* ===== Document ===== */
-html{ background:#000; height:100% }
+html{ background:#fff; height:100% }
 body{
   margin:0; background:var(--bg); color:var(--text);
   font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;
@@ -34,126 +30,47 @@ body{
 }
 h1,h2,h3{ margin:0 0 8px 0 }
 
-/* ===== Toast ===== */
-.toast{
-  position:fixed; left:50%; transform:translateX(-50%); top:16px;
-  background:rgba(0,0,0,.85); color:#fff; padding:10px 14px; border-radius:12px;
-  z-index:90; opacity:0; pointer-events:none; transition:opacity .2s
-}
-.toast.show{ opacity:1 }
-
-/* ===== Bannière (VALIDÉE) ===== */
+/* ===== Bannière ===== */
 .banner{
-  position:relative; margin:0; padding:0; border:0; background:#000;
+  position:relative; margin:0; padding:0; border:0;
   margin-top: calc(-1 * var(--safe-top));
   padding-top: var(--safe-top);
   height: calc(var(--banner-h) + var(--safe-top));
   overflow:hidden;
 }
-.banner-track{
-  position:relative; height:100%;
-  display:flex; overflow-x:auto;
-  scroll-snap-type:x mandatory; -webkit-overflow-scrolling:touch;
-  gap:0; margin:0; padding:0; scrollbar-width:none;
-}
+.banner-track{ position:relative; height:100%; display:flex; overflow-x:auto; scroll-snap-type:x mandatory; -webkit-overflow-scrolling:touch; gap:0; }
 .banner-track::-webkit-scrollbar{ display:none }
 .banner-track > *{ flex:0 0 100vw; height:100%; scroll-snap-align:center; }
-.banner img{
-  width:100%; height:100%;
-  object-fit:cover; object-position:center top;
-  display:block; border:0; pointer-events:none;
-}
-.banner-dots{
-  position:absolute; left:50%; transform:translateX(-50%);
-  bottom:8px; display:flex; gap:6px; z-index:2;
-}
-.banner-dots .dot{ width:6px; height:6px; border-radius:50%; background:rgba(255,255,255,.5) }
+.banner img{ width:100%; height:100%; object-fit:cover; display:block; }
+.banner-dots{ position:absolute; left:50%; transform:translateX(-50%); bottom:8px; display:flex; gap:6px; z-index:2; }
+.banner-dots .dot{ width:6px; height:6px; border-radius:50%; background:rgba(0,0,0,.3) }
 .banner-dots .dot.active{ background:var(--accent-cta) }
 
 /* ===== Contenu ===== */
 .layout{
   max-width:1100px;
-  margin:12px auto calc(var(--tabbar-h) + var(--safeB) + 14px) auto; /* espace réel sous le contenu */
+  margin:12px auto calc(var(--tabbar-h) + var(--safe-bottom) + 14px) auto;
   padding:0 12px;
 }
 .card{ background:#fff; border:1px solid var(--line); border-radius:16px; padding:16px; margin:10px 0 }
 .hint{ color:var(--muted); font-size:12px }
 
-.hero-min{ text-align:center; padding:8px 12px 0 }
-.hero-hash{ font-size:32px; line-height:1.05; margin-bottom:2px }
-.hero-tag{ font-size:15px; font-weight:900; letter-spacing:.3px }
-
-.home-card{ background:#fff; border:1px solid var(--line); border-radius:16px; padding:12px 14px; margin:8px 0 10px }
-.prog-row{ display:flex; align-items:center; justify-content:space-between; gap:12px }
-.home-title{ font-size:20px }
-.points-badge{
-  display:inline-flex; align-items:center; gap:6px; padding:7px 12px;
-  border:1.5px dashed #d0d0d0; border-radius:999px; font-weight:800; background:#fff
-}
-
-.home-block{ margin:10px 0 6px }
-.home-block-head{ display:flex; align-items:center; justify-content:space-between }
-.btn{ border:1px solid #d7d7d7; background:#fff; color:#111; padding:12px 14px; border-radius:14px; font-weight:700; cursor:pointer }
-.btn.primary{ background:var(--accent-cta); color:#fff; border-color:var(--accent-cta) }
-.btn.outline{ background:transparent; border:1.5px solid var(--accent-cta); color:var(--accent-cta); font-weight:800 }
-.btn.small{ padding:9px 14px; border-radius:999px }
-
-/* Hscroll cartes */
-.hscroll{ display:grid; grid-auto-flow:column; gap:10px; overflow-x:auto; scroll-snap-type:x mandatory; padding:4px 2px }
-.hscroll.compact3{ grid-auto-columns:30.5% }
-.hcard{ scroll-snap-align:start; background:#fff; border:1px solid var(--line); border-radius:16px; overflow:hidden; cursor:pointer }
-.hcard img{ width:100%; height:128px; object-fit:cover; display:block }
-.hcard .pad{ padding:9px }
-.price{ font-weight:800 }
-
-/* Espace client */
-.client-grid{ display:grid; grid-template-columns:repeat(2,1fr); gap:12px }
-.client-tile{ background:#fff; border:1px solid var(--line); border-radius:16px; padding:26px 12px; font-weight:800; cursor:pointer }
-
-/* ===== Modals ===== */
-.modal{ position:fixed; inset:0; z-index:50; display:none }
-.modal.show{ display:block }
-.modal-bg{ position:absolute; inset:0; background:rgba(17,17,17,.35); backdrop-filter:blur(2px) }
-.modal-card{
-  position:absolute; left:50%; top:50%; transform:translate(-50%,-50%);
-  width:min(640px,92vw); max-height:85vh; overflow:auto; background:#fff;
-  border:1px solid var(--line); border-radius:18px; box-shadow:0 12px 48px rgba(0,0,0,.25)
-}
-.modal-header,.modal-footer{ display:flex; align-items:center; gap:12px; padding:14px 16px; border-bottom:1px solid var(--line) }
-.modal-footer{ border-top:1px solid var(--line); border-bottom:0; justify-content:space-between }
-.pad{ padding:14px 16px }
-.grid{ display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:12px }
-input,select{ width:100%; padding:12px; border-radius:12px; border:1px solid #d7d7d7; background:#fff; color:#111; font-size:16px }
-.order-type-grid{ display:grid; grid-template-columns:repeat(3,1fr); gap:12px; margin-bottom:10px }
-.order-type{ background:#fff; border:1px solid var(--line); border-radius:16px; padding:18px 10px; display:grid; gap:6px; place-items:center; font-weight:800 }
-.ot-emoji{ font-size:26px }
-
-/* Ancien CTA rond masqué */
-.order-cta-round{ display:none !important; }
-
-/* ===== Onglets: visibilité ===== */
+/* ===== Onglets ===== */
 .tab{ display:none; }
 .tab.active{ display:block; }
 
-/* ===== Bas d’écran : (si présent) wrapper + safe-area ===== */
-.tabbar-wrap{
-  position:fixed; left:0; right:0; bottom:0;
-  display:flex; flex-direction:column;
-  z-index:30; pointer-events:none;       /* la tabbar prend les events */
-}
-.safe-bottom{ display:none; }            /* désactivée : on intègre la safe-area */
-
-/* ===== TABBAR (2 | CTA | 2) — UNIFIÉE ===== */
+/* ===== Tabbar ===== */
 .tabbar{
-  position:fixed; left:0; right:0; bottom:0; z-index:30;
-  background:var(--tabbar-bg);
-  height: calc(var(--tabbar-h) + var(--safeB));  /* 43px + safe-area */
+  position:fixed; left:0; right:0; bottom:0;
+  z-index:30;
+  background:var(--tabbar-bg);   /* blanche */
+  height: calc(var(--tabbar-h) + var(--safe-bottom));
   padding: 0 16px;
-  padding-bottom: var(--safeB);                  /* intègre la safe-area */
-  box-shadow:0 -2px 8px rgba(0,0,0,.06);
+  padding-bottom: var(--safe-bottom);
+  box-shadow:0 -2px 8px rgba(0,0,0,.08);
   overflow:visible;
-  pointer-events:auto;
 
+  /* grille symétrique */
   --cta-gap: calc(var(--cta-size) + 16px);
   display:grid;
   grid-template-columns:
@@ -164,50 +81,43 @@ input,select{ width:100%; padding:12px; border-radius:12px; border:1px solid #d7
     minmax(64px,1fr);
   align-items:center;
 }
-/* neutralise tout pseudo-élément hérité */
-.tabbar::before, .tabbar::after{ display:none !important; }
 
-/* Boutons onglets (sans effet de tap/ombre) */
+/* Icônes des onglets */
 .tabbtn{
   -webkit-appearance:none; appearance:none;
   background:transparent; border:0; padding:0; cursor:pointer;
   width:100%; height:var(--icon-sz);
-  display:grid; place-items:center; justify-self:center;
+  justify-self:center; align-self:center;
+  display:grid; place-items:center;
   transform: translateY(var(--icon-shift-y));
-  outline:none; box-shadow:none; -webkit-tap-highlight-color:transparent;
+  -webkit-tap-highlight-color: transparent;
 }
-.tabbtn:focus, .tabbtn:active{ outline:none; box-shadow:none; background:transparent }
-
-/* Icônes : inactif foncé / actif marque (via filter pour images non currentColor) */
 .tabbtn .tab-ic{
-  width:min(var(--icon-sz),100%); height:auto; object-fit:contain; display:block; pointer-events:none;
-  /* foncé */
-  filter: brightness(0) saturate(100%) invert(20%) sepia(0%) saturate(0%) hue-rotate(0deg);
-  opacity:.9;
+  width: min(var(--icon-sz), 100%);
+  height:auto; object-fit:contain;
+  display:block;
 }
 .tabbtn.active .tab-ic{
-  /* teinte proche #A64027 */
-  filter: brightness(0) saturate(100%) invert(27%) sepia(56%) saturate(753%) hue-rotate(342deg) brightness(88%) contrast(94%);
-  opacity:1;
+  filter: invert(29%) sepia(85%) saturate(450%) hue-rotate(340deg) brightness(95%) contrast(95%);
 }
 
-/* Placement symétrique autour du CTA */
-.tabbar .tabbtn:nth-of-type(1){ grid-column:1 }
-.tabbar .tabbtn:nth-of-type(2){ grid-column:2 }
-.tabbar .tabbtn:nth-of-type(3){ grid-column:4 }
-.tabbar .tabbtn:nth-of-type(4){ grid-column:5 }
+/* Placement symétrique */
+.tabbar .tabbtn:nth-of-type(1){ grid-column:1; }
+.tabbar .tabbtn:nth-of-type(2){ grid-column:2; }
+.tabbar .tabbtn:nth-of-type(3){ grid-column:4; }
+.tabbar .tabbtn:nth-of-type(4){ grid-column:5; }
 
-/* CTA centré (inchangé) */
+/* CTA central */
 .cta-img{
   position:absolute; left:50%; transform:translateX(-50%);
   top: calc(-1 * var(--cta-lift));
   width: var(--cta-size); height: var(--cta-size);
   background:transparent; border:0; padding:0; cursor:pointer;
-  display:grid; place-items:center; z-index:101; pointer-events:auto;
+  display:grid; place-items:center; z-index:101;
 }
-.cta-img img{ width:100%; height:100%; object-fit:contain; display:block; }
+.cta-img img{ width:100%; height:100%; object-fit:contain; }
 
-/* Sécurité très petits écrans */
+/* Sécurité petits écrans */
 @media (max-width: 360px){
   :root{ --icon-sz: 68px; }
 }
