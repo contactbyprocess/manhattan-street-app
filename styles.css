@@ -1,185 +1,214 @@
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-  <meta charset="utf-8" />
-  <!-- PWA plein écran sous encoche -->
-  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
-  <meta name="apple-mobile-web-app-capable" content="yes" />
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-  <meta name="theme-color" content="#000000" />
-  <link rel="manifest" href="manifest.json" />
+/* ===== Variables ===== */
+*{ box-sizing:border-box }
+:root{
+  --bg:#EDEDED; --text:#111;
+  --line:#e7e7e7; --muted:#6d6d6d;
+  --accent-cta:#c24d2c;
 
-  <title>Manhattan Street — Commande</title>
+  --safe-top: env(safe-area-inset-top, 0px);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
 
-  <!-- bump versions pour casser le cache -->
-  <link rel="stylesheet" href="styles.css?v=65" />
-  <script defer src="app.js?v=65"></script>
-</head>
-<body>
-  <!-- Splash plein écran -->
-  <div id="splash">
-    <img src="assets/splash.jpg" alt="Splash" />
-  </div>
+  /* Bannière */
+  --banner-h: 21vh;
 
-  <!-- toast -->
-  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+  /* Tabbar */
+  --tabbar-bg:#ffffff;   /* tabbar blanche */
+  --tabbar-h:50px;
+  --icon-sz:480px;
+  --icon-shift-y:-105px;
+  --cta-size:102px;
+  --cta-lift:50px;
+}
 
-  <!-- ===== Bannière ===== -->
-  <section class="banner">
-    <div class="banner-track" id="bannerTrack">
-      <img src="assets/banner1.jpg" alt="Bannière 1" />
-      <img src="assets/banner2.jpg" alt="Bannière 2" />
-      <img src="assets/banner3.jpg" alt="Bannière 3" />
-    </div>
-    <div class="banner-dots" id="bannerDots"></div>
-  </section>
+/* ===== Document ===== */
+html{ background:#EDEDED; height:100% }
+body{
+  margin:0; background:var(--bg); color:var(--text);
+  font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;
+  min-height:100%; overflow:auto;
+  -webkit-overflow-scrolling:touch; overscroll-behavior-y:none;
+}
+h1,h2,h3{ margin:0 0 8px 0 }
 
-  <!-- ===== Contenu principal ===== -->
-  <main class="layout">
-    <!-- Accueil -->
-    <section class="tab tab-home active" id="tab-home">
-      <section class="hero-min">
-        <h1 class="hero-hash">#ManhattanStreet</h1>
-        <p class="hero-tag">TON INCONTOURNABLE 🗽🔥</p>
-      </section>
+/* ===== Toast ===== */
+.toast{
+  position:fixed; left:50%; transform:translateX(-50%); top:16px;
+  background:rgba(0,0,0,.85); color:#fff; padding:10px 14px; border-radius:12px;
+  z-index:90; opacity:0; pointer-events:none; transition:opacity .2s
+}
+.toast.show{ opacity:1 }
 
-      <!-- Mon programme -->
-      <section class="home-card">
-        <div class="prog-row">
-          <h2 class="home-title">Mon Programme</h2>
-          <div class="points-badge">Points : <strong id="pointsCountTop">0</strong></div>
-        </div>
-      </section>
+/* ===== Bannière ===== */
+.banner{
+  position:relative; margin:0; padding:0; border:0;
+  margin-top: calc(-1 * var(--safe-top));
+  padding-top: var(--safe-top);
+  height: calc(var(--banner-h) + var(--safe-top));
+  overflow:hidden;
+}
+.banner-track{ position:relative; height:100%; display:flex; overflow-x:auto; scroll-snap-type:x mandatory; -webkit-overflow-scrolling:touch; gap:0; }
+.banner-track::-webkit-scrollbar{ display:none }
+.banner-track > *{ flex:0 0 100vw; height:100%; scroll-snap-align:center; }
+.banner img{ width:100%; height:100%; object-fit:cover; display:block; }
+.banner-dots{ position:absolute; left:50%; transform:translateX(-50%); bottom:8px; display:flex; gap:6px; z-index:2; }
+.banner-dots .dot{ width:6px; height:6px; border-radius:50%; background:rgba(0,0,0,.3) }
+.banner-dots .dot.active{ background:var(--accent-cta) }
 
-      <!-- Hype du moment (contenu masqué pour l’instant) -->
-      <section class="home-block">
-        <div class="home-block-head">
-          <h2>La hype du moment ✨</h2>
-          <button class="btn outline small" id="goOrderTop">Commander ›</button>
-        </div>
-        <div id="featured"></div>
-      </section>
+/* ===== Contenu ===== */
+.layout{
+  max-width:1100px;
+  margin:12px auto calc(var(--tabbar-h) + var(--safe-bottom) + 14px) auto;
+  padding:0 12px;
+}
+.card{ background:#fff; border:1px solid var(--line); border-radius:16px; padding:16px; margin:10px 0 }
+.hint{ color:var(--muted); font-size:12px }
 
-      <!-- Espace client -->
-      <section class="home-block">
-        <h2>Mon espace client</h2>
-        <div class="client-grid">
-          <button class="client-tile" id="tileOrders"><span>Mes commandes</span></button>
-          <button class="client-tile" id="tileProfile"><span>Mon profil</span></button>
-        </div>
-      </section>
-    </section>
+.hero-min{ text-align:center; padding:8px 12px 0 }
+.hero-hash{ font-size:32px; line-height:1.05; margin-bottom:2px }
+.hero-tag{ font-size:15px; font-weight:900; letter-spacing:.3px }
 
-    <!-- Commande -->
-    <section class="tab" id="tab-order">
-      <div class="card">
-        <h2 id="orderModeTitle">Commande</h2>
-        <div class="order-info hint" id="orderInfo"></div>
+.home-card{ background:#fff; border:1px solid var(--line); border-radius:16px; padding:12px 14px; margin:8px 0 10px }
+.prog-row{ display:flex; align-items:center; justify-content:space-between; gap:12px }
+.home-title{ font-size:20px }
+.points-badge{
+  display:inline-flex; align-items:center; gap:6px; padding:7px 12px;
+  border:1.5px dashed #d0d0d0; border-radius:999px; font-weight:800; background:#fff
+}
 
-        <div class="map-wrap">
-          <iframe id="mapFrame" title="Carte" loading="lazy"
-            src="https://www.openstreetmap.org/export/embed.html?bbox=3.204%2C50.734%2C3.224%2C50.754&layer=mapnik&marker=50.744%2C3.214"></iframe>
-        </div>
+.home-block{ margin:10px 0 6px }
+.home-block-head{ display:flex; align-items:center; justify-content:space-between }
+.btn{ border:1px solid #d7d7d7; background:#fff; color:#111; padding:12px 14px; border-radius:14px; font-weight:700; cursor:pointer }
+.btn.primary{ background:var(--accent-cta); color:#fff; border-color:var(--accent-cta) }
+.btn.outline{ background:transparent; border:1.5px solid var(--accent-cta); color:var(--accent-cta); font-weight:800 }
+.btn.small{ padding:9px 14px; border-radius:999px }
 
-        <div id="dineInBlock" class="grid" style="display:none;margin-top:10px">
-          <label>Numéro de table
-            <input id="tableNumber" inputmode="numeric" pattern="[0-9]*" placeholder="Ex : 12" />
-          </label>
-        </div>
+/* Espace client */
+.client-grid{ display:grid; grid-template-columns:repeat(2,1fr); gap:12px }
+.client-tile{ background:#fff; border:1px solid var(--line); border-radius:16px; padding:26px 12px; font-weight:800; cursor:pointer }
 
-        <div class="order-actions">
-          <button class="btn primary" id="orderStart">Commencer ma commande</button>
-        </div>
-      </div>
-    </section>
+/* ===== Onglets ===== */
+.tab{ display:none; }
+.tab.active{ display:block; }
 
-    <!-- Fidélité -->
-    <section class="tab" id="tab-loyalty">
-      <div class="card">
-        <h2>Ma carte de fidélité</h2>
+/* ===== Tabbar ===== */
+.tabbar{
+  position:fixed; left:0; right:0; bottom:0;
+  z-index:30;
+  background:var(--tabbar-bg);
+  height: calc(var(--tabbar-h) + var(--safe-bottom));
+  padding: 0 16px;
+  padding-bottom: var(--safe-bottom);
+  box-shadow:0 -2px 8px rgba(0,0,0,.08);
+  overflow:visible;
 
-        <div class="loyalty-card">
-          <div class="lc-header">MANHATTAN STREET</div>
-          <div class="lc-body">
-            <div class="lc-name" id="lcName">Prénom</div>
-            <div class="lc-id" id="lcId">ID — XXXX</div>
-            <div class="lc-points">Points : <span id="lcPoints">0</span></div>
-          </div>
-        </div>
+  --cta-gap: calc(var(--cta-size) + 16px);
+  display:grid;
+  grid-template-columns:
+    minmax(64px,1fr)
+    minmax(64px,1fr)
+    var(--cta-gap)
+    minmax(64px,1fr)
+    minmax(64px,1fr);
+  align-items:center;
+}
 
-        <p class="hint" style="margin-top:8px">Présente ce QR en caisse :</p>
-        <div class="qr-wrap">
-          <div id="qrCanvas" class="qr-canvas" aria-label="QR code"></div>
-          <div class="qr-code-text" id="qrCodeText"></div>
-        </div>
-      </div>
-    </section>
+/* Icônes des onglets (teinte via CSS mask) */
+.tabbtn{
+  -webkit-appearance:none; appearance:none;
+  background:transparent; border:0; padding:0; cursor:pointer;
+  width:100%; height:var(--icon-sz);
+  justify-self:center; align-self:center;
+  display:grid; place-items:center;
+  transform: translateY(var(--icon-shift-y));
+  -webkit-tap-highlight-color: transparent;
+  color:#bdbdbd;                 /* INACTIF gris */
+}
+.tabbtn.active{ color:#A64027; }  /* ACTIF couleur marque */
 
-    <!-- Historique -->
-    <section class="tab" id="tab-orders">
-      <div class="card">
-        <h2>Mon historique</h2>
-        <div id="myOrders"></div>
-      </div>
-    </section>
+/* on cache les <img> */
+.tabbtn .tab-ic{ display:none !important; }
 
-    <!-- Profil -->
-    <section class="tab" id="tab-profile">
-      <div class="card">
-        <h2>Mon profil</h2>
-        <div class="grid">
-          <label>Prénom <input id="profileName" /></label>
-          <label>E-mail <input id="profileEmail" type="email" /></label>
-          <label>Téléphone <input id="profilePhone" type="tel" /></label>
-        </div>
-        <button class="btn primary" id="saveProfileBtn">Enregistrer</button>
-      </div>
-    </section>
-  </main>
+/* on dessine l'icône teintée avec ::before */
+.tabbtn::before{
+  content:"";
+  width: min(var(--icon-sz), 100%);
+  height: min(var(--icon-sz), 100%);
+  display:block;
+  background: currentColor;
+  transform: translateY(var(--icon-shift-y));
+  -webkit-mask: var(--ic) center / contain no-repeat;
+          mask: var(--ic) center / contain no-repeat;
+}
 
-  <!-- Ancien CTA rond (neutralisé en CSS global) -->
-  <button id="orderCta" class="order-cta-round" aria-label="Commander">🛍️</button>
+/* on assigne chaque asset comme mask */
+.tabbtn[data-tab="home"]   { --ic: url('assets/tab-home.svg'); }
+.tabbtn[data-tab="loyalty"]{ --ic: url('assets/tab-loyalty.svg'); }
+.tabbtn[data-tab="orders"] { --ic: url('assets/tab-orders.svg'); }
+.tabbtn[data-tab="profile"]{ --ic: url('assets/tab-profile.svg'); }
 
-  <!-- Modal commande -->
-  <div id="orderTypeModal" class="modal" aria-hidden="true">
-    <div class="modal-bg"></div>
-    <div class="modal-card">
-      <div class="modal-header"><h3>Choisis ton type de commande</h3></div>
-      <div class="pad">
-        <div class="order-type-grid">
-          <button class="order-type" id="otClickCollect"><div class="ot-emoji">🛍️</div><div>Click & Collect</div></button>
-          <button class="order-type" id="otDelivery"><div class="ot-emoji">🚚</div><div>Livraison</div></button>
-          <button class="order-type" id="otDineIn"><div class="ot-emoji">🍽️</div><div>Sur place</div></button>
-        </div>
-        <div id="dineInExtras" class="dinein-form" style="display:none">
-          <label>Numéro de table
-            <input id="tableNumberModal" inputmode="numeric" pattern="[0-9]*" placeholder="Ex : 12" />
-          </label>
-        </div>
-      </div>
-      <div class="modal-footer">
-        <button class="btn ghost" id="orderTypeClose">Fermer</button>
-      </div>
-    </div>
-  </div>
+/* Placement symétrique + ajustements fins */
+.tabbar .tabbtn:nth-of-type(1){ grid-column:1; }
+.tabbar .tabbtn:nth-of-type(2){ grid-column:2; }
 
-  <!-- ===== Tabbar ===== -->
-  <nav class="tabbar" aria-label="Navigation">
-    <button class="tabbtn" data-tab="home" aria-label="Accueil">
-      <img class="tab-ic" src="assets/tab-home.svg" alt="" />
-    </button>
-    <button class="tabbtn" data-tab="loyalty" aria-label="Fidélité">
-      <img class="tab-ic" src="assets/tab-loyalty.svg" alt="" />
-    </button>
-    <button class="tabbtn" data-tab="orders" aria-label="Historique">
-      <img class="tab-ic" src="assets/tab-orders.svg" alt="" />
-    </button>
-    <button class="tabbtn" data-tab="profile" aria-label="Profil">
-      <img class="tab-ic" src="assets/tab-profile.svg" alt="" />
-    </button>
-    <button class="cta-img" id="ctaOrder" aria-label="Commander">
-      <img src="assets/cta-commander.svg" alt="" />
-    </button>
-  </nav>
-</body>
-</html>
+/* Historique rapproché du CTA */
+.tabbar .tabbtn:nth-of-type(3){
+  grid-column:4;
+  justify-self:start;
+  margin-left:-15px;
+}
+
+/* Profil rapproché vers l’intérieur */
+.tabbar .tabbtn:nth-of-type(4){
+  grid-column:5;
+  justify-self:end;
+  margin-right:10px;
+}
+
+/* CTA central */
+.cta-img{
+  position:absolute; left:50%; transform:translateX(-50%);
+  top: calc(-1 * var(--cta-lift));
+  width: var(--cta-size); height: var(--cta-size);
+  background:transparent; border:0; padding:0; cursor:pointer;
+  display:grid; place-items:center; z-index:101;
+}
+.cta-img img{ width:100%; height:100%; object-fit:contain; }
+
+/* Sécurité petits écrans */
+@media (max-width: 360px){
+  :root{ --icon-sz: 68px; }
+}
+
+/* === Forçage identique sur tous les onglets === */
+.tab{
+  min-height: calc(100vh - (var(--tabbar-h) + env(safe-area-inset-bottom, 0px)));
+}
+.layout{
+  margin: 12px auto calc(var(--tabbar-h) + env(safe-area-inset-bottom, 0px)) auto !important;
+}
+.tabbar{
+  position: fixed !important;
+  left: 0 !important; right: 0 !important; bottom: 0 !important;
+  background: #fff !important;
+  height: calc(var(--tabbar-h) + env(safe-area-inset-bottom, 0px)) !important;
+  padding-bottom: env(safe-area-inset-bottom, 0px) !important;
+  z-index: 30 !important;
+}
+
+/* ===== SPLASH PLEIN ÉCRAN ===== */
+#splash {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  background: #000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: opacity 0.6s ease;
+}
+
+#splash img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
