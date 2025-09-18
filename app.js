@@ -206,6 +206,9 @@ document.addEventListener('DOMContentLoaded',()=>{
 
   // Onglet par défaut : Accueil
   switchTab('home');
+
+  // >>> signal : l’app est prête côté JS
+  document.dispatchEvent(new Event('app:ready'));
 });
 
 /* ===== PWA: keep SW fresh ===== */
