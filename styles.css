@@ -20,19 +20,30 @@
   --cta-lift:50px;
 }
 
-/* ===== Document ===== */
+ /* ===== Document ===== */
 html{ background:#fff; height:100% }
 body{
   margin:0;
-  background: url("assets/bg.svg") no-repeat center top; /* fond SVG */
-  background-size: cover;   /* recouvre tout l’écran */
-  background-attachment: fixed; /* optionnel : le fond reste fixe au scroll */
+  /* fond SVG plus discret, taille fixe et centrée en haut */
+  background: url("assets/bg.svg") no-repeat center top;
+  background-size: 1100px auto;   /* << ajuste ici la “taille visuelle” */
+  /* background-attachment: fixed;  <-- on supprime pour éviter l'effet trop présent */
   color:var(--text);
   font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;
-  min-height:100%; overflow:auto;
-  -webkit-overflow-scrolling:touch; overscroll-behavior-y:none;
+  min-height:100%;
+  overflow:auto;
+  overscroll-behavior-y:none;
 }
-h1,h2,h3{ margin:0 0 8px 0 }
+/* anti-scroll latéral global, au cas où */
+html, body{ overflow-x:hidden; }
+
+/* Responsive : un peu plus petit sur petits écrans */
+@media (max-width: 430px){
+  body{ background-size: 820px auto; }
+}
+@media (max-width: 360px){
+  body{ background-size: 700px auto; }
+}
 
 /* ===== Bannière ===== */
 .banner{
@@ -165,3 +176,6 @@ h1,h2,h3{ margin:0 0 8px 0 }
   padding-bottom: env(safe-area-inset-bottom, 0px) !important;
   z-index: 30 !important;
 }
+
+/* Masquer la liste d’items “Hype du moment” pour supprimer le slide horizontal */
+#featured{ display:none !important; }
