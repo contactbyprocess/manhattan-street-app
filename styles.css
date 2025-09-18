@@ -1,7 +1,7 @@
 /* ===== Variables ===== */
 *{ box-sizing:border-box }
 :root{
-  --bg:#ffffff; --text:#111;
+  --bg:#EDEDED; --text:#111;
   --line:#e7e7e7; --muted:#6d6d6d;
   --accent-cta:#c24d2c;
 
@@ -18,37 +18,16 @@
   --icon-shift-y:-105px;
   --cta-size:102px;
   --cta-lift:50px;
-
-  /* Fond SVG (taille réglable ici) */
-  --bg-illustration-w: 800px;     /* <<< ajuste la largeur visuelle du fond */
 }
 
 /* ===== Document ===== */
-html{ background:#fff; height:100% }
+html{ background:#EDEDED; height:100% }
 body{
-  margin:0;
-  background-color: var(--bg);
-  background-image: url("assets/bg.svg");
-  background-repeat: no-repeat;
-  background-position: top center;
-  background-size: var(--bg-illustration-w) auto !important;  /* << clé : taille du SVG */
-  color:var(--text);
+  margin:0; background:var(--bg); color:var(--text);
   font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;
-  min-height:100%;
-  overflow:auto;
-  overscroll-behavior-y:none;
+  min-height:100%; overflow:auto;
+  -webkit-overflow-scrolling:touch; overscroll-behavior-y:none;
 }
-/* pas de scroll latéral */
-html, body{ overflow-x:hidden; }
-
-/* Responsive : réduis un peu la taille du fond sur petits écrans */
-@media (max-width: 430px){
-  :root{ --bg-illustration-w: 320px; }
-}
-@media (max-width: 360px){
-  :root{ --bg-illustration-w: 280px; }
-}
-
 h1,h2,h3{ margin:0 0 8px 0 }
 
 /* ===== Bannière ===== */
@@ -129,6 +108,8 @@ h1,h2,h3{ margin:0 0 8px 0 }
   -webkit-mask: var(--ic) center / contain no-repeat;
           mask: var(--ic) center / contain no-repeat;
 }
+
+/* on assigne chaque asset comme mask */
 .tabbtn[data-tab="home"]   { --ic: url('assets/tab-home.svg'); }
 .tabbtn[data-tab="loyalty"]{ --ic: url('assets/tab-loyalty.svg'); }
 .tabbtn[data-tab="orders"] { --ic: url('assets/tab-orders.svg'); }
@@ -182,6 +163,3 @@ h1,h2,h3{ margin:0 0 8px 0 }
   padding-bottom: env(safe-area-inset-bottom, 0px) !important;
   z-index: 30 !important;
 }
-
-/* ===== Masquer la liste “Hype du moment” ===== */
-#featured{ display:none !important; }
