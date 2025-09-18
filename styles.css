@@ -26,7 +26,7 @@ body{
   margin:0;
   /* fond SVG plus discret, taille fixe et centrée en haut */
   background: url("assets/bg.svg") no-repeat center top;
-  background-size: 800px auto;   /* << ajuste ici la “taille visuelle” */
+  background-size: 400px auto;   /* << ajuste ici la “taille visuelle” */
   /* background-attachment: fixed;  <-- on supprime pour éviter l'effet trop présent */
   color:var(--text);
   font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;
