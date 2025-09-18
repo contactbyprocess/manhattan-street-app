@@ -147,16 +147,53 @@ function renderQR(email){
 function openModal(sel){qs(sel)?.classList.add('show');}
 function closeModal(sel){qs(sel)?.classList.remove('show');}
 
-/* ===== Splash (5s min) ===== */
-window.addEventListener("load", () => {
-  const splash = document.getElementById("splash");
-  if (splash) {
-    setTimeout(() => {
-      splash.style.opacity = 0;
-      setTimeout(() => splash.remove(), 600);
-    }, 5000); // 5 secondes d'affichage minimum
+/* ===== Splash “smart” : 5s min + prêt applicatif ===== */
+(function(){
+  const MIN_MS = 5000;             // 5s minimum
+  const MAX_WAIT_MS = 9000;        // sécurité : au plus ~9s
+  const startTs = Date.now();
+
+  // Promesse: “app prête” (évènement custom)
+  const appReadyP = new Promise(resolve => {
+    document.addEventListener('app:ready', resolve, { once:true });
+  });
+
+  // Promesse: bannières chargées (ou résolues si erreur)
+  function waitForBannerImages() {
+    const imgs = [...document.querySelectorAll('.banner-track img')];
+    if (imgs.length === 0) return Promise.resolve();
+    return Promise.all(imgs.map(img => {
+      if (img.complete) return Promise.resolve();
+      return new Promise(res => {
+        const done = () => res();
+        img.addEventListener('load', done, { once:true });
+        img.addEventListener('error', done, { once:true });
+      });
+    }));
   }
-});
+
+  // Promesse: min 5s écoulées
+  const minDelayP = new Promise(res => {
+    const left = Math.max(0, MIN_MS - (Date.now() - startTs));
+    setTimeout(res, left);
+  });
+
+  // Promesse: timeout sécurité
+  const maxTimeoutP = new Promise(res => setTimeout(res, MAX_WAIT_MS));
+
+  window.addEventListener("load", async () => {
+    const splash = document.getElementById("splash");
+    if (!splash) return;
+
+    await Promise.race([
+      Promise.all([minDelayP, appReadyP, waitForBannerImages()]),
+      maxTimeoutP
+    ]);
+
+    splash.style.opacity = 0;
+    setTimeout(() => splash.remove(), 600);
+  });
+})();
 
 /* ===== INIT ===== */
 document.addEventListener('DOMContentLoaded',()=>{
