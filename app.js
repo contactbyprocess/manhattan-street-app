@@ -215,3 +215,14 @@ document.addEventListener('DOMContentLoaded',()=>{
 if ('serviceWorker' in navigator) {
   navigator.serviceWorker.getRegistrations().then(list => list.forEach(reg => reg.update()));
 }
+
+// Splash : reste visible 5 secondes puis disparaît
+window.addEventListener("load", () => {
+  const splash = document.getElementById("splash");
+  if (splash) {
+    setTimeout(() => {
+      splash.style.opacity = 0;
+      setTimeout(() => splash.remove(), 600);
+    }, 5000); // 5 secondes
+  }
+});
