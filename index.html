@@ -12,17 +12,19 @@
   <title>Manhattan Street — Commande</title>
 
   <!-- bump versions pour casser le cache -->
-  <link rel="stylesheet" href="styles.css?v=66" />
-  <script defer src="app.js?v=66"></script>
+  <link rel="stylesheet" href="styles.css?v=65" />
+  <script defer src="app.js?v=65"></script>
 </head>
 <body>
-  <!-- Splash plein écran (image gérée en CSS) -->
-<div id="splash"></div>
+  <!-- Splash plein écran -->
+  <div id="splash">
+    <img src="assets/splash.jpg" alt="Splash" />
+  </div>
 
   <!-- toast -->
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
 
-  <!-- ===== Bannière (VALIDÉE) ===== -->
+  <!-- ===== Bannière ===== -->
   <section class="banner">
     <div class="banner-track" id="bannerTrack">
       <img src="assets/banner1.jpg" alt="Bannière 1" />
@@ -49,13 +51,13 @@
         </div>
       </section>
 
-      <!-- Hype du moment (liste retirée) -->
+      <!-- Hype du moment (contenu masqué pour l’instant) -->
       <section class="home-block">
         <div class="home-block-head">
           <h2>La hype du moment ✨</h2>
           <button class="btn outline small" id="goOrderTop">Commander ›</button>
         </div>
-        <!-- Liste #featured retirée volontairement -->
+        <div id="featured"></div>
       </section>
 
       <!-- Espace client -->
@@ -161,29 +163,20 @@
     </div>
   </div>
 
-  <!-- ===== Tabbar (blanche, unifiée) ===== -->
+  <!-- ===== Tabbar ===== -->
   <nav class="tabbar" aria-label="Navigation">
-    <!-- 1 -->
     <button class="tabbtn" data-tab="home" aria-label="Accueil">
       <img class="tab-ic" src="assets/tab-home.svg" alt="" />
     </button>
-
-    <!-- 2 -->
     <button class="tabbtn" data-tab="loyalty" aria-label="Fidélité">
       <img class="tab-ic" src="assets/tab-loyalty.svg" alt="" />
     </button>
-
-    <!-- 3 -->
     <button class="tabbtn" data-tab="orders" aria-label="Historique">
       <img class="tab-ic" src="assets/tab-orders.svg" alt="" />
     </button>
-
-    <!-- 4 -->
     <button class="tabbtn" data-tab="profile" aria-label="Profil">
       <img class="tab-ic" src="assets/tab-profile.svg" alt="" />
     </button>
-
-    <!-- CTA centré -->
     <button class="cta-img" id="ctaOrder" aria-label="Commander">
       <img src="assets/cta-commander.svg" alt="" />
     </button>
