@@ -50,48 +50,24 @@ function initBannerCarousel(){
   window.addEventListener('resize', ()=> { track.scrollLeft = i * slideW(); });
 }
 
-/* ===== Featured ===== */
+/* ===== Featured (neutralisé) ===== */
 function renderFeatured(){
-  const el=qs('#featured'); if(!el) return;
-  const prods=getProducts().filter(p=>p.tags?.includes('featured')).slice(0,9);
-  el.innerHTML=prods.map(p=>`
-    <article class="hcard" onclick="showToast('Fiche produit à venir')">
-      <img src="${p.img}" alt="${p.name}" />
-      <div class="pad">
-        <h3>${p.name}</h3>
-        <div class="price">${euro(p.price)}</div>
-      </div>
-    </article>`).join('');
+  // Liste retirée du HTML → no-op
+  const el = document.getElementById('featured');
+  if (!el) return;
+  el.innerHTML = '';
+  el.style.display = 'none';
 }
 
 /* ===== Tabs ===== */
 function switchTab(tab){
-  // Active/désactive les boutons d’onglets
-  qsa('.tabbar [data-tab]').forEach(b=>{
-    b.classList.toggle('active', b.dataset.tab===tab);
-  });
-  // Affiche/masque les sections
-  let found = false;
-  qsa('.tab').forEach(s=>{
-    const isTarget = (s.id===`tab-${tab}`);
-    s.classList.toggle('active', isTarget);
-    if(isTarget) found = true;
-  });
-  // Fallback sécurité si id introuvable
-  if(!found){ qsa('.tab').forEach(s=>s.classList.remove('active')); qs('#tab-home')?.classList.add('active'); }
-  // Remonter en haut à chaque changement d’onglet
+  qsa('.tabbar [data-tab]').forEach(b=> b.classList.toggle('active', b.dataset.tab===tab));
+  qsa('.tab').forEach(s=> s.classList.toggle('active', s.id===`tab-${tab}`));
   window.scrollTo({top:0, behavior:'smooth'});
 }
-
 function bindTabbar(){
-  // Cible uniquement les boutons avec data-tab (pas le CTA)
   qsa('.tabbar [data-tab]').forEach(btn=>{
-    // Empêche tout focus/scroll parasite
-    btn.addEventListener('click', (e)=>{
-      e.preventDefault();
-      e.stopPropagation();
-      switchTab(btn.dataset.tab);
-    }, {passive:false});
+    btn.addEventListener('click',()=> switchTab(btn.dataset.tab));
   });
 }
 
@@ -99,19 +75,8 @@ function bindTabbar(){
 function bindCTA(){
   const openSel=()=>openModal('#orderTypeModal');
 
-  // CTA central de la tabbar
-  qs('#ctaOrder')?.addEventListener('click', (e)=>{
-    e.preventDefault();
-    e.stopPropagation();
-    openSel();
-  }, {passive:false});
-
   // CTA “Commander” dans la home
-  qs('#goOrderTop')?.addEventListener('click', (e)=>{
-    e.preventDefault();
-    e.stopPropagation();
-    openSel();
-  }, {passive:false});
+  qs('#goOrderTop')?.addEventListener('click', openSel);
 
   // Choix du mode de commande
   qs('#otClickCollect')?.addEventListener('click',()=>{closeModal('#orderTypeModal');openOrderTab('takeaway');});
@@ -182,9 +147,20 @@ function renderQR(email){
 function openModal(sel){qs(sel)?.classList.add('show');}
 function closeModal(sel){qs(sel)?.classList.remove('show');}
 
+/* ===== Splash (5s min) ===== */
+window.addEventListener("load", () => {
+  const splash = document.getElementById("splash");
+  if (splash) {
+    setTimeout(() => {
+      splash.style.opacity = 0;
+      setTimeout(() => splash.remove(), 600);
+    }, 5000); // 5 secondes d'affichage minimum
+  }
+});
+
 /* ===== INIT ===== */
 document.addEventListener('DOMContentLoaded',()=>{
-  renderFeatured();
+  renderFeatured();     // no-op (liste retirée)
   bindTabbar();
   bindCTA();
   bindProfile();
@@ -193,17 +169,6 @@ document.addEventListener('DOMContentLoaded',()=>{
 
   // Onglet par défaut : Accueil
   switchTab('home');
-
-  // Splash : reste visible au moins 2 secondes
-window.addEventListener("load", () => {
-  const splash = document.getElementById("splash");
-  if (splash) {
-    setTimeout(() => {
-      splash.style.opacity = 0;
-      setTimeout(() => splash.remove(), 500); // transition douce
-    }, 2000); // délai minimum de 2 secondes
-  }
-});
 });
 
 /* ===== PWA: keep SW fresh ===== */
