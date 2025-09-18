@@ -18,32 +18,38 @@
   --icon-shift-y:-105px;
   --cta-size:102px;
   --cta-lift:50px;
+
+  /* Fond SVG (taille réglable ici) */
+  --bg-illustration-w: 400px;     /* <<< ajuste la largeur visuelle du fond */
 }
 
- /* ===== Document ===== */
+/* ===== Document ===== */
 html{ background:#fff; height:100% }
 body{
   margin:0;
-  /* fond SVG plus discret, taille fixe et centrée en haut */
-  background: url("assets/bg.svg") no-repeat center top;
-  background-size: 400px auto;   /* << ajuste ici la “taille visuelle” */
-  /* background-attachment: fixed;  <-- on supprime pour éviter l'effet trop présent */
+  background-color: var(--bg);
+  background-image: url("assets/bg.svg");
+  background-repeat: no-repeat;
+  background-position: top center;
+  background-size: var(--bg-illustration-w) auto !important;  /* << clé : taille du SVG */
   color:var(--text);
   font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;
   min-height:100%;
   overflow:auto;
   overscroll-behavior-y:none;
 }
-/* anti-scroll latéral global, au cas où */
+/* pas de scroll latéral */
 html, body{ overflow-x:hidden; }
 
-/* Responsive : un peu plus petit sur petits écrans */
+/* Responsive : réduis un peu la taille du fond sur petits écrans */
 @media (max-width: 430px){
-  body{ background-size: 820px auto; }
+  :root{ --bg-illustration-w: 320px; }
 }
 @media (max-width: 360px){
-  body{ background-size: 700px auto; }
+  :root{ --bg-illustration-w: 280px; }
 }
+
+h1,h2,h3{ margin:0 0 8px 0 }
 
 /* ===== Bannière ===== */
 .banner{
@@ -177,5 +183,5 @@ html, body{ overflow-x:hidden; }
   z-index: 30 !important;
 }
 
-/* Masquer la liste d’items “Hype du moment” pour supprimer le slide horizontal */
+/* ===== Masquer la liste “Hype du moment” ===== */
 #featured{ display:none !important; }
