@@ -23,7 +23,11 @@
 /* ===== Document ===== */
 html{ background:#fff; height:100% }
 body{
-  margin:0; background:var(--bg); color:var(--text);
+  margin:0;
+  background: url("assets/bg.svg") no-repeat center top; /* fond SVG */
+  background-size: cover;   /* recouvre tout l’écran */
+  background-attachment: fixed; /* optionnel : le fond reste fixe au scroll */
+  color:var(--text);
   font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;
   min-height:100%; overflow:auto;
   -webkit-overflow-scrolling:touch; overscroll-behavior-y:none;
@@ -108,8 +112,6 @@ h1,h2,h3{ margin:0 0 8px 0 }
   -webkit-mask: var(--ic) center / contain no-repeat;
           mask: var(--ic) center / contain no-repeat;
 }
-
-/* on assigne chaque asset comme mask */
 .tabbtn[data-tab="home"]   { --ic: url('assets/tab-home.svg'); }
 .tabbtn[data-tab="loyalty"]{ --ic: url('assets/tab-loyalty.svg'); }
 .tabbtn[data-tab="orders"] { --ic: url('assets/tab-orders.svg'); }
@@ -163,6 +165,3 @@ h1,h2,h3{ margin:0 0 8px 0 }
   padding-bottom: env(safe-area-inset-bottom, 0px) !important;
   z-index: 30 !important;
 }
-
-/* ===== Masquer uniquement la liste d'items "Hype du moment" ===== */
-#featured{ display:none !important; }
