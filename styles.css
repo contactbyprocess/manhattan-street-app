@@ -58,7 +58,7 @@ h1,h2,h3{ margin:0 0 8px 0 }
 
 /* Option: réduire encore un peu sur petits écrans */
 @media (max-width: 380px){
-  :root{ --splash-size: 90vmin; }
+  :root{ --splash-size: 200vmin; }
 }
 /* ===== Toast ===== */
 .toast{
