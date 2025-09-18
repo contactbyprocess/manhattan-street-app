@@ -30,14 +30,36 @@ body{
 }
 h1,h2,h3{ margin:0 0 8px 0 }
 
-/* ===== Splash ===== */
-#splash{
-  position:fixed; inset:0; background:#000;
-  display:flex; align-items:center; justify-content:center;
-  z-index:9999; transition:opacity .6s ease;
+/* ===== Splash écran complet (image centrée, taille réduite) ===== */
+:root{
+  /* taille visuelle du visuel de splash, adaptée à l’écran */
+  --splash-size: 80vmin; /* ajuste: 70vmin, 60vmin… */
 }
-#splash img{ width:100%; height:100%; object-fit:cover }
 
+#splash{
+  position: fixed;
+  inset: 0;
+  background: #000; /* fond derrière l’image */
+  z-index: 9999;
+  opacity: 1;
+  transition: opacity .6s ease;
+}
+
+/* on dessine l’image en pseudo-élément pour un contrôle fin du scale */
+#splash::before{
+  content:"";
+  position:absolute;
+  left:50%; top:50%;
+  transform: translate(-50%,-50%);
+  width: var(--splash-size);
+  height: var(--splash-size);
+  background: url("assets/splash.jpg") center center / contain no-repeat;
+}
+
+/* Option: réduire encore un peu sur petits écrans */
+@media (max-width: 380px){
+  :root{ --splash-size: 70vmin; }
+}
 /* ===== Toast ===== */
 .toast{
   position:fixed; left:50%; transform:translateX(-50%); top:16px;
