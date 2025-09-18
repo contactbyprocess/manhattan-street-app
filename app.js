@@ -193,6 +193,17 @@ document.addEventListener('DOMContentLoaded',()=>{
 
   // Onglet par défaut : Accueil
   switchTab('home');
+
+  // Splash : reste visible au moins 2 secondes
+window.addEventListener("load", () => {
+  const splash = document.getElementById("splash");
+  if (splash) {
+    setTimeout(() => {
+      splash.style.opacity = 0;
+      setTimeout(() => splash.remove(), 500); // transition douce
+    }, 2000); // délai minimum de 2 secondes
+  }
+});
 });
 
 /* ===== PWA: keep SW fresh ===== */
