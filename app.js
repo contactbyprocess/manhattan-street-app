@@ -1,4 +1,4 @@
-/* ===== Helpers ===== */
+  /* ===== Helpers ===== */
 const qs = s => document.querySelector(s);
 const qsa = s => [...document.querySelectorAll(s)];
 const get = (k,d)=>{try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch{return d}};
@@ -71,32 +71,73 @@ function bindTabbar(){
   });
 }
 
+/* ===== État commande (mémo dernier mode) ===== */
+const ORDER_KEY = 'ms_order_prefs';
+function getOrderPrefs(){ return get(ORDER_KEY, { mode:null, table:null }); }
+function setOrderPrefs(p){ set(ORDER_KEY, p); }
+
 /* ===== CTA & commandes ===== */
 function bindCTA(){
   const openSel=()=>openModal('#orderTypeModal');
 
-  // CTA “Commander” dans la home
+  // CTA central (tabbar)
+  qs('#ctaOrder')?.addEventListener('click', openSel);
+
+  // CTA “Commander ›” dans la home
   qs('#goOrderTop')?.addEventListener('click', openSel);
 
   // Choix du mode de commande
-  qs('#otClickCollect')?.addEventListener('click',()=>{closeModal('#orderTypeModal');openOrderTab('takeaway');});
-  qs('#otDelivery')?.addEventListener('click',()=>{closeModal('#orderTypeModal');openOrderTab('delivery');});
+  qs('#otClickCollect')?.addEventListener('click',()=>{
+    closeModal('#orderTypeModal');
+    openOrderTab('takeaway');
+  });
+
+  qs('#otDelivery')?.addEventListener('click',()=>{
+    closeModal('#orderTypeModal');
+    openOrderTab('delivery');
+  });
+
   qs('#otDineIn')?.addEventListener('click',()=>{
     const n=(qs('#tableNumberModal')?.value||'').trim();
+    if(n && !/^\d{1,4}$/.test(n)){
+      showToast('Numéro de table invalide');
+      return;
+    }
     closeModal('#orderTypeModal');
-    openOrderTab('dinein',n);
+    openOrderTab('dinein', n || null);
   });
+
   qs('#orderTypeClose')?.addEventListener('click',()=>closeModal('#orderTypeModal'));
+
+  // ENTER sur le champ table => sélection Sur place
+  qs('#tableNumberModal')?.addEventListener('keydown', (e)=>{
+    if(e.key==='Enter'){
+      e.preventDefault();
+      qs('#otDineIn')?.click();
+    }
+  });
 
   // Raccourcis espace client
   qs('#tileOrders')?.addEventListener('click',()=>switchTab('orders'));
   qs('#tileProfile')?.addEventListener('click',()=>switchTab('profile'));
+
+  // (Option) Si tu veux relancer direct le dernier mode au clic CTA,
+  // décommente ce bloc :
+  /*
+  const last = getOrderPrefs();
+  if(last.mode){
+    qs('#ctaOrder')?.addEventListener('click', ()=>{
+      openOrderTab(last.mode, last.table);
+    });
+  }
+  */
 }
 
 function openOrderTab(mode, tableNo=null){
   switchTab('order');
   const title=qs('#orderModeTitle'), info=qs('#orderInfo'), dine=qs('#dineInBlock');
   const fn=(getProfile().firstName||'chef');
+
   if(mode==='takeaway'){
     title.textContent='Click & Collect';
     info.textContent=`${fn}, passe ta commande et viens la récupérer.`;
@@ -111,7 +152,12 @@ function openOrderTab(mode, tableNo=null){
     dine.style.display='grid';
     if(tableNo) qs('#tableNumber').value=tableNo;
   }
+
+  // Action “Commencer ma commande” (à brancher au panier plus tard)
   qs('#orderStart').onclick=()=>showToast(`Flux commande (${mode}) à brancher`);
+
+  // Mémorise le choix
+  setOrderPrefs({ mode, table: tableNo || null });
 }
 
 /* ===== Profil / Fidélité ===== */
@@ -215,14 +261,3 @@ document.addEventListener('DOMContentLoaded',()=>{
 if ('serviceWorker' in navigator) {
   navigator.serviceWorker.getRegistrations().then(list => list.forEach(reg => reg.update()));
 }
-
-// Splash : reste visible 5 secondes puis disparaît
-window.addEventListener("load", () => {
-  const splash = document.getElementById("splash");
-  if (splash) {
-    setTimeout(() => {
-      splash.style.opacity = 0;
-      setTimeout(() => splash.remove(), 600);
-    }, 5000); // 5 secondes
-  }
-});
