@@ -14,7 +14,7 @@
   /* Tabbar (validées) */
   --tabbar-bg:#ffffff;
   --tabbar-h:50px;
-  --icon-sz:480px;
+  --icon-sz:480px;          /* tes icônes géantes + décalage validés */
   --icon-shift-y:-105px;
   --cta-size:102px;
   --cta-lift:50px;
@@ -29,14 +29,18 @@ body{
 }
 h1,h2,h3{ margin:0 0 8px 0 }
 
-/* ===== Splash ===== */
-.splash{
+/* ===== Splash (plein écran, compatible #splash ou .splash) ===== */
+#splash, .splash{
   position:fixed; inset:0; z-index:9999;
   display:grid; place-items:center;
   background:#fff;
   transition:opacity .6s ease;
 }
-.splash img{ max-width:90%; max-height:90%; object-fit:contain; display:block }
+#splash img, .splash img{
+  width:100%; height:100%;
+  object-fit:cover;            /* >>> plein écran couvrant */
+  display:block;
+}
 
 /* ===== Toast ===== */
 .toast{
@@ -46,7 +50,7 @@ h1,h2,h3{ margin:0 0 8px 0 }
 }
 .toast.show{ opacity:1 }
 
-/* ===== Bannière ===== */
+/* ===== Bannière (validée) ===== */
 .banner{
   position:relative; margin:0; padding:0; border:0; background:#000;
   margin-top: calc(-1 * var(--safe-top));
@@ -82,24 +86,26 @@ h1,h2,h3{ margin:0 0 8px 0 }
 .hero-hash{ font-size:32px; line-height:1.05; margin-bottom:2px }
 .hero-tag{ font-size:15px; font-weight:900; letter-spacing:.3px }
 
-/* ===== Onglets ===== */
+/* ===== Onglets (pages) ===== */
 .tab{ display:none; }
 .tab.active{ display:block; }
 
-/* ===== Map plein écran ===== */
+/* ===== Map plein écran (derrière l’UI, au-dessus du fond) ===== */
 .map-fullscreen{
   position: fixed;
   top: 0; left: 0; right: 0;
   bottom: calc(var(--tabbar-h) + env(safe-area-inset-bottom, 0px));
-  z-index: 1; /* sous l’overlay, au-dessus du fond */
+  z-index: 1;
   background: #f2f2f2;
 }
+.map-fullscreen iframe,
+.map-wrap iframe{ width:100%; height:100%; border:0 }
 
-/* ===== Overlay commande (plus bas) ===== */
+/* ===== Overlay commande (remonté pour être bien visible) ===== */
 .order-overlay{
   position: fixed;
   left: 12px; right: 12px;
-  top: calc(120px + var(--safe-top)); /* << plus bas pour être bien visible */
+  top: calc(120px + var(--safe-top));   /* encadré remonté */
   z-index: 2;
   display: grid; gap:8px;
 }
@@ -122,7 +128,11 @@ h1,h2,h3{ margin:0 0 8px 0 }
 .address-row{ display: grid; grid-template-columns: 1fr auto; gap:8px; align-items:center; }
 .address-row input{ height:40px; padding:8px; border-radius:10px; border:1px solid #ddd; }
 
-/* ===== Tabbar ===== */
+/* ===== Cartes “classiques” (si on n’est pas en plein écran) ===== */
+.map-wrap{ height:300px; margin:12px 0; }
+.map-wrap iframe{ width:100%; height:100%; border:0 }
+
+/* ===== Tabbar (blanche, validée) ===== */
 .tabbar{
   position:fixed; left:0; right:0; bottom:0; z-index:30;
   background:var(--tabbar-bg);
@@ -131,6 +141,7 @@ h1,h2,h3{ margin:0 0 8px 0 }
   padding: 0 16px;
   box-shadow:0 -2px 8px rgba(0,0,0,.08);
 
+  /* grille 2 | CTA | 2 + gap central (modifiable) */
   --cta-gap: calc(var(--cta-size) + 16px);
   display:grid;
   grid-template-columns:
@@ -159,6 +170,7 @@ h1,h2,h3{ margin:0 0 8px 0 }
 }
 .tabbtn.active{ color:#A64027; }  /* actif marque */
 
+/* on n’utilise pas <img>, on masque et on peint au mask */
 .tabbtn .tab-ic{ display:none !important; }
 .tabbtn::before{
   content:"";
@@ -175,7 +187,7 @@ h1,h2,h3{ margin:0 0 8px 0 }
 .tabbtn[data-tab="orders"] { --ic: url('assets/tab-orders.svg'); }
 .tabbtn[data-tab="profile"]{ --ic: url('assets/tab-profile.svg'); }
 
-/* Placement symétrique validé */
+/* Placement symétrique validé + ajustements fins côté droit */
 .tabbar .tabbtn:nth-of-type(1){ grid-column:1; }
 .tabbar .tabbtn:nth-of-type(2){ grid-column:2; }
 /* Historique rapproché du CTA */
@@ -203,32 +215,30 @@ h1,h2,h3{ margin:0 0 8px 0 }
 }
 .cta-img img{ width:100%; height:100%; object-fit:contain; }
 
-/* Mode commande : CTA se fond, colonnes conservent la même taille d’icône */
+/* Mode commande : CTA se fond, colonnes resserrées sans changer la taille des icônes */
 body.ordering .cta-img{
   opacity:0; transform:translate(-50%, -2px) scale(.92); pointer-events:none;
 }
-/* On “plie” la colonne centrale en douceur en ramenant le gap à 0,
-   tout en gardant les icônes à la même taille (on ne touche pas --icon-sz) */
-body.ordering .tabbar{ --cta-gap: 0px; }
+body.ordering .tabbar{ --cta-gap: 0px; }           /* rapproche les colonnes 2 et 4 */
 body.ordering .tabbar .tabbtn{
   margin:0 !important; justify-self:center !important;
 }
 
-/* Sécurité petits écrans (tu peux garder 480px si tu préfères) */
+/* Sécurité petits écrans (tu peux conserver 480/-105 si ça te va) */
 @media (max-width: 360px){
   :root{ --icon-sz: 440px; --icon-shift-y:-96px; }
 }
 
-/* Forçage identique sur tous les onglets */
+/* Forçage identique sur tous les onglets (pas de marche) */
 .tab{ min-height: calc(100vh - (var(--tabbar-h) + env(safe-area-inset-bottom, 0px))); }
 
-/* Carte + overlay : quand on n’est pas sur l’onglet Commande, on évite le recouvrement */
+/* Quand on n’est pas sur Commande, on coupe la carte/overlay plein écran */
 #tab-order:not(.active) .map-fullscreen{ display:none; }
 #tab-order:not(.active) .order-overlay{ display:none; }
 
-/* Petite carte information */
+/* Petite carte info dans l’onglet commande (sous l’overlay) */
 .order-card{
   position: relative;
-  z-index: 0; /* sous l’overlay, n’interfère pas avec la carte */
+  z-index: 0;
   margin: calc(120px + var(--safe-top)) 12px 12px; /* descend sous l’overlay */
 }
