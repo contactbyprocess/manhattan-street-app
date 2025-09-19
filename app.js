@@ -63,11 +63,15 @@ function switchTab(tab){
   qsa('.tabbar [data-tab]').forEach(b=> b.classList.toggle('active', b.dataset.tab===tab));
   qsa('.tab').forEach(s=> s.classList.toggle('active', s.id===`tab-${tab}`));
 
-  // bannière visible uniquement sur Home
+  // Bannière seulement sur Accueil
   const hb = document.getElementById('homeBanner');
   if(hb) hb.style.display = (tab === 'home' ? 'block' : 'none');
 
-  // si on ouvre commande, on s'assure que la map est initialisée
+  // Mode commande : CTA caché + tabbar en 4 colonnes
+  if(tab === 'order') document.body.classList.add('ordering');
+  else document.body.classList.remove('ordering');
+
+  // carte initialisée seulement si onglet Commande
   if(tab === 'order') {
     initOrderMapOnce().catch(()=>{ /* ignore */ });
   }
@@ -84,7 +88,6 @@ function bindTabbar(){
 }
 
 /* ===== Commande / Cartographie ===== */
-/* Resto : adresse & fallback coords */
 const RESTO_ADDR = 'Petite rue 10, Mouscron 7700, Belgique';
 const RESTO_FALLBACK = { lat: 50.744, lng: 3.214 };
 const DELIVERY_RADIUS_M = 5000;
@@ -92,8 +95,8 @@ const DELIVERY_RADIUS_M = 5000;
 let map, restoMarker, clientMarker, radiusCircle;
 let mapReady = false;
 let currentMode = 'takeaway';
+let lastGeo = null; // stocke la position si l’utilisateur l’autorise
 
-/* Haversine (mètres) */
 function haversine(a, b){
   const R=6371000, toRad = d=>d*Math.PI/180;
   const dLat = toRad(b.lat-a.lat), dLng = toRad(b.lng-a.lng);
@@ -101,7 +104,7 @@ function haversine(a, b){
   return 2*R*Math.asin(Math.sqrt(s1));
 }
 
-/* Geocoding simple via Nominatim */
+/* Geocoding Nominatim */
 async function geocode(query){
   const cacheKey = 'geo:'+query.toLowerCase().trim();
   const cached = get(cacheKey, null);
@@ -123,50 +126,48 @@ async function geocode(query){
   return pt;
 }
 
-/* Init carte Leaflet (une fois) */
+/* Init carte (une fois) — centre sur le RESTO, pas sur l’utilisateur */
 async function initOrderMapOnce(){
   if(mapReady) return;
-  // s'assurer que Leaflet est chargé
   if(typeof L === 'undefined') return;
 
   let resto = RESTO_FALLBACK;
-  try { resto = await geocode(RESTO_ADDR); } catch(e){ /* fallback accepté */ }
+  try { resto = await geocode(RESTO_ADDR); } catch(e){ /* fallback ok */ }
 
-  map = L.map('orderMap', { zoomControl: true, attributionControl: false }).setView([resto.lat, resto.lng], 14);
-  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    maxZoom: 19, attribution: '&copy; OpenStreetMap'
+  map = L.map('orderMap', { zoomControl: true, attributionControl: false }).setView([resto.lat, resto.lng], 15);
+
+  /* ► TUYAU : style CARTO POSITRON (clair) */
+  L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+    maxZoom: 20,
+    attribution: '&copy; OpenStreetMap &copy; CARTO'
   }).addTo(map);
 
   restoMarker = L.marker([resto.lat, resto.lng]).addTo(map).bindPopup('Restaurant');
   radiusCircle = L.circle([resto.lat, resto.lng], { radius: DELIVERY_RADIUS_M, fillOpacity: 0.04, color: '#A64027' }).addTo(map);
 
-  // tenter la géolocalisation — déclenche la permission navigateur
-  if(navigator.geolocation){
-    navigator.geolocation.getCurrentPosition(
-      pos=>{
-        const p = { lat: pos.coords.latitude, lng: pos.coords.longitude };
-        if(!clientMarker) clientMarker = L.marker([p.lat, p.lng]).addTo(map);
-        else clientMarker.setLatLng([p.lat, p.lng]);
-        map.setView([p.lat, p.lng], 15);
-      },
-      ()=>{ /* ignore si refus */ },
-      { enableHighAccuracy:true, timeout:8000, maximumAge:0 }
-    );
-  }
-
   mapReady = true;
 }
 
-/* Appliquer mode sélectionné */
+/* Demander permission de localisation (sans recentrer) */
+function requestGeolocationAuth(){
+  if(!navigator.geolocation) return;
+  navigator.geolocation.getCurrentPosition(
+    pos => { lastGeo = { lat: pos.coords.latitude, lng: pos.coords.longitude }; },
+    _err => { /* refus ou erreur : on n’insiste pas */ },
+    { enableHighAccuracy:true, timeout:8000, maximumAge:0 }
+  );
+}
+
+/* Mode de commande */
 function setMode(mode){
   currentMode = mode;
   document.querySelectorAll('#orderModes .seg-btn').forEach(b=>{
     b.classList.toggle('active', b.dataset.mode === mode);
   });
   const deliveryPanel = document.getElementById('deliveryPanel');
-  const dineinPanel = document.getElementById('dineinPanel');
-  deliveryPanel && (deliveryPanel.style.display = (mode==='delivery' ? 'block' : 'none'));
-  dineinPanel && (dineinPanel.style.display = (mode==='dinein' ? 'block' : 'none'));
+  const dineinPanel   = document.getElementById('dineinPanel');
+  if(deliveryPanel) deliveryPanel.style.display = (mode==='delivery' ? 'block' : 'none');
+  if(dineinPanel)   dineinPanel.style.display   = (mode==='dinein' ? 'block' : 'none');
 
   if(mapReady){
     if(mode === 'takeaway' || mode === 'dinein'){
@@ -174,9 +175,12 @@ function setMode(mode){
       map.setView([c.lat, c.lng], 15);
     }
   }
+
+  // ► Quand on passe en LIVRAISON, on demande l’autorisation (sans recadrer)
+  if(mode === 'delivery') requestGeolocationAuth();
 }
 
-/* traiter soumission adresse livraison */
+/* Validation d’adresse livraison */
 async function handleAddressSubmit(e){
   e && e.preventDefault();
   const q = document.getElementById('deliveryAddress').value.trim();
@@ -196,16 +200,15 @@ async function handleAddressSubmit(e){
     }
     map.setView([pt.lat, pt.lng], 16);
     showToast('Adresse OK ✅', 2000);
-    // ici tu peux enregistrer l'adresse / permettre la suite de commande
   }catch(err){
     showToast('Adresse introuvable');
   }
 }
 
-/* ===== CTA & commandes (liaison) ===== */
+/* ===== CTA & commandes ===== */
 function bindCTA(){
   const openOrderPage = async ()=>{
-    switchTab('order');
+    switchTab('order');               // → déclenche body.ordering + init map
     await initOrderMapOnce();
     setMode(currentMode || 'takeaway');
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -269,7 +272,7 @@ function renderQR(email){
   qs('#qrCodeText').textContent=email;
 }
 
-/* ===== Splash simple (5s mini) ===== */
+/* ===== Splash 5s min ===== */
 (function(){
   const MIN_MS = 5000, MAX_MS = 9000;
   const minDelayP = new Promise(res=> setTimeout(res, MIN_MS));
