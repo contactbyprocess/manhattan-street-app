@@ -11,27 +11,27 @@
 
   <title>Manhattan Street — Commande</title>
 
-  <link rel="stylesheet" href="styles.css?v=66" />
-  <script defer src="app.js?v=66"></script>
+  <link rel="stylesheet" href="styles.css?v=67" />
+  <script defer src="app.js?v=67"></script>
 </head>
 <body>
   <!-- toast -->
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
 
-  <!-- ===== Bannière ===== -->
-  <section class="banner">
-    <div class="banner-track" id="bannerTrack">
-      <img src="assets/banner1.jpg" alt="Bannière 1" />
-      <img src="assets/banner2.jpg" alt="Bannière 2" />
-      <img src="assets/banner3.jpg" alt="Bannière 3" />
-    </div>
-    <div class="banner-dots" id="bannerDots"></div>
-  </section>
-
   <!-- ===== Contenu principal ===== -->
   <main class="layout">
     <!-- Accueil -->
     <section class="tab tab-home active" id="tab-home">
+      <!-- ===== Bannière (VISIBLE UNIQUEMENT SUR ACCUEIL) ===== -->
+      <section class="banner">
+        <div class="banner-track" id="bannerTrack">
+          <img src="assets/banner1.jpg" alt="Bannière 1" />
+          <img src="assets/banner2.jpg" alt="Bannière 2" />
+          <img src="assets/banner3.jpg" alt="Bannière 3" />
+        </div>
+        <div class="banner-dots" id="bannerDots"></div>
+      </section>
+
       <section class="hero-min">
         <h1 class="hero-hash">#ManhattanStreet</h1>
         <p class="hero-tag">TON INCONTOURNABLE 🗽🔥</p>
@@ -65,9 +65,9 @@
       </section>
     </section>
 
-    <!-- Commande (ONGLET, pas de modal) -->
+    <!-- Commande (ONGLET) -->
     <section class="tab" id="tab-order">
-      <!-- Sélecteur de type de commande (intégré dans l’onglet) -->
+      <!-- Sélecteur intégré -->
       <div class="card" id="orderTypeCard">
         <h2>Choisis ton type de commande</h2>
         <div class="order-type-grid" style="margin-top:10px">
