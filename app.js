@@ -80,20 +80,32 @@ function openModal(sel){
   const m = qs(sel);
   if(!m) return;
   m.classList.add('show');
-  m.style.display = 'block'; // fallback si CSS display primait
+  m.style.display = 'block'; // fallback
+  m.setAttribute('aria-hidden','false');
 }
 function closeModal(sel){
   const m = qs(sel);
   if(!m) return;
   m.classList.remove('show');
   m.style.display = '';
+  m.setAttribute('aria-hidden','true');
 }
 
-/* ===== CTA & commandes (délégation de clic) ===== */
+/* ===== CTA & commandes ===== */
 function bindCTA(){
   const openSel = ()=> openModal('#orderTypeModal');
 
-  // ✅ Délégation globale pour capter les clics même si un overlay gêne
+  // 1) écouteur direct sur le bouton CTA
+  const ctaBtn = qs('#ctaOrder');
+  if (ctaBtn){
+    ctaBtn.addEventListener('click', (e)=>{
+      e.preventDefault();
+      e.stopPropagation();
+      openSel();
+    });
+  }
+
+  // 2) délégation globale (si on clique l'image interne ou un overlay)
   document.addEventListener('click', (e)=>{
     const cta   = e.target.closest('#ctaOrder');
     const goTop = e.target.closest('#goOrderTop');
@@ -102,6 +114,9 @@ function bindCTA(){
       openSel();
     }
   });
+
+  // 3) fallback debug accessible en console
+  window.openOrderModal = () => openSel();
 
   // Choix du mode
   qs('#otClickCollect')?.addEventListener('click', ()=>{
@@ -137,19 +152,6 @@ function bindCTA(){
   // Raccourcis espace client
   qs('#tileOrders')?.addEventListener('click', ()=> switchTab('orders'));
   qs('#tileProfile')?.addEventListener('click', ()=> switchTab('profile'));
-
-  // (Option) relancer direct le dernier mode :
-  /*
-  const last = getOrderPrefs();
-  if(last.mode){
-    document.addEventListener('click', (e)=>{
-      if(e.target.closest('#ctaOrder')){
-        e.preventDefault();
-        openOrderTab(last.mode, last.table);
-      }
-    });
-  }
-  */
 }
 
 /* ===== Ouverture onglet Commande avec contexte ===== */
