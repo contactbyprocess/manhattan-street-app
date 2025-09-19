@@ -11,16 +11,10 @@
 
   <title>Manhattan Street — Commande</title>
 
-  <!-- bump versions pour casser le cache -->
-  <link rel="stylesheet" href="styles.css?v=65" />
-  <script defer src="app.js?v=65"></script>
+  <link rel="stylesheet" href="styles.css?v=66" />
+  <script defer src="app.js?v=66"></script>
 </head>
 <body>
-  <!-- Splash plein écran -->
-  <div id="splash">
-    <img src="assets/splash.jpg" alt="Splash" />
-  </div>
-
   <!-- toast -->
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
 
@@ -51,13 +45,14 @@
         </div>
       </section>
 
-      <!-- Hype du moment (contenu masqué pour l’instant) -->
+      <!-- Hype du moment -->
       <section class="home-block">
         <div class="home-block-head">
           <h2>La hype du moment ✨</h2>
           <button class="btn outline small" id="goOrderTop">Commander ›</button>
         </div>
-        <div id="featured"></div>
+        <!-- Liste neutralisée par JS -->
+        <div class="hscroll compact3" id="featured"></div>
       </section>
 
       <!-- Espace client -->
@@ -70,13 +65,28 @@
       </section>
     </section>
 
-    <!-- Commande -->
+    <!-- Commande (ONGLET, pas de modal) -->
     <section class="tab" id="tab-order">
+      <!-- Sélecteur de type de commande (intégré dans l’onglet) -->
+      <div class="card" id="orderTypeCard">
+        <h2>Choisis ton type de commande</h2>
+        <div class="order-type-grid" style="margin-top:10px">
+          <button class="order-type" id="otClickCollect"><div class="ot-emoji">🛍️</div><div>Click & Collect</div></button>
+          <button class="order-type" id="otDelivery"><div class="ot-emoji">🚚</div><div>Livraison</div></button>
+          <button class="order-type" id="otDineIn"><div class="ot-emoji">🍽️</div><div>Sur place</div></button>
+        </div>
+        <div id="dineInExtrasInline" class="grid" style="display:none; margin-top:10px">
+          <label>Numéro de table
+            <input id="tableNumberInline" inputmode="numeric" pattern="[0-9]*" placeholder="Ex : 12" />
+          </label>
+        </div>
+      </div>
+
       <div class="card">
         <h2 id="orderModeTitle">Commande</h2>
         <div class="order-info hint" id="orderInfo"></div>
 
-        <div class="map-wrap">
+        <div class="map-wrap" style="margin-top:10px">
           <iframe id="mapFrame" title="Carte" loading="lazy"
             src="https://www.openstreetmap.org/export/embed.html?bbox=3.204%2C50.734%2C3.224%2C50.754&layer=mapnik&marker=50.744%2C3.214"></iframe>
         </div>
@@ -87,7 +97,7 @@
           </label>
         </div>
 
-        <div class="order-actions">
+        <div class="order-actions" style="margin-top:10px">
           <button class="btn primary" id="orderStart">Commencer ma commande</button>
         </div>
       </div>
@@ -140,30 +150,7 @@
   <!-- Ancien CTA rond (neutralisé en CSS global) -->
   <button id="orderCta" class="order-cta-round" aria-label="Commander">🛍️</button>
 
-  <!-- Modal commande -->
-  <div id="orderTypeModal" class="modal" aria-hidden="true">
-    <div class="modal-bg"></div>
-    <div class="modal-card">
-      <div class="modal-header"><h3>Choisis ton type de commande</h3></div>
-      <div class="pad">
-        <div class="order-type-grid">
-          <button class="order-type" id="otClickCollect"><div class="ot-emoji">🛍️</div><div>Click & Collect</div></button>
-          <button class="order-type" id="otDelivery"><div class="ot-emoji">🚚</div><div>Livraison</div></button>
-          <button class="order-type" id="otDineIn"><div class="ot-emoji">🍽️</div><div>Sur place</div></button>
-        </div>
-        <div id="dineInExtras" class="dinein-form" style="display:none">
-          <label>Numéro de table
-            <input id="tableNumberModal" inputmode="numeric" pattern="[0-9]*" placeholder="Ex : 12" />
-          </label>
-        </div>
-      </div>
-      <div class="modal-footer">
-        <button class="btn ghost" id="orderTypeClose">Fermer</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- ===== Tabbar ===== -->
+  <!-- ===== Tabbar (blanche, unifiée) ===== -->
   <nav class="tabbar" aria-label="Navigation">
     <button class="tabbtn" data-tab="home" aria-label="Accueil">
       <img class="tab-ic" src="assets/tab-home.svg" alt="" />
@@ -177,6 +164,7 @@
     <button class="tabbtn" data-tab="profile" aria-label="Profil">
       <img class="tab-ic" src="assets/tab-profile.svg" alt="" />
     </button>
+    <!-- CTA centré -->
     <button class="cta-img" id="ctaOrder" aria-label="Commander">
       <img src="assets/cta-commander.svg" alt="" />
     </button>
