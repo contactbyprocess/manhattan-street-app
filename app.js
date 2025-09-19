@@ -60,20 +60,22 @@ function renderFeatured(){
 
 /* ===== Tabs ===== */
 function switchTab(tab){
+  // active bouton
   qsa('.tabbar [data-tab]').forEach(b=> b.classList.toggle('active', b.dataset.tab===tab));
+  // active section
   qsa('.tab').forEach(s=> s.classList.toggle('active', s.id===`tab-${tab}`));
 
-  // Bannière seulement sur Accueil
+  // bannière uniquement sur home
   const hb = document.getElementById('homeBanner');
   if(hb) hb.style.display = (tab === 'home' ? 'block' : 'none');
 
-  // Mode commande : CTA caché + tabbar en 4 colonnes
-  if(tab === 'order') document.body.classList.add('ordering');
-  else document.body.classList.remove('ordering');
-
-  // carte initialisée seulement si onglet Commande
-  if(tab === 'order') {
-    initOrderMapOnce().catch(()=>{ /* ignore */ });
+  // mode commande : CTA fade + gap central replié
+  if(tab === 'order'){
+    document.body.classList.add('ordering');
+    initOrderMapOnce().catch(()=>{});
+    setMode(currentMode || 'takeaway');
+  } else {
+    document.body.classList.remove('ordering');
   }
 
   window.scrollTo({top:0, behavior:'smooth'});
@@ -87,7 +89,7 @@ function bindTabbar(){
   });
 }
 
-/* ===== Commande / Cartographie ===== */
+/* ===== Commande / Carto ===== */
 const RESTO_ADDR = 'Petite rue 10, Mouscron 7700, Belgique';
 const RESTO_FALLBACK = { lat: 50.744, lng: 3.214 };
 const DELIVERY_RADIUS_M = 5000;
@@ -95,7 +97,7 @@ const DELIVERY_RADIUS_M = 5000;
 let map, restoMarker, clientMarker, radiusCircle;
 let mapReady = false;
 let currentMode = 'takeaway';
-let lastGeo = null; // stocke la position si l’utilisateur l’autorise
+let lastGeo = null;
 
 function haversine(a, b){
   const R=6371000, toRad = d=>d*Math.PI/180;
@@ -104,7 +106,6 @@ function haversine(a, b){
   return 2*R*Math.asin(Math.sqrt(s1));
 }
 
-/* Geocoding Nominatim */
 async function geocode(query){
   const cacheKey = 'geo:'+query.toLowerCase().trim();
   const cached = get(cacheKey, null);
@@ -126,7 +127,6 @@ async function geocode(query){
   return pt;
 }
 
-/* Init carte (une fois) — centre sur le RESTO, pas sur l’utilisateur */
 async function initOrderMapOnce(){
   if(mapReady) return;
   if(typeof L === 'undefined') return;
@@ -136,7 +136,7 @@ async function initOrderMapOnce(){
 
   map = L.map('orderMap', { zoomControl: true, attributionControl: false }).setView([resto.lat, resto.lng], 15);
 
-  /* ► TUYAU : style CARTO POSITRON (clair) */
+  // Style clair Carto
   L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
     maxZoom: 20,
     attribution: '&copy; OpenStreetMap &copy; CARTO'
@@ -146,19 +146,19 @@ async function initOrderMapOnce(){
   radiusCircle = L.circle([resto.lat, resto.lng], { radius: DELIVERY_RADIUS_M, fillOpacity: 0.04, color: '#A64027' }).addTo(map);
 
   mapReady = true;
+  // Fix de rendu si le conteneur vient d’apparaître
+  setTimeout(()=> map.invalidateSize(), 50);
 }
 
-/* Demander permission de localisation (sans recentrer) */
 function requestGeolocationAuth(){
   if(!navigator.geolocation) return;
   navigator.geolocation.getCurrentPosition(
     pos => { lastGeo = { lat: pos.coords.latitude, lng: pos.coords.longitude }; },
-    _err => { /* refus ou erreur : on n’insiste pas */ },
+    _err => { /* refus : on ne fait rien */ },
     { enableHighAccuracy:true, timeout:8000, maximumAge:0 }
   );
 }
 
-/* Mode de commande */
 function setMode(mode){
   currentMode = mode;
   document.querySelectorAll('#orderModes .seg-btn').forEach(b=>{
@@ -170,17 +170,16 @@ function setMode(mode){
   if(dineinPanel)   dineinPanel.style.display   = (mode==='dinein' ? 'block' : 'none');
 
   if(mapReady){
+    const c = restoMarker.getLatLng();
     if(mode === 'takeaway' || mode === 'dinein'){
-      const c = restoMarker.getLatLng();
       map.setView([c.lat, c.lng], 15);
     }
+    setTimeout(()=> map.invalidateSize(), 50);
   }
 
-  // ► Quand on passe en LIVRAISON, on demande l’autorisation (sans recadrer)
   if(mode === 'delivery') requestGeolocationAuth();
 }
 
-/* Validation d’adresse livraison */
 async function handleAddressSubmit(e){
   e && e.preventDefault();
   const q = document.getElementById('deliveryAddress').value.trim();
@@ -208,7 +207,7 @@ async function handleAddressSubmit(e){
 /* ===== CTA & commandes ===== */
 function bindCTA(){
   const openOrderPage = async ()=>{
-    switchTab('order');               // → déclenche body.ordering + init map
+    switchTab('order');               // → ajoute body.ordering + init carte
     await initOrderMapOnce();
     setMode(currentMode || 'takeaway');
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -233,12 +232,12 @@ function bindCTA(){
   // form adresse
   document.getElementById('addressForm')?.addEventListener('submit', handleAddressSubmit);
 
-  // table inline ENTER
+  // ENTER table
   document.getElementById('tableNumberInline')?.addEventListener('keydown', (e)=>{
     if(e.key === 'Enter'){ e.preventDefault(); showToast('Table enregistrée ✅'); }
   });
 
-  // raccourcis espace client
+  // raccourcis
   document.getElementById('tileOrders')?.addEventListener('click', ()=> switchTab('orders'));
   document.getElementById('tileProfile')?.addEventListener('click', ()=> switchTab('profile'));
 }
