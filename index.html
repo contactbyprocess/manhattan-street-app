@@ -11,10 +11,19 @@
 
   <title>Manhattan Street — Commande</title>
 
-  <link rel="stylesheet" href="styles.css?v=68" />
-  <script defer src="app.js?v=68"></script>
+  <!-- Leaflet (carte) -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <script defer src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+  <link rel="stylesheet" href="styles.css?v=100" />
+  <script defer src="app.js?v=100"></script>
 </head>
 <body>
+  <!-- Splash (plein écran) -->
+  <div id="splash" aria-hidden="false" class="splash">
+    <img src="assets/splash.jpg" alt="Manhattan Street" />
+  </div>
+
   <!-- toast -->
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
 
@@ -45,13 +54,13 @@
         </div>
       </section>
 
-      <!-- Hype du moment -->
+      <!-- Hype du moment (neutralisée côté JS) -->
       <section class="home-block">
         <div class="home-block-head">
           <h2>La hype du moment ✨</h2>
           <button class="btn outline small" id="goOrderTop">Commander ›</button>
         </div>
-        <div class="hscroll compact3" id="featured"></div>
+        <div class="hscroll compact3" id="featured" aria-hidden="true"></div>
       </section>
 
       <!-- Espace client -->
@@ -66,36 +75,42 @@
 
     <!-- Commande (ONGLET) -->
     <section class="tab" id="tab-order">
-      <!-- Sélecteur intégré -->
-      <div class="card" id="orderTypeCard">
-        <h2>Choisis ton type de commande</h2>
-        <div class="order-type-grid" style="margin-top:10px">
-          <button class="order-type" id="otClickCollect"><div class="ot-emoji">🛍️</div><div>Click & Collect</div></button>
-          <button class="order-type" id="otDelivery"><div class="ot-emoji">🚚</div><div>Livraison</div></button>
-          <button class="order-type" id="otDineIn"><div class="ot-emoji">🍽️</div><div>Sur place</div></button>
+      <!-- Map plein écran (leaflet) — placée via CSS sous overlay -->
+      <div id="orderMap" class="map-fullscreen" aria-hidden="false"></div>
+
+      <!-- Overlay de contrôle (segment + panneaux) -->
+      <div class="order-overlay" id="orderOverlay">
+        <div class="segmented" id="orderModes" role="tablist" aria-label="Modes de commande">
+          <button type="button" class="seg-btn" data-mode="delivery">Livraison</button>
+          <button type="button" class="seg-btn active" data-mode="takeaway">À emporter</button>
+          <button type="button" class="seg-btn" data-mode="dinein">Sur place</button>
         </div>
-        <div id="dineInExtrasInline" class="grid" style="display:none; margin-top:10px">
-          <label>Numéro de table
+
+        <!-- Panels -->
+        <div class="panel" id="deliveryPanel" style="display:none">
+          <form id="addressForm" class="address-row" autocomplete="off">
+            <input id="deliveryAddress" placeholder="Adresse de livraison (ex : rue, ville)" autocomplete="street-address" />
+            <button class="btn primary" id="addressGo" type="submit">Valider</button>
+          </form>
+          <div class="hint">Zone de livraison : 5 km autour du restaurant</div>
+        </div>
+
+        <div class="panel" id="dineinPanel" style="display:none">
+          <label class="inline">Numéro de table
             <input id="tableNumberInline" inputmode="numeric" pattern="[0-9]*" placeholder="Ex : 12" />
           </label>
         </div>
       </div>
 
-      <div class="card">
+      <!-- Contenu secondaire (titre, info, bouton) -->
+      <div class="card" style="margin: 12px;">
         <h2 id="orderModeTitle">Commande</h2>
         <div class="order-info hint" id="orderInfo"></div>
-
-        <div class="map-wrap" style="margin-top:10px">
-          <iframe id="mapFrame" title="Carte" loading="lazy"
-            src="https://www.openstreetmap.org/export/embed.html?bbox=3.204%2C50.734%2C3.224%2C50.754&layer=mapnik&marker=50.744%2C3.214"></iframe>
-        </div>
-
         <div id="dineInBlock" class="grid" style="display:none;margin-top:10px">
           <label>Numéro de table
             <input id="tableNumber" inputmode="numeric" pattern="[0-9]*" placeholder="Ex : 12" />
           </label>
         </div>
-
         <div class="order-actions" style="margin-top:10px">
           <button class="btn primary" id="orderStart">Commencer ma commande</button>
         </div>
@@ -106,7 +121,6 @@
     <section class="tab" id="tab-loyalty">
       <div class="card">
         <h2>Ma carte de fidélité</h2>
-
         <div class="loyalty-card">
           <div class="lc-header">MANHATTAN STREET</div>
           <div class="lc-body">
@@ -115,7 +129,6 @@
             <div class="lc-points">Points : <span id="lcPoints">0</span></div>
           </div>
         </div>
-
         <p class="hint" style="margin-top:8px">Présente ce QR en caisse :</p>
         <div class="qr-wrap">
           <div id="qrCanvas" class="qr-canvas" aria-label="QR code"></div>
