@@ -3,7 +3,7 @@
 :root{
   --bg:#EDEDED; --text:#111;
   --line:#e7e7e7; --muted:#6d6d6d;
-  --accent-cta:#c24d2c;
+  --accent-cta:#A64027;
 
   --safe-top: env(safe-area-inset-top, 0px);
   --safe-bottom: env(safe-area-inset-bottom, 0px);
@@ -11,7 +11,7 @@
   /* Bannière */
   --banner-h: 21vh;
 
-  /* Tabbar */
+  /* Tabbar (validées) */
   --tabbar-bg:#ffffff;
   --tabbar-h:50px;
   --icon-sz:480px;
@@ -25,25 +25,48 @@ html{ background:var(--bg); height:100% }
 body{
   margin:0; background:var(--bg); color:var(--text);
   font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;
-  min-height:100%; overflow:auto;
-  -webkit-overflow-scrolling:touch; overscroll-behavior-y:none;
+  min-height:100%; overflow:auto; -webkit-overflow-scrolling:touch;
 }
 h1,h2,h3{ margin:0 0 8px 0 }
 
+/* ===== Splash ===== */
+.splash{
+  position:fixed; inset:0; z-index:9999;
+  display:grid; place-items:center;
+  background:#fff;
+  transition:opacity .6s ease;
+}
+.splash img{ max-width:90%; max-height:90%; object-fit:contain; display:block }
+
+/* ===== Toast ===== */
+.toast{
+  position:fixed; left:50%; transform:translateX(-50%); top:16px;
+  background:rgba(0,0,0,.85); color:#fff; padding:10px 14px; border-radius:12px;
+  z-index:9998; opacity:0; pointer-events:none; transition:opacity .2s
+}
+.toast.show{ opacity:1 }
+
 /* ===== Bannière ===== */
 .banner{
-  position:relative; margin:0; padding:0; border:0;
+  position:relative; margin:0; padding:0; border:0; background:#000;
   margin-top: calc(-1 * var(--safe-top));
   padding-top: var(--safe-top);
   height: calc(var(--banner-h) + var(--safe-top));
   overflow:hidden;
 }
-.banner-track{ position:relative; height:100%; display:flex; overflow-x:auto; scroll-snap-type:x mandatory; -webkit-overflow-scrolling:touch; gap:0; }
+.banner-track{
+  position:relative; height:100%;
+  display:flex; overflow-x:auto; scroll-snap-type:x mandatory; -webkit-overflow-scrolling:touch;
+  gap:0; margin:0; padding:0; scrollbar-width:none;
+}
 .banner-track::-webkit-scrollbar{ display:none }
 .banner-track > *{ flex:0 0 100vw; height:100%; scroll-snap-align:center; }
-.banner img{ width:100%; height:100%; object-fit:cover; display:block; }
-.banner-dots{ position:absolute; left:50%; transform:translateX(-50%); bottom:8px; display:flex; gap:6px; z-index:2; }
-.banner-dots .dot{ width:6px; height:6px; border-radius:50%; background:rgba(0,0,0,.3) }
+.banner img{ width:100%; height:100%; object-fit:cover; object-position:center top; display:block; }
+.banner-dots{
+  position:absolute; left:50%; transform:translateX(-50%);
+  bottom:8px; display:flex; gap:6px; z-index:2;
+}
+.banner-dots .dot{ width:6px; height:6px; border-radius:50%; background:rgba(255,255,255,.5) }
 .banner-dots .dot.active{ background:var(--accent-cta) }
 
 /* ===== Contenu ===== */
@@ -55,20 +78,58 @@ h1,h2,h3{ margin:0 0 8px 0 }
 .card{ background:#fff; border:1px solid var(--line); border-radius:16px; padding:16px; margin:10px 0 }
 .hint{ color:var(--muted); font-size:12px }
 
+.hero-min{ text-align:center; padding:8px 12px 0 }
+.hero-hash{ font-size:32px; line-height:1.05; margin-bottom:2px }
+.hero-tag{ font-size:15px; font-weight:900; letter-spacing:.3px }
+
 /* ===== Onglets ===== */
 .tab{ display:none; }
 .tab.active{ display:block; }
 
+/* ===== Map plein écran ===== */
+.map-fullscreen{
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  bottom: calc(var(--tabbar-h) + env(safe-area-inset-bottom, 0px));
+  z-index: 1; /* sous l’overlay, au-dessus du fond */
+  background: #f2f2f2;
+}
+
+/* ===== Overlay commande (plus bas) ===== */
+.order-overlay{
+  position: fixed;
+  left: 12px; right: 12px;
+  top: calc(120px + var(--safe-top)); /* << plus bas pour être bien visible */
+  z-index: 2;
+  display: grid; gap:8px;
+}
+
+.segmented{
+  display: grid; grid-template-columns: 1fr 1fr 1fr;
+  background: #fff; border:1px solid var(--line); border-radius: 14px; overflow: hidden;
+  box-shadow: 0 4px 18px rgba(0,0,0,.08);
+}
+.seg-btn{
+  appearance: none; background: transparent; border: 0; padding: 10px 8px; font-weight: 800; cursor: pointer;
+  color: #333;
+}
+.seg-btn.active{ background:var(--accent-cta); color:#fff; }
+
+.panel{
+  background:#fff; border:1px solid var(--line); border-radius: 14px; padding: 10px;
+  box-shadow: 0 8px 26px rgba(0,0,0,.10);
+}
+.address-row{ display: grid; grid-template-columns: 1fr auto; gap:8px; align-items:center; }
+.address-row input{ height:40px; padding:8px; border-radius:10px; border:1px solid #ddd; }
+
 /* ===== Tabbar ===== */
 .tabbar{
-  position:fixed; left:0; right:0; bottom:0;
-  z-index:30;
+  position:fixed; left:0; right:0; bottom:0; z-index:30;
   background:var(--tabbar-bg);
   height: calc(var(--tabbar-h) + var(--safe-bottom));
-  padding: 0 16px;
   padding-bottom: var(--safe-bottom);
+  padding: 0 16px;
   box-shadow:0 -2px 8px rgba(0,0,0,.08);
-  overflow:visible;
 
   --cta-gap: calc(var(--cta-size) + 16px);
   display:grid;
@@ -79,9 +140,12 @@ h1,h2,h3{ margin:0 0 8px 0 }
     minmax(64px,1fr)
     minmax(64px,1fr);
   align-items:center;
+
+  /* transitions douces quand le CTA disparaît */
+  transition: grid-template-columns .28s ease, padding .28s ease, box-shadow .28s ease, background .28s ease, opacity .2s ease;
 }
 
-/* Icônes des onglets */
+/* Icônes des onglets (teinte via mask) */
 .tabbtn{
   -webkit-appearance:none; appearance:none;
   background:transparent; border:0; padding:0; cursor:pointer;
@@ -91,8 +155,9 @@ h1,h2,h3{ margin:0 0 8px 0 }
   transform: translateY(var(--icon-shift-y));
   -webkit-tap-highlight-color: transparent;
   color:#bdbdbd; /* inactif gris */
+  transition: color .18s ease, transform .18s ease;
 }
-.tabbtn.active{ color:#A64027; }  /* actif couleur marque */
+.tabbtn.active{ color:#A64027; }  /* actif marque */
 
 .tabbtn .tab-ic{ display:none !important; }
 .tabbtn::before{
@@ -126,39 +191,44 @@ h1,h2,h3{ margin:0 0 8px 0 }
   margin-right:10px;
 }
 
-/* CTA central */
+/* CTA central (animé) */
 .cta-img{
   position:absolute; left:50%; transform:translateX(-50%);
   top: calc(-1 * var(--cta-lift));
   width: var(--cta-size); height: var(--cta-size);
   background:transparent; border:0; padding:0; cursor:pointer;
   display:grid; place-items:center; z-index:101;
+
+  transition: opacity .24s ease, transform .24s ease;
 }
 .cta-img img{ width:100%; height:100%; object-fit:contain; }
 
-/* Mode commande : CTA caché, 4 onglets équilibrés */
-body.ordering .cta-img{ display:none !important; }
-body.ordering .tabbar{
-  grid-template-columns: repeat(4, 1fr) !important;
+/* Mode commande : CTA se fond, colonnes conservent la même taille d’icône */
+body.ordering .cta-img{
+  opacity:0; transform:translate(-50%, -2px) scale(.92); pointer-events:none;
 }
+/* On “plie” la colonne centrale en douceur en ramenant le gap à 0,
+   tout en gardant les icônes à la même taille (on ne touche pas --icon-sz) */
+body.ordering .tabbar{ --cta-gap: 0px; }
 body.ordering .tabbar .tabbtn{
-  margin:0 !important;
-  justify-self:center !important;
+  margin:0 !important; justify-self:center !important;
 }
-body.ordering .tabbar .tabbtn:nth-of-type(1){ grid-column:1 !important; }
-body.ordering .tabbar .tabbtn:nth-of-type(2){ grid-column:2 !important; }
-body.ordering .tabbar .tabbtn:nth-of-type(3){ grid-column:3 !important; }
-body.ordering .tabbar .tabbtn:nth-of-type(4){ grid-column:4 !important; }
 
-/* Sécurité petits écrans */
+/* Sécurité petits écrans (tu peux garder 480px si tu préfères) */
 @media (max-width: 360px){
-  :root{ --icon-sz: 68px; }
+  :root{ --icon-sz: 440px; --icon-shift-y:-96px; }
 }
 
-/* === Forçage identique sur tous les onglets === */
-.tab{
-  min-height: calc(100vh - (var(--tabbar-h) + env(safe-area-inset-bottom, 0px)));
-}
-.layout{
-  margin: 12px auto calc(var(--tabbar-h) + env(safe-area-inset-bottom, 0px)) auto !important;
+/* Forçage identique sur tous les onglets */
+.tab{ min-height: calc(100vh - (var(--tabbar-h) + env(safe-area-inset-bottom, 0px))); }
+
+/* Carte + overlay : quand on n’est pas sur l’onglet Commande, on évite le recouvrement */
+#tab-order:not(.active) .map-fullscreen{ display:none; }
+#tab-order:not(.active) .order-overlay{ display:none; }
+
+/* Petite carte information */
+.order-card{
+  position: relative;
+  z-index: 0; /* sous l’overlay, n’interfère pas avec la carte */
+  margin: calc(120px + var(--safe-top)) 12px 12px; /* descend sous l’overlay */
 }
