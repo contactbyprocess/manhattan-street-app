@@ -20,7 +20,7 @@ function getProfile(){return get(KEY.PROFILE,{firstName:'',email:'',phone:''});}
 function setProfile(p){set(KEY.PROFILE,p);}
 function getPoints(email){const u=getUsers();return u[email]?.points||0;}
 
-/* ===== Bannière ===== */
+/* ===== Bannière carousel ===== */
 function initBannerCarousel(){
   const track = document.querySelector('#bannerTrack');
   const dots  = document.querySelector('#bannerDots');
@@ -62,10 +62,19 @@ function renderFeatured(){
 function switchTab(tab){
   qsa('.tabbar [data-tab]').forEach(b=> b.classList.toggle('active', b.dataset.tab===tab));
   qsa('.tab').forEach(s=> s.classList.toggle('active', s.id===`tab-${tab}`));
+
+  // bannière visible uniquement sur Home
+  const hb = document.getElementById('homeBanner');
+  if(hb) hb.style.display = (tab === 'home' ? 'block' : 'none');
+
+  // si on ouvre commande, on s'assure que la map est initialisée
+  if(tab === 'order') {
+    initOrderMapOnce().catch(()=>{ /* ignore */ });
+  }
+
   window.scrollTo({top:0, behavior:'smooth'});
 }
 function bindTabbar(){
-  // Délégation fiable : n’importe quel clic sur un bouton d’onglet
   document.addEventListener('click', (e)=>{
     const btn = e.target.closest('.tabbar [data-tab]');
     if(!btn) return;
@@ -74,86 +83,161 @@ function bindTabbar(){
   });
 }
 
-/* ===== État commande (mémo dernier mode) ===== */
-const ORDER_KEY = 'ms_order_prefs';
-function getOrderPrefs(){ return get(ORDER_KEY, { mode:null, table:null }); }
-function setOrderPrefs(p){ set(ORDER_KEY, p); }
+/* ===== Commande / Cartographie ===== */
+/* Resto : adresse & fallback coords */
+const RESTO_ADDR = 'Petite rue 10, Mouscron 7700, Belgique';
+const RESTO_FALLBACK = { lat: 50.744, lng: 3.214 };
+const DELIVERY_RADIUS_M = 5000;
 
-/* ===== CTA & commandes ===== */
+let map, restoMarker, clientMarker, radiusCircle;
+let mapReady = false;
+let currentMode = 'takeaway';
+
+/* Haversine (mètres) */
+function haversine(a, b){
+  const R=6371000, toRad = d=>d*Math.PI/180;
+  const dLat = toRad(b.lat-a.lat), dLng = toRad(b.lng-a.lng);
+  const s1 = Math.sin(dLat/2)**2 + Math.cos(toRad(a.lat))*Math.cos(toRad(b.lat))*Math.sin(dLng/2)**2;
+  return 2*R*Math.asin(Math.sqrt(s1));
+}
+
+/* Geocoding simple via Nominatim */
+async function geocode(query){
+  const cacheKey = 'geo:'+query.toLowerCase().trim();
+  const cached = get(cacheKey, null);
+  if(cached) return cached;
+
+  const url = new URL('https://nominatim.openstreetmap.org/search');
+  url.searchParams.set('q', query);
+  url.searchParams.set('format', 'json');
+  url.searchParams.set('limit', '1');
+
+  const res = await fetch(url.toString(), {
+    headers: { 'Accept': 'application/json', 'User-Agent': 'MSApp/1.0 (demo)' }
+  });
+  if(!res.ok) throw new Error('geo http '+res.status);
+  const arr = await res.json();
+  if(!arr.length) throw new Error('Adresse introuvable');
+  const pt = { lat: parseFloat(arr[0].lat), lng: parseFloat(arr[0].lon) };
+  set(cacheKey, pt);
+  return pt;
+}
+
+/* Init carte Leaflet (une fois) */
+async function initOrderMapOnce(){
+  if(mapReady) return;
+  // s'assurer que Leaflet est chargé
+  if(typeof L === 'undefined') return;
+
+  let resto = RESTO_FALLBACK;
+  try { resto = await geocode(RESTO_ADDR); } catch(e){ /* fallback accepté */ }
+
+  map = L.map('orderMap', { zoomControl: true, attributionControl: false }).setView([resto.lat, resto.lng], 14);
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    maxZoom: 19, attribution: '&copy; OpenStreetMap'
+  }).addTo(map);
+
+  restoMarker = L.marker([resto.lat, resto.lng]).addTo(map).bindPopup('Restaurant');
+  radiusCircle = L.circle([resto.lat, resto.lng], { radius: DELIVERY_RADIUS_M, fillOpacity: 0.04, color: '#A64027' }).addTo(map);
+
+  // tenter la géolocalisation — déclenche la permission navigateur
+  if(navigator.geolocation){
+    navigator.geolocation.getCurrentPosition(
+      pos=>{
+        const p = { lat: pos.coords.latitude, lng: pos.coords.longitude };
+        if(!clientMarker) clientMarker = L.marker([p.lat, p.lng]).addTo(map);
+        else clientMarker.setLatLng([p.lat, p.lng]);
+        map.setView([p.lat, p.lng], 15);
+      },
+      ()=>{ /* ignore si refus */ },
+      { enableHighAccuracy:true, timeout:8000, maximumAge:0 }
+    );
+  }
+
+  mapReady = true;
+}
+
+/* Appliquer mode sélectionné */
+function setMode(mode){
+  currentMode = mode;
+  document.querySelectorAll('#orderModes .seg-btn').forEach(b=>{
+    b.classList.toggle('active', b.dataset.mode === mode);
+  });
+  const deliveryPanel = document.getElementById('deliveryPanel');
+  const dineinPanel = document.getElementById('dineinPanel');
+  deliveryPanel && (deliveryPanel.style.display = (mode==='delivery' ? 'block' : 'none'));
+  dineinPanel && (dineinPanel.style.display = (mode==='dinein' ? 'block' : 'none'));
+
+  if(mapReady){
+    if(mode === 'takeaway' || mode === 'dinein'){
+      const c = restoMarker.getLatLng();
+      map.setView([c.lat, c.lng], 15);
+    }
+  }
+}
+
+/* traiter soumission adresse livraison */
+async function handleAddressSubmit(e){
+  e && e.preventDefault();
+  const q = document.getElementById('deliveryAddress').value.trim();
+  if(!q){ showToast('Entre une adresse'); return; }
+  try{
+    const pt = await geocode(q);
+    if(!mapReady) await initOrderMapOnce();
+    if(!clientMarker) clientMarker = L.marker([pt.lat, pt.lng]).addTo(map);
+    else clientMarker.setLatLng([pt.lat, pt.lng]);
+
+    const restoPos = restoMarker.getLatLng();
+    const d = haversine({lat: restoPos.lat, lng: restoPos.lng}, pt);
+    if(d > DELIVERY_RADIUS_M){
+      showToast('Adresse hors zone (5 km)');
+      map.setView([pt.lat, pt.lng], 14);
+      return;
+    }
+    map.setView([pt.lat, pt.lng], 16);
+    showToast('Adresse OK ✅', 2000);
+    // ici tu peux enregistrer l'adresse / permettre la suite de commande
+  }catch(err){
+    showToast('Adresse introuvable');
+  }
+}
+
+/* ===== CTA & commandes (liaison) ===== */
 function bindCTA(){
-  // CTA central (tabbar) -> ouvre l’onglet Commande et focus la carte de choix
-  const openOrderPage = ()=>{
+  const openOrderPage = async ()=>{
     switchTab('order');
-    // focus visuel en scrollant vers la carte de sélection
-    const card = document.getElementById('orderTypeCard');
-    card?.scrollIntoView({ behavior:'smooth', block:'start' });
+    await initOrderMapOnce();
+    setMode(currentMode || 'takeaway');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  // clic direct sur le bouton CTA
   document.getElementById('ctaOrder')?.addEventListener('click', (e)=>{
-    e.preventDefault();
-    e.stopPropagation();
+    e.preventDefault(); e.stopPropagation();
     openOrderPage();
   });
-
-  // bouton “Commander ›” en home
   document.getElementById('goOrderTop')?.addEventListener('click', (e)=>{
     e.preventDefault();
     openOrderPage();
   });
 
-  // Sélection des modes (dans l’onglet “Commande”)
-  document.getElementById('otClickCollect')?.addEventListener('click', ()=>{
-    applyOrderMode('takeaway');
-  });
-  document.getElementById('otDelivery')?.addEventListener('click', ()=>{
-    applyOrderMode('delivery');
-  });
-  document.getElementById('otDineIn')?.addEventListener('click', ()=>{
-    // révèle le champ table en inline pour la saisie rapide
-    const extra = document.getElementById('dineInExtrasInline');
-    if (extra) extra.style.display = 'grid';
-    const input = document.getElementById('tableNumberInline');
-    input?.focus();
-    applyOrderMode('dinein');
+  // segmented control
+  document.getElementById('orderModes')?.addEventListener('click', (e)=>{
+    const b = e.target.closest('.seg-btn');
+    if(!b) return;
+    setMode(b.dataset.mode);
   });
 
-  // ENTER sur le champ table (inline)
+  // form adresse
+  document.getElementById('addressForm')?.addEventListener('submit', handleAddressSubmit);
+
+  // table inline ENTER
   document.getElementById('tableNumberInline')?.addEventListener('keydown', (e)=>{
-    if(e.key==='Enter'){
-      e.preventDefault();
-      applyOrderMode('dinein', e.target.value.trim());
-    }
+    if(e.key === 'Enter'){ e.preventDefault(); showToast('Table enregistrée ✅'); }
   });
 
-  // Raccourcis espace client
-  document.getElementById('tileOrders')?.addEventListener('click', ()=>switchTab('orders'));
-  document.getElementById('tileProfile')?.addEventListener('click', ()=>switchTab('profile'));
-}
-
-function applyOrderMode(mode, tableNo=null){
-  // Met à jour la 2e carte (titre + info + champ si besoin)
-  const title=qs('#orderModeTitle'), info=qs('#orderInfo'), dine=qs('#dineInBlock');
-  const fn=(getProfile().firstName||'chef');
-
-  if(mode==='takeaway'){
-    title.textContent='Click & Collect';
-    info.textContent=`${fn}, passe ta commande et viens la récupérer.`;
-    dine.style.display='none';
-  } else if(mode==='delivery'){
-    title.textContent='Livraison';
-    info.textContent=`${fn}, la livraison arrive bientôt.`;
-    dine.style.display='none';
-  } else {
-    title.textContent='Sur place';
-    info.textContent=`${fn}, indique ton numéro de table.`;
-    dine.style.display='grid';
-    if(tableNo) qs('#tableNumber').value=tableNo;
-  }
-
-  // Action “Commencer ma commande” (placeholder)
-  qs('#orderStart').onclick=()=>showToast(`Flux commande (${mode}) à brancher`);
-  setOrderPrefs({ mode, table: tableNo || null });
+  // raccourcis espace client
+  document.getElementById('tileOrders')?.addEventListener('click', ()=> switchTab('orders'));
+  document.getElementById('tileProfile')?.addEventListener('click', ()=> switchTab('profile'));
 }
 
 /* ===== Profil / Fidélité ===== */
@@ -185,48 +269,35 @@ function renderQR(email){
   qs('#qrCodeText').textContent=email;
 }
 
-/* ===== Splash simple (5s mini, non bloquant) ===== */
+/* ===== Splash simple (5s mini) ===== */
 (function(){
-  const MIN_MS = 5000, MAX_WAIT_MS = 9000;
+  const MIN_MS = 5000, MAX_MS = 9000;
   const minDelayP = new Promise(res=> setTimeout(res, MIN_MS));
-  const maxTimeoutP = new Promise(res=> setTimeout(res, MAX_WAIT_MS));
+  const maxTimeoutP = new Promise(res=> setTimeout(res, MAX_MS));
 
   window.addEventListener('load', async ()=>{
     const splash = document.getElementById('splash');
     if(!splash) return;
-    splash.style.pointerEvents='none';
     await Promise.race([minDelayP, maxTimeoutP]);
-    splash.style.opacity=0;
+    splash.style.opacity = 0;
     setTimeout(()=> splash.remove(), 600);
   });
 })();
 
 /* ===== INIT ===== */
 document.addEventListener('DOMContentLoaded',()=>{
-  // Onglet par défaut
-  switchTab('home');
-
+  renderFeatured();
   bindTabbar();
   bindCTA();
   bindProfile();
   renderLoyalty();
-  renderFeatured();     // neutralisé
   initBannerCarousel();
+
+  // Onglet par défaut
+  switchTab('home');
 });
 
 /* ===== PWA: keep SW fresh ===== */
 if ('serviceWorker' in navigator) {
   navigator.serviceWorker.getRegistrations().then(list => list.forEach(reg => reg.update()));
-}
-
-function switchTab(tab){
-  // activer le bouton
-  qsa('.tabbar [data-tab]').forEach(b=> b.classList.toggle('active', b.dataset.tab===tab));
-  // activer la section
-  qsa('.tab').forEach(s=> s.classList.toggle('active', s.id===`tab-${tab}`));
-  // montrer la bannière seulement sur Home (sans changer sa taille)
-  const hb = document.getElementById('homeBanner');
-  if (hb) hb.style.display = (tab === 'home' ? 'block' : 'none');
-  // scroll top
-  window.scrollTo({top:0, behavior:'smooth'});
 }
