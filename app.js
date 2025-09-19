@@ -218,3 +218,15 @@ document.addEventListener('DOMContentLoaded',()=>{
 if ('serviceWorker' in navigator) {
   navigator.serviceWorker.getRegistrations().then(list => list.forEach(reg => reg.update()));
 }
+
+function switchTab(tab){
+  // activer le bouton
+  qsa('.tabbar [data-tab]').forEach(b=> b.classList.toggle('active', b.dataset.tab===tab));
+  // activer la section
+  qsa('.tab').forEach(s=> s.classList.toggle('active', s.id===`tab-${tab}`));
+  // montrer la bannière seulement sur Home (sans changer sa taille)
+  const hb = document.getElementById('homeBanner');
+  if (hb) hb.style.display = (tab === 'home' ? 'block' : 'none');
+  // scroll top
+  window.scrollTo({top:0, behavior:'smooth'});
+}
