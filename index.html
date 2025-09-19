@@ -15,11 +15,11 @@
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <script defer src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
-  <link rel="stylesheet" href="styles.css?v=100" />
-  <script defer src="app.js?v=100"></script>
+  <link rel="stylesheet" href="styles.css?v=110" />
+  <script defer src="app.js?v=110"></script>
 </head>
 <body>
-  <!-- Splash (plein écran) -->
+  <!-- Splash -->
   <div id="splash" aria-hidden="false" class="splash">
     <img src="assets/splash.jpg" alt="Manhattan Street" />
   </div>
@@ -27,7 +27,7 @@
   <!-- toast -->
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
 
-  <!-- ===== Bannière (VALIDÉE) — full-bleed, hors .layout ===== -->
+  <!-- ===== Bannière (seulement sur Accueil) ===== -->
   <section class="banner" id="homeBanner">
     <div class="banner-track" id="bannerTrack">
       <img src="assets/banner1.jpg" alt="Bannière 1" />
@@ -73,12 +73,12 @@
       </section>
     </section>
 
-    <!-- Commande (ONGLET) -->
+    <!-- Commande -->
     <section class="tab" id="tab-order">
-      <!-- Map plein écran (leaflet) — placée via CSS sous overlay -->
+      <!-- Carte plein écran (Leaflet) -->
       <div id="orderMap" class="map-fullscreen" aria-hidden="false"></div>
 
-      <!-- Overlay de contrôle (segment + panneaux) -->
+      <!-- Overlay de contrôle -->
       <div class="order-overlay" id="orderOverlay">
         <div class="segmented" id="orderModes" role="tablist" aria-label="Modes de commande">
           <button type="button" class="seg-btn" data-mode="delivery">Livraison</button>
@@ -102,7 +102,7 @@
         </div>
       </div>
 
-      <!-- Contenu secondaire (titre, info, bouton) -->
+      <!-- Contenu secondaire -->
       <div class="card" style="margin: 12px;">
         <h2 id="orderModeTitle">Commande</h2>
         <div class="order-info hint" id="orderInfo"></div>
@@ -159,10 +159,10 @@
     </section>
   </main>
 
-  <!-- Ancien CTA rond (neutralisé en CSS global) -->
+  <!-- Ancien CTA rond (neutralisé) -->
   <button id="orderCta" class="order-cta-round" aria-label="Commander">🛍️</button>
 
-  <!-- ===== Tabbar (blanche, unifiée) ===== -->
+  <!-- ===== Tabbar (blanche) ===== -->
   <nav class="tabbar" aria-label="Navigation">
     <button class="tabbtn" data-tab="home" aria-label="Accueil">
       <img class="tab-ic" src="assets/tab-home.svg" alt="" />
