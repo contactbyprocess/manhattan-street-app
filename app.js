@@ -1,4 +1,4 @@
-  /* ===== Helpers ===== */
+/* ===== Helpers ===== */
 const qs = s => document.querySelector(s);
 const qsa = s => [...document.querySelectorAll(s)];
 const get = (k,d)=>{try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch{return d}};
@@ -52,7 +52,6 @@ function initBannerCarousel(){
 
 /* ===== Featured (neutralisé) ===== */
 function renderFeatured(){
-  // Liste retirée du HTML → no-op
   const el = document.getElementById('featured');
   if (!el) return;
   el.innerHTML = '';
@@ -76,28 +75,46 @@ const ORDER_KEY = 'ms_order_prefs';
 function getOrderPrefs(){ return get(ORDER_KEY, { mode:null, table:null }); }
 function setOrderPrefs(p){ set(ORDER_KEY, p); }
 
-/* ===== CTA & commandes ===== */
+/* ===== Modals (robustes) ===== */
+function openModal(sel){
+  const m = qs(sel);
+  if(!m) return;
+  m.classList.add('show');
+  m.style.display = 'block'; // fallback si CSS display primait
+}
+function closeModal(sel){
+  const m = qs(sel);
+  if(!m) return;
+  m.classList.remove('show');
+  m.style.display = '';
+}
+
+/* ===== CTA & commandes (délégation de clic) ===== */
 function bindCTA(){
-  const openSel=()=>openModal('#orderTypeModal');
+  const openSel = ()=> openModal('#orderTypeModal');
 
-  // CTA central (tabbar)
-  qs('#ctaOrder')?.addEventListener('click', openSel);
+  // ✅ Délégation globale pour capter les clics même si un overlay gêne
+  document.addEventListener('click', (e)=>{
+    const cta   = e.target.closest('#ctaOrder');
+    const goTop = e.target.closest('#goOrderTop');
+    if (cta || goTop){
+      e.preventDefault();
+      openSel();
+    }
+  });
 
-  // CTA “Commander ›” dans la home
-  qs('#goOrderTop')?.addEventListener('click', openSel);
-
-  // Choix du mode de commande
-  qs('#otClickCollect')?.addEventListener('click',()=>{
+  // Choix du mode
+  qs('#otClickCollect')?.addEventListener('click', ()=>{
     closeModal('#orderTypeModal');
     openOrderTab('takeaway');
   });
 
-  qs('#otDelivery')?.addEventListener('click',()=>{
+  qs('#otDelivery')?.addEventListener('click', ()=>{
     closeModal('#orderTypeModal');
     openOrderTab('delivery');
   });
 
-  qs('#otDineIn')?.addEventListener('click',()=>{
+  qs('#otDineIn')?.addEventListener('click', ()=>{
     const n=(qs('#tableNumberModal')?.value||'').trim();
     if(n && !/^\d{1,4}$/.test(n)){
       showToast('Numéro de table invalide');
@@ -107,9 +124,9 @@ function bindCTA(){
     openOrderTab('dinein', n || null);
   });
 
-  qs('#orderTypeClose')?.addEventListener('click',()=>closeModal('#orderTypeModal'));
+  qs('#orderTypeClose')?.addEventListener('click', ()=> closeModal('#orderTypeModal'));
 
-  // ENTER sur le champ table => sélection Sur place
+  // ENTER sur le champ table => confirme "Sur place"
   qs('#tableNumberModal')?.addEventListener('keydown', (e)=>{
     if(e.key==='Enter'){
       e.preventDefault();
@@ -118,21 +135,24 @@ function bindCTA(){
   });
 
   // Raccourcis espace client
-  qs('#tileOrders')?.addEventListener('click',()=>switchTab('orders'));
-  qs('#tileProfile')?.addEventListener('click',()=>switchTab('profile'));
+  qs('#tileOrders')?.addEventListener('click', ()=> switchTab('orders'));
+  qs('#tileProfile')?.addEventListener('click', ()=> switchTab('profile'));
 
-  // (Option) Si tu veux relancer direct le dernier mode au clic CTA,
-  // décommente ce bloc :
+  // (Option) relancer direct le dernier mode :
   /*
   const last = getOrderPrefs();
   if(last.mode){
-    qs('#ctaOrder')?.addEventListener('click', ()=>{
-      openOrderTab(last.mode, last.table);
+    document.addEventListener('click', (e)=>{
+      if(e.target.closest('#ctaOrder')){
+        e.preventDefault();
+        openOrderTab(last.mode, last.table);
+      }
     });
   }
   */
 }
 
+/* ===== Ouverture onglet Commande avec contexte ===== */
 function openOrderTab(mode, tableNo=null){
   switchTab('order');
   const title=qs('#orderModeTitle'), info=qs('#orderInfo'), dine=qs('#dineInBlock');
@@ -153,10 +173,8 @@ function openOrderTab(mode, tableNo=null){
     if(tableNo) qs('#tableNumber').value=tableNo;
   }
 
-  // Action “Commencer ma commande” (à brancher au panier plus tard)
+  // Action “Commencer ma commande” (à raccorder au panier)
   qs('#orderStart').onclick=()=>showToast(`Flux commande (${mode}) à brancher`);
-
-  // Mémorise le choix
   setOrderPrefs({ mode, table: tableNo || null });
 }
 
@@ -189,22 +207,16 @@ function renderQR(email){
   qs('#qrCodeText').textContent=email;
 }
 
-/* ===== Modals ===== */
-function openModal(sel){qs(sel)?.classList.add('show');}
-function closeModal(sel){qs(sel)?.classList.remove('show');}
-
 /* ===== Splash “smart” : 5s min + prêt applicatif ===== */
 (function(){
   const MIN_MS = 5000;             // 5s minimum
-  const MAX_WAIT_MS = 9000;        // sécurité : au plus ~9s
+  const MAX_WAIT_MS = 9000;        // sécurité
   const startTs = Date.now();
 
-  // Promesse: “app prête” (évènement custom)
   const appReadyP = new Promise(resolve => {
     document.addEventListener('app:ready', resolve, { once:true });
   });
 
-  // Promesse: bannières chargées (ou résolues si erreur)
   function waitForBannerImages() {
     const imgs = [...document.querySelectorAll('.banner-track img')];
     if (imgs.length === 0) return Promise.resolve();
@@ -218,13 +230,10 @@ function closeModal(sel){qs(sel)?.classList.remove('show');}
     }));
   }
 
-  // Promesse: min 5s écoulées
   const minDelayP = new Promise(res => {
     const left = Math.max(0, MIN_MS - (Date.now() - startTs));
     setTimeout(res, left);
   });
-
-  // Promesse: timeout sécurité
   const maxTimeoutP = new Promise(res => setTimeout(res, MAX_WAIT_MS));
 
   window.addEventListener("load", async () => {
@@ -243,7 +252,7 @@ function closeModal(sel){qs(sel)?.classList.remove('show');}
 
 /* ===== INIT ===== */
 document.addEventListener('DOMContentLoaded',()=>{
-  renderFeatured();     // no-op (liste retirée)
+  renderFeatured();     // neutralisé
   bindTabbar();
   bindCTA();
   bindProfile();
@@ -253,7 +262,7 @@ document.addEventListener('DOMContentLoaded',()=>{
   // Onglet par défaut : Accueil
   switchTab('home');
 
-  // >>> signal : l’app est prête côté JS
+  // signal : app prête
   document.dispatchEvent(new Event('app:ready'));
 });
 
