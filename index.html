@@ -15,19 +15,23 @@
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <script defer src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
-  <link rel="stylesheet" href="styles.css?v=122" />
-  <script defer src="app.js?v=122"></script>
+  <link rel="stylesheet" href="styles.css?v=130" />
+  <script defer src="app.js?v=130"></script>
 </head>
 <body>
-  <!-- Splash -->
+  <!-- Splash (on ajustera plus tard si besoin) -->
   <div id="splash" aria-hidden="false" class="splash">
     <img src="assets/splash.jpg" alt="Manhattan Street" />
   </div>
 
   <!-- toast -->
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
+  <!-- Alerte centrée -->
+  <div id="note" class="note-overlay" aria-live="assertive" aria-atomic="true">
+    <div class="note-card" id="noteCard"></div>
+  </div>
 
-  <!-- ===== Bannière (seulement sur Accueil) ===== -->
+  <!-- ===== Bannière (uniquement sur Accueil) ===== -->
   <section class="banner" id="homeBanner">
     <div class="banner-track" id="bannerTrack">
       <img src="assets/banner1.jpg" alt="Bannière 1" />
@@ -54,7 +58,7 @@
         </div>
       </section>
 
-      <!-- Hype du moment (neutralisée côté JS) -->
+      <!-- Hype du moment (neutralisée en JS) -->
       <section class="home-block">
         <div class="home-block-head">
           <h2>La hype du moment ✨</h2>
@@ -75,10 +79,10 @@
 
     <!-- Commande -->
     <section class="tab" id="tab-order" aria-label="Commande">
-      <!-- Carte plein écran (Leaflet) -->
+      <!-- Carte plein écran -->
       <div id="orderMap" class="map-fullscreen" aria-hidden="false"></div>
 
-      <!-- Overlay de contrôle (plus bas) -->
+      <!-- Overlay contrôle (remonté de 30px) -->
       <div class="order-overlay" id="orderOverlay">
         <div class="segmented" id="orderModes" role="tablist" aria-label="Modes de commande">
           <button type="button" class="seg-btn" data-mode="delivery">Livraison</button>
@@ -86,13 +90,12 @@
           <button type="button" class="seg-btn" data-mode="dinein">Sur place</button>
         </div>
 
-        <!-- Panels -->
+        <!-- PANELS -->
         <div class="panel" id="deliveryPanel" style="display:none">
           <form id="addressForm" class="address-row" autocomplete="off">
             <input id="deliveryAddress" placeholder="Adresse de livraison (ex : rue, ville)" autocomplete="street-address" />
             <button class="btn primary" id="addressGo" type="submit">Valider</button>
           </form>
-          <div class="hint">Zone de livraison : 5 km autour du restaurant</div>
         </div>
 
         <div class="panel" id="dineinPanel" style="display:none">
@@ -102,7 +105,7 @@
         </div>
       </div>
 
-      <!-- Contenu secondaire -->
+      <!-- Bloc infos basiques -->
       <div class="card order-card">
         <h2 id="orderModeTitle">Commande</h2>
         <div class="order-info hint" id="orderInfo"></div>
@@ -163,7 +166,7 @@
   <button id="orderCta" class="order-cta-round" aria-label="Commander">🛍️</button>
 
   <!-- ===== Tabbar (blanche) ===== -->
-  <nav class="tabbar" aria-label="Navigation">
+  <nav class="tabbar" aria-label="Navigation" id="tabbar">
     <button class="tabbtn" data-tab="home" aria-label="Accueil">
       <img class="tab-ic" src="assets/tab-home.svg" alt="" />
     </button>
