@@ -1,7 +1,7 @@
 /* ===== Variables ===== */
 *{ box-sizing:border-box }
 :root{
-  --bg:#EDEDED; /* fond demandé */
+  --bg:#EDEDED; /* fond gris demandé */
   --text:#111;
   --line:#e7e7e7; --muted:#6d6d6d;
   --accent-cta:#A64027;
@@ -9,14 +9,14 @@
   --safe-top: env(safe-area-inset-top, 0px);
   --safe-bottom: env(safe-area-inset-bottom, 0px);
 
-  /* Bannière */
+  /* Bannière (VALIDÉE) */
   --banner-h: 25vh;
 
-  /* Tabbar */
+  /* Tabbar (valeurs validées par toi) */
   --tabbar-bg:#ffffff;
   --tabbar-h:50px;
-  --icon-sz:42px;
-  --icon-shift-y: -4px;
+  --icon-sz:480px;
+  --icon-shift-y:-105px;
   --cta-size:102px;
   --cta-lift:50px;
 }
@@ -102,27 +102,16 @@ body{
 .btn.outline{ background:transparent; border:1.5px solid var(--accent-cta); color:var(--accent-cta); font-weight:800 }
 .btn.small{ padding:6px 10px; border-radius:999px }
 
-/* Hscroll compact neutralisé (vide) */
-.hscroll{ display:grid; grid-auto-flow:column; gap:10px; overflow-x:auto; scroll-snap-type:x mandatory; padding:4px 2px }
-.hscroll.compact3{ grid-auto-columns:30.5% }
-
-/* Espace client */
-.client-grid{ display:grid; grid-template-columns:repeat(2,1fr); gap:12px }
-.client-tile{ background:#fff; border:1px solid var(--line); border-radius:16px; padding:18px 12px; font-weight:800; cursor:pointer }
-
-/* ===== Modals (non utilisés ici) ===== */
-.modal{ position:fixed; inset:0; z-index:50; display:none }
-
-/* ===== Onglets: visibilité ===== */
+/* Onglets visibilité */
 .tab{ display:none; }
 .tab.active{ display:block; }
 
-/* ===== Map full screen (derrière overlay, au-dessus du contenu mais sous tabbar) ===== */
+/* ===== Map plein écran (sous overlay, au-dessus contenu) ===== */
 .map-fullscreen{
   position: fixed;
   top: 0; left: 0; right: 0;
   bottom: calc(var(--tabbar-h) + env(safe-area-inset-bottom, 0px));
-  z-index: 1;    /* dessous overlay (z-index:2) et dessous tabbar (z-index:30) */
+  z-index: 1;
 }
 
 /* ===== Overlay commande en haut ===== */
@@ -154,14 +143,15 @@ body{
 .address-row{ display: grid; grid-template-columns: 1fr auto; gap:8px; align-items:center; }
 .address-row input{ height:40px; padding:8px; border-radius:10px; border:1px solid #ddd; }
 
-/* ===== TABBAR (2 | CTA | 2) ===== */
+/* ===== TABBAR (2 | CTA | 2) — état normal ===== */
 .tabbar{
   position:fixed; left:0; right:0; bottom:0; z-index:30;
   background:var(--tabbar-bg);
   height: calc(var(--tabbar-h) + var(--safe-bottom));
   padding-bottom: var(--safe-bottom);
-  padding: 0 12px;
+  padding: 0 16px;
   box-shadow:0 -2px 8px rgba(0,0,0,.08);
+
   --cta-gap: calc(var(--cta-size) + 16px);
   display:grid;
   grid-template-columns:
@@ -173,17 +163,27 @@ body{
   align-items:center;
 }
 
-/* Boutons onglets */
+/* Boutons onglets (on conserve tes tailles/offsets) */
 .tabbtn{
+  -webkit-appearance:none; appearance:none;
   background:transparent; border:0; padding:0; cursor:pointer;
   width:100%; height:var(--icon-sz);
-  display:grid; place-items:center; transform: translateY(var(--icon-shift-y));
+  display:grid; place-items:center;
+  transform: translateY(var(--icon-shift-y));
   -webkit-tap-highlight-color: transparent;
 }
-.tabbtn .tab-ic{ width: var(--icon-sz); height:auto; object-fit:contain; display:block; opacity:.9; }
-.tabbtn.active .tab-ic{ filter: none; opacity:1; }
+.tabbtn .tab-ic{
+  width: min(var(--icon-sz), 100%);
+  height:auto; object-fit:contain; display:block;
+}
 
-/* CTA centré */
+/* Placement normal autour du CTA */
+.tabbar .tabbtn:nth-of-type(1){ grid-column:1; }
+.tabbar .tabbtn:nth-of-type(2){ grid-column:2; }
+.tabbar .tabbtn:nth-of-type(3){ grid-column:4; }
+.tabbar .tabbtn:nth-of-type(4){ grid-column:5; }
+
+/* CTA central (visible hors commande) */
 .cta-img{
   position:absolute; left:50%; transform:translateX(-50%);
   top: calc(-1 * var(--cta-lift));
@@ -193,10 +193,20 @@ body{
 }
 .cta-img img{ width:100%; height:100%; object-fit:contain; }
 
-/* ===== Responsive tiny screens ===== */
+/* ===== MODE COMMANDE : CTA caché, 4 colonnes pleines ===== */
+body.ordering .cta-img{ display:none !important; }
+body.ordering .tabbar{
+  grid-template-columns: repeat(4, 1fr) !important;
+}
+body.ordering .tabbar .tabbtn:nth-of-type(1){ grid-column:1 !important; }
+body.ordering .tabbar .tabbtn:nth-of-type(2){ grid-column:2 !important; }
+body.ordering .tabbar .tabbtn:nth-of-type(3){ grid-column:3 !important; }
+body.ordering .tabbar .tabbtn:nth-of-type(4){ grid-column:4 !important; }
+
+/* Responsive tiny screens */
 @media (max-width:360px){
-  :root{ --icon-sz:38px; --tabbar-h:46px; }
+  :root{ --icon-sz: 440px; --icon-shift-y:-96px; } /* léger downscale si micro-écran */
 }
 
-/* ensures tabs content not hidden under tabbar */
+/* S’assure que le contenu n’est pas caché par la tabbar */
 .tab{ min-height: calc(100vh - (var(--tabbar-h) + env(safe-area-inset-bottom,0px))); }
