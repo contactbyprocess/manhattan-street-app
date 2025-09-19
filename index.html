@@ -15,8 +15,8 @@
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <script defer src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
-  <link rel="stylesheet" href="styles.css?v=110" />
-  <script defer src="app.js?v=110"></script>
+  <link rel="stylesheet" href="styles.css?v=122" />
+  <script defer src="app.js?v=122"></script>
 </head>
 <body>
   <!-- Splash -->
@@ -74,11 +74,11 @@
     </section>
 
     <!-- Commande -->
-    <section class="tab" id="tab-order">
+    <section class="tab" id="tab-order" aria-label="Commande">
       <!-- Carte plein écran (Leaflet) -->
       <div id="orderMap" class="map-fullscreen" aria-hidden="false"></div>
 
-      <!-- Overlay de contrôle -->
+      <!-- Overlay de contrôle (plus bas) -->
       <div class="order-overlay" id="orderOverlay">
         <div class="segmented" id="orderModes" role="tablist" aria-label="Modes de commande">
           <button type="button" class="seg-btn" data-mode="delivery">Livraison</button>
@@ -103,7 +103,7 @@
       </div>
 
       <!-- Contenu secondaire -->
-      <div class="card" style="margin: 12px;">
+      <div class="card order-card">
         <h2 id="orderModeTitle">Commande</h2>
         <div class="order-info hint" id="orderInfo"></div>
         <div id="dineInBlock" class="grid" style="display:none;margin-top:10px">
