@@ -210,3 +210,11 @@ body.ordering .cta-img{ opacity:0; transform:translate(-50%,-2px) scale(.92); po
 
 /* Petite carte info sous l’overlay */
 .order-card{ position:relative; z-index:0; margin: calc(120px + var(--safe-top)) 12px 12px; }
+
+/* Espace tampon en bas pour toutes les pages (évite que la page soit trop courte) */
+.tab { min-height: calc(100vh - (var(--tabbar-h) + env(safe-area-inset-bottom, 0px))); }
+
+/* Spacer à mettre en bas des onglets non-accueil tant qu'ils sont vides */
+.page-spacer {
+  height: calc(32vh + var(--safe-bottom)); /* tu peux ajuster 24–40vh */
+}
