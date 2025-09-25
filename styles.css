@@ -23,7 +23,7 @@
   --tab-col-min: 64px;
   --tab-col-max: 88px;
 
-  /* Gap central du CTA (on ne le modifie plus en mode commande) */
+  /* Gap central (inchangé en mode commande) */
   --cta-gap: calc(var(--cta-size) + 16px);
 }
 
@@ -133,7 +133,7 @@ h1,h2,h3{ margin:0 0 8px 0 }
 .tabbar{
   position:fixed; left:0; right:0; bottom:0; z-index:30;
   background:var(--tabbar-bg);
-  height: calc(var(--tabbar-h) + var(--safe-bottom));   /* <<< comme sur l’accueil */
+  height: calc(var(--tabbar-h) + var(--safe-bottom));
   padding-bottom: var(--safe-bottom);
   padding: 0 16px;
   box-shadow:0 -2px 8px rgba(0,0,0,.08);
@@ -192,39 +192,21 @@ h1,h2,h3{ margin:0 0 8px 0 }
 }
 .cta-img img{ width:100%; height:100%; object-fit:contain }
 
-/* Mode commande : on cache le CTA, MAIS on ne change PAS le gap ni la taille des icônes */
+/* Mode commande : on cache juste le CTA (gap et tailles inchangés) */
 body.ordering .cta-img{ opacity:0; transform:translate(-50%,-2px) scale(.92); pointer-events:none; }
-/* pas de body.ordering .tabbar{ --cta-gap:0 } → la tabbar reste identique */
 
 /* Petits écrans */
 @media (max-width: 360px){
   :root{ --icon-sz:440px; --icon-shift-y:-96px; }
 }
 
-/* Hauteur min des pages → pas de “marche” */
-.tab{ min-height: calc(100vh - (var(--tabbar-h) + env(safe-area-inset-bottom, 0px))); }
-
-/* Masquer carte/overlay si on n’est pas sur l’onglet commande */
-#tab-order:not(.active) .map-fullscreen{ display:none; }
-#tab-order:not(.active) .order-overlay{ display:none; }
-
-/* Petite carte info sous l’overlay */
-.order-card{ position:relative; z-index:0; margin: calc(120px + var(--safe-top)) 12px 12px; }
-
-/* Espace tampon en bas pour toutes les pages (évite que la page soit trop courte) */
-.tab { min-height: calc(100vh - (var(--tabbar-h) + env(safe-area-inset-bottom, 0px))); }
-
-/* Spacer à mettre en bas des onglets non-accueil tant qu'ils sont vides */
-.page-spacer {
-  height: calc(32vh + var(--safe-bottom)); /* tu peux ajuster 24–40vh */
+/* Hauteur min des pages → pas de marche (règle unique) */
+.tab{ 
+  min-height: calc(100vh - (var(--tabbar-h) + env(safe-area-inset-bottom, 0px)));
+  position: relative;
 }
 
-
 /* === Stabilise la tabbar sur les onglets courts (hors Accueil) === */
-.tab { position: relative; }
-
-/* Ajoute un "tampon" invisible sous le contenu des onglets non-accueil,
-   pour compenser la tabbar + safe-area et un peu d'air (32vh). */
 #tab-loyalty::after,
 #tab-orders::after,
 #tab-profile::after {
@@ -233,4 +215,9 @@ body.ordering .cta-img{ opacity:0; transform:translate(-50%,-2px) scale(.92); po
   height: calc(32vh + var(--tabbar-h) + var(--safe-bottom));
 }
 
-/* On laisse l’accueil intact (pas de spacer forcé) */
+/* Masquer carte/overlay si on n’est pas sur l’onglet commande */
+#tab-order:not(.active) .map-fullscreen{ display:none; }
+#tab-order:not(.active) .order-overlay{ display:none; }
+
+/* Petite carte info sous l’overlay */
+.order-card{ position:relative; z-index:0; margin: calc(120px + var(--safe-top)) 12px 12px; }
