@@ -6,7 +6,7 @@ const set = (k,v)=>localStorage.setItem(k,JSON.stringify(v));
 const euro = n => n.toFixed(2).replace('.',',')+' €';
 function showToast(msg,dur=1500){const t=qs('#toast');if(!t)return;t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),dur);}
 
-/* ===== Données démo ===== */
+/* ===== Données démo (inchangées) ===== */
 const KEY={PROFILE:'ms_profile',USERS:'ms_users',PRODUCTS:'ms_products'};
 const DEFAULT_PRODUCTS=[
   {id:'b1',name:'Classic Manhattan Burger',price:7.9,img:'https://picsum.photos/seed/b1/900/600',tags:['featured']},
@@ -20,10 +20,10 @@ function getProfile(){return get(KEY.PROFILE,{firstName:'',email:'',phone:''});}
 function setProfile(p){set(KEY.PROFILE,p);}
 function getPoints(email){const u=getUsers();return u[email]?.points||0;}
 
-/* ===== Bannière carousel ===== */
+/* ===== Bannière carousel (inchangé) ===== */
 function initBannerCarousel(){
-  const track = document.querySelector('#bannerTrack');
-  const dots  = document.querySelector('#bannerDots');
+  const track = qs('#bannerTrack');
+  const dots  = qs('#bannerDots');
   if(!track || !dots) return;
 
   const slides = [...track.children];
@@ -59,26 +59,26 @@ function renderFeatured(){
 }
 
 /* ===== Tabs ===== */
+function toggleBannerFor(tab){
+  const banner = document.querySelector('.banner');
+  if(!banner) return;
+  banner.style.display = (tab === 'home') ? 'block' : 'none';
+}
 function switchTab(tab){
   // active bouton
   qsa('.tabbar [data-tab]').forEach(b=> b.classList.toggle('active', b.dataset.tab===tab));
   // active section
   qsa('.tab').forEach(s=> s.classList.toggle('active', s.id===`tab-${tab}`));
 
-  // bannière uniquement sur home
-  const hb = document.getElementById('homeBanner');
-  if(hb) hb.style.display = (tab === 'home' ? 'block' : 'none');
+  toggleBannerFor(tab);
 
-  // mode commande : CTA fade + gap central replié
+  // Mode commande = CTA fade out (géré par CSS via body.ordering)
   if(tab === 'order'){
     document.body.classList.add('ordering');
-    initOrderMapOnce().catch(()=>{});
-    setMode(currentMode || 'takeaway');
-  } else {
+    window.scrollTo({top:0, behavior:'smooth'});
+  }else{
     document.body.classList.remove('ordering');
   }
-
-  window.scrollTo({top:0, behavior:'smooth'});
 }
 function bindTabbar(){
   document.addEventListener('click', (e)=>{
@@ -89,157 +89,61 @@ function bindTabbar(){
   });
 }
 
-/* ===== Commande / Carto ===== */
-const RESTO_ADDR = 'Petite rue 10, Mouscron 7700, Belgique';
-const RESTO_FALLBACK = { lat: 50.744, lng: 3.214 };
-const DELIVERY_RADIUS_M = 5000;
-
-let map, restoMarker, clientMarker, radiusCircle;
-let mapReady = false;
-let currentMode = 'takeaway';
-let lastGeo = null;
-
-function haversine(a, b){
-  const R=6371000, toRad = d=>d*Math.PI/180;
-  const dLat = toRad(b.lat-a.lat), dLng = toRad(b.lng-a.lng);
-  const s1 = Math.sin(dLat/2)**2 + Math.cos(toRad(a.lat))*Math.cos(toRad(b.lat))*Math.sin(dLng/2)**2;
-  return 2*R*Math.asin(Math.sqrt(s1));
-}
-
-async function geocode(query){
-  const cacheKey = 'geo:'+query.toLowerCase().trim();
-  const cached = get(cacheKey, null);
-  if(cached) return cached;
-
-  const url = new URL('https://nominatim.openstreetmap.org/search');
-  url.searchParams.set('q', query);
-  url.searchParams.set('format', 'json');
-  url.searchParams.set('limit', '1');
-
-  const res = await fetch(url.toString(), {
-    headers: { 'Accept': 'application/json', 'User-Agent': 'MSApp/1.0 (demo)' }
-  });
-  if(!res.ok) throw new Error('geo http '+res.status);
-  const arr = await res.json();
-  if(!arr.length) throw new Error('Adresse introuvable');
-  const pt = { lat: parseFloat(arr[0].lat), lng: parseFloat(arr[0].lon) };
-  set(cacheKey, pt);
-  return pt;
-}
-
-async function initOrderMapOnce(){
-  if(mapReady) return;
-  if(typeof L === 'undefined') return;
-
-  let resto = RESTO_FALLBACK;
-  try { resto = await geocode(RESTO_ADDR); } catch(e){ /* fallback ok */ }
-
-  map = L.map('orderMap', { zoomControl: true, attributionControl: false }).setView([resto.lat, resto.lng], 15);
-
-  // Style clair Carto
-  L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
-    maxZoom: 20,
-    attribution: '&copy; OpenStreetMap &copy; CARTO'
-  }).addTo(map);
-
-  restoMarker = L.marker([resto.lat, resto.lng]).addTo(map).bindPopup('Restaurant');
-  radiusCircle = L.circle([resto.lat, resto.lng], { radius: DELIVERY_RADIUS_M, fillOpacity: 0.04, color: '#A64027' }).addTo(map);
-
-  mapReady = true;
-  // Fix de rendu si le conteneur vient d’apparaître
-  setTimeout(()=> map.invalidateSize(), 50);
-}
-
-function requestGeolocationAuth(){
-  if(!navigator.geolocation) return;
-  navigator.geolocation.getCurrentPosition(
-    pos => { lastGeo = { lat: pos.coords.latitude, lng: pos.coords.longitude }; },
-    _err => { /* refus : on ne fait rien */ },
-    { enableHighAccuracy:true, timeout:8000, maximumAge:0 }
-  );
-}
-
-function setMode(mode){
-  currentMode = mode;
-  document.querySelectorAll('#orderModes .seg-btn').forEach(b=>{
-    b.classList.toggle('active', b.dataset.mode === mode);
-  });
-  const deliveryPanel = document.getElementById('deliveryPanel');
-  const dineinPanel   = document.getElementById('dineinPanel');
-  if(deliveryPanel) deliveryPanel.style.display = (mode==='delivery' ? 'block' : 'none');
-  if(dineinPanel)   dineinPanel.style.display   = (mode==='dinein' ? 'block' : 'none');
-
-  if(mapReady){
-    const c = restoMarker.getLatLng();
-    if(mode === 'takeaway' || mode === 'dinein'){
-      map.setView([c.lat, c.lng], 15);
-    }
-    setTimeout(()=> map.invalidateSize(), 50);
-  }
-
-  if(mode === 'delivery') requestGeolocationAuth();
-}
-
-async function handleAddressSubmit(e){
-  e && e.preventDefault();
-  const q = document.getElementById('deliveryAddress').value.trim();
-  if(!q){ showToast('Entre une adresse'); return; }
-  try{
-    const pt = await geocode(q);
-    if(!mapReady) await initOrderMapOnce();
-    if(!clientMarker) clientMarker = L.marker([pt.lat, pt.lng]).addTo(map);
-    else clientMarker.setLatLng([pt.lat, pt.lng]);
-
-    const restoPos = restoMarker.getLatLng();
-    const d = haversine({lat: restoPos.lat, lng: restoPos.lng}, pt);
-    if(d > DELIVERY_RADIUS_M){
-      showToast('Adresse hors zone (5 km)');
-      map.setView([pt.lat, pt.lng], 14);
-      return;
-    }
-    map.setView([pt.lat, pt.lng], 16);
-    showToast('Adresse OK ✅', 2000);
-  }catch(err){
-    showToast('Adresse introuvable');
-  }
-}
-
-/* ===== CTA & commandes ===== */
+/* ===== CTA & ouverture "Commande" ===== */
 function bindCTA(){
-  const openOrderPage = async ()=>{
-    switchTab('order');               // → ajoute body.ordering + init carte
-    await initOrderMapOnce();
-    setMode(currentMode || 'takeaway');
+  const openOrderPage = ()=>{
+    switchTab('order');                 // → ajoute body.ordering
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  document.getElementById('ctaOrder')?.addEventListener('click', (e)=>{
+  qs('#ctaOrder')?.addEventListener('click', (e)=>{
     e.preventDefault(); e.stopPropagation();
     openOrderPage();
   });
-  document.getElementById('goOrderTop')?.addEventListener('click', (e)=>{
+
+  qs('#goOrderTop')?.addEventListener('click', (e)=>{
     e.preventDefault();
     openOrderPage();
   });
 
-  // segmented control
+  // Choix mode commande (si présent dans ton HTML actuel)
   document.getElementById('orderModes')?.addEventListener('click', (e)=>{
-    const b = e.target.closest('.seg-btn');
+    const b = e.target.closest('.mode-btn');
     if(!b) return;
-    setMode(b.dataset.mode);
+    // visuel actif
+    qsa('#orderModes .mode-btn').forEach(x=> x.classList.toggle('active', x===b));
+    const title=qs('#orderModeTitle'), info=qs('#orderInfo');
+    const fn=(getProfile().firstName||'chef');
+
+    if(b.dataset.mode==='takeaway'){
+      title.textContent='Click & Collect';
+      info.textContent=`${fn}, passe ta commande et viens la récupérer.`;
+      qs('#deliveryAddressWrap')?.setAttribute('style','display:none;margin-top:12px;');
+      qs('#dineInBlock')?.setAttribute('style','display:none;margin-top:12px;');
+    }else if(b.dataset.mode==='delivery'){
+      title.textContent='Livraison';
+      info.textContent=`${fn}, saisis ton adresse de livraison.`;
+      qs('#deliveryAddressWrap')?.setAttribute('style','display:block;margin-top:12px;');
+      qs('#dineInBlock')?.setAttribute('style','display:none;margin-top:12px;');
+    }else{
+      title.textContent='Sur place';
+      info.textContent=`${fn}, indique ton numéro de table.`;
+      qs('#deliveryAddressWrap')?.setAttribute('style','display:none;margin-top:12px;');
+      qs('#dineInBlock')?.setAttribute('style','display:block;margin-top:12px;');
+    }
   });
 
-  // form adresse
-  document.getElementById('addressForm')?.addEventListener('submit', handleAddressSubmit);
-
-  // ENTER table
-  document.getElementById('tableNumberInline')?.addEventListener('keydown', (e)=>{
-    if(e.key === 'Enter'){ e.preventDefault(); showToast('Table enregistrée ✅'); }
+  // Valider l’adresse (placeholder pour plus tard)
+  document.getElementById('checkAddressBtn')?.addEventListener('click', ()=>{
+    const v = (qs('#deliveryAddress')?.value||'').trim();
+    if(!v) return showToast('Entre une adresse');
+    showToast('Adresse OK ✅', 1500);
   });
 
-  // raccourcis
-  document.getElementById('tileOrders')?.addEventListener('click', ()=> switchTab('orders'));
-  document.getElementById('tileProfile')?.addEventListener('click', ()=> switchTab('profile'));
+  // ENTER sur table
+  qs('#tableNumber')?.addEventListener('keydown', (e)=>{
+    if(e.key==='Enter'){ e.preventDefault(); showToast('Table enregistrée ✅'); }
+  });
 }
 
 /* ===== Profil / Fidélité ===== */
@@ -288,7 +192,7 @@ function renderQR(email){
 
 /* ===== INIT ===== */
 document.addEventListener('DOMContentLoaded',()=>{
-  renderFeatured();
+  renderFeatured();          // neutralisé (au cas où)
   bindTabbar();
   bindCTA();
   bindProfile();
@@ -296,7 +200,7 @@ document.addEventListener('DOMContentLoaded',()=>{
   initBannerCarousel();
 
   // Onglet par défaut
-  switchTab('home');
+  switchTab('home');         // => affiche la bannière
 });
 
 /* ===== PWA: keep SW fresh ===== */
