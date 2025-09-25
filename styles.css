@@ -249,3 +249,40 @@ body.ordering .tabbar .tabbtn{
   z-index: 0;
   margin: calc(120px + var(--safe-top)) 12px 12px; /* descend sous l’overlay */
 }
+
+/* ==== LOCK TABBAR: identique à l'accueil sur TOUTES les pages ==== */
+.tabbar{
+  position: fixed !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;                      /* collée tout en bas */
+  z-index: 30 !important;
+
+  height: var(--tabbar-h) !important;        /* hauteur validée, inchangée */
+  padding-bottom: env(safe-area-inset-bottom, 0px) !important; /* recouvre le home-indicator */
+  background: var(--tabbar-bg) !important;
+  box-shadow: 0 -2px 8px rgba(0,0,0,.08) !important;
+}
+
+/* Peindre la safe-area sous la barre (sans la pousser) */
+.tabbar::after{
+  content: "";
+  position: fixed;
+  left: 0; right: 0; bottom: 0;
+  height: env(safe-area-inset-bottom, 0px);
+  background: var(--tabbar-bg);
+  pointer-events: none;
+  z-index: 20; /* juste sous la tabbar */
+}
+
+/* Sécurité: empêcher tout style par-onglet de décaler la barre */
+#tab-home .tabbar,
+#tab-loyalty .tabbar,
+#tab-orders .tabbar,
+#tab-profile .tabbar,
+#tab-order .tabbar{
+  bottom: 0 !important;
+  height: var(--tabbar-h) !important;
+  padding-bottom: env(safe-area-inset-bottom, 0px) !important;
+}
+
