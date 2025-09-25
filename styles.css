@@ -1,60 +1,172 @@
-/* ===== Tabbar: fixée, taille verrouillée partout ===== */
+/* ===== Variables ===== */
+*{ box-sizing:border-box }
 :root{
-  /* garde tes valeurs validées */
+  --bg:#EDEDED; --text:#111;
+  --line:#e7e7e7; --muted:#6d6d6d;
+  --accent-cta:#A64027;
+
+  --safe-top: env(safe-area-inset-top, 0px);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+
+  /* Bannière */
+  --banner-h: 21vh;
+
+  /* Tabbar (validées) */
   --tabbar-bg:#ffffff;
   --tabbar-h:50px;
-  --icon-sz:480px;
+  --icon-sz:480px;          /* icônes validées */
   --icon-shift-y:-105px;
   --cta-size:102px;
   --cta-lift:50px;
 
-  /* NOUVEAU: largeur fixe par colonne d’onglet */
-  --tab-col: 88px;         /* <- ajuste si tu veux 84/92… */
+  /* Clamp des colonnes pour éviter l’agrandissement des onglets quand le CTA disparaît */
+  --tab-col-min: 64px;
+  --tab-col-max: 88px;
+
+  /* Gap central du CTA (replié seulement en mode ordering) */
   --cta-gap: calc(var(--cta-size) + 16px);
 }
 
+/* ===== Document ===== */
+html{ background:var(--bg); height:100% }
+body{
+  margin:0; background:var(--bg); color:var(--text);
+  font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;
+  min-height:100%; overflow:auto; -webkit-overflow-scrolling:touch;
+}
+h1,h2,h3{ margin:0 0 8px 0 }
+
+/* ===== Splash (plein écran) ===== */
+#splash, .splash{
+  position:fixed; inset:0; z-index:9999;
+  display:grid; place-items:center;
+  background:#fff;
+  transition:opacity .6s ease;
+}
+#splash img, .splash img{
+  width:100%; height:100%;
+  object-fit:cover; /* plein écran couvrant */
+  display:block;
+}
+
+/* ===== Toast ===== */
+.toast{
+  position:fixed; left:50%; transform:translateX(-50%); top:16px;
+  background:rgba(0,0,0,.85); color:#fff; padding:10px 14px; border-radius:12px;
+  z-index:9998; opacity:0; pointer-events:none; transition:opacity .2s
+}
+.toast.show{ opacity:1 }
+
+/* ===== Bannière (revert stable) ===== */
+.banner{
+  position:relative; margin:0; padding:0; border:0; background:#000;
+  margin-top: calc(-1 * var(--safe-top));
+  padding-top: var(--safe-top);
+  height: calc(var(--banner-h) + var(--safe-top));
+  overflow:hidden;
+}
+.banner-track{
+  position:relative; height:100%;
+  display:flex; overflow-x:auto; scroll-snap-type:x mandatory; -webkit-overflow-scrolling:touch;
+  gap:0; margin:0; padding:0; scrollbar-width:none;
+}
+.banner-track::-webkit-scrollbar{ display:none }
+.banner-track > *{
+  flex:0 0 100vw;
+  height:100%;
+  scroll-snap-align:center;
+}
+.banner img{
+  width:100%; height:100%;
+  object-fit:cover; object-position:center top; display:block;
+}
+.banner-dots{
+  position:absolute; left:50%; transform:translateX(-50%);
+  bottom:8px; display:flex; gap:6px; z-index:2;
+}
+.banner-dots .dot{ width:6px; height:6px; border-radius:50%; background:rgba(255,255,255,.5) }
+.banner-dots .dot.active{ background:var(--accent-cta) }
+
+/* ===== Contenu ===== */
+.layout{
+  max-width:1100px;
+  margin:12px auto calc(var(--tabbar-h) + var(--safe-bottom) + 14px) auto;
+  padding:0 12px;
+}
+.card{ background:#fff; border:1px solid var(--line); border-radius:16px; padding:16px; margin:10px 0 }
+.hint{ color:var(--muted); font-size:12px }
+
+.hero-min{ text-align:center; padding:8px 12px 0 }
+.hero-hash{ font-size:32px; line-height:1.05; margin-bottom:2px }
+.hero-tag{ font-size:15px; font-weight:900; letter-spacing:.3px }
+
+/* ===== Onglets (pages) ===== */
+.tab{ display:none; }
+.tab.active{ display:block; }
+
+/* ===== Cartes classiques ===== */
+.map-wrap{ height:300px; margin:12px 0; }
+.map-wrap iframe{ width:100%; height:100%; border:0 }
+
+/* ===== Segmented / overlay commande (simple) ===== */
+.segmented{
+  display:grid; grid-template-columns:1fr 1fr 1fr;
+  background:#fff; border:1px solid var(--line); border-radius:14px; overflow:hidden;
+  box-shadow:0 4px 18px rgba(0,0,0,.08);
+  margin:12px 0;
+}
+.seg-btn{
+  appearance:none; background:transparent; border:0; padding:10px 8px; font-weight:800; cursor:pointer;
+  color:#333;
+}
+.seg-btn.active{ background:var(--accent-cta); color:#fff; }
+
+/* ===== Tabbar (blanche, validée) ===== */
 .tabbar{
   position:fixed; left:0; right:0; bottom:0; z-index:30;
   background:var(--tabbar-bg);
-  height: calc(var(--tabbar-h) + env(safe-area-inset-bottom, 0px));
+  height: calc(var(--tabbar-h) + var(--safe-bottom));
+  padding-bottom: var(--safe-bottom);
   padding: 0 16px;
-  padding-bottom: env(safe-area-inset-bottom, 0px);
   box-shadow:0 -2px 8px rgba(0,0,0,.08);
   overflow:visible;
 
-  /* 2 | CTA | 2, colonnes d’onglets à largeur FIXE */
+  /* grille 2 | CTA | 2 avec colonnes CLAMPÉES */
   display:grid;
   grid-template-columns:
-    var(--tab-col) var(--tab-col) var(--cta-gap) var(--tab-col) var(--tab-col);
+    minmax(var(--tab-col-min), var(--tab-col-max))
+    minmax(var(--tab-col-min), var(--tab-col-max))
+    var(--cta-gap)
+    minmax(var(--tab-col-min), var(--tab-col-max))
+    minmax(var(--tab-col-min), var(--tab-col-max));
   align-items:center;
 
-  /* transitions douces uniquement sur le gap central */
-  transition: grid-template-columns .28s ease;
+  transition: grid-template-columns .28s ease, padding .28s ease, box-shadow .28s ease, background .28s ease, opacity .2s ease;
 }
 
-/* Empêche tout “grossissement” des icônes */
+/* Icônes des onglets (teinte via mask) */
 .tabbtn{
   -webkit-appearance:none; appearance:none;
   background:transparent; border:0; padding:0; cursor:pointer;
-  width: var(--tab-col); max-width: var(--tab-col);   /* <- verrouille la largeur */
-  height: var(--icon-sz);
+  width:100%; height:var(--icon-sz);
   justify-self:center; align-self:center;
   display:grid; place-items:center;
   transform: translateY(var(--icon-shift-y));
   -webkit-tap-highlight-color: transparent;
-  color:#bdbdbd;
+  color:#bdbdbd; /* inactif gris */
   transition: color .18s ease, transform .18s ease;
+  max-width: var(--tab-col-max); /* clamp côté bouton aussi */
 }
-.tabbtn.active{ color:#A64027; }
+.tabbtn.active{ color:#A64027; }  /* actif marque */
 
-/* on peint via mask (comme tu avais) */
+/* on masque <img> et on peint au mask pour teinter */
 .tabbtn .tab-ic{ display:none !important; }
 .tabbtn::before{
   content:"";
-  width:min(var(--icon-sz), 100%);
-  height:min(var(--icon-sz), 100%);
+  width:min(var(--icon-sz),100%);
+  height:min(var(--icon-sz),100%);
   display:block;
-  background: currentColor;
+  background:currentColor;
   transform: translateY(var(--icon-shift-y));
   -webkit-mask: var(--ic) center / contain no-repeat;
           mask: var(--ic) center / contain no-repeat;
@@ -64,13 +176,19 @@
 .tabbtn[data-tab="orders"] { --ic: url('assets/tab-orders.svg'); }
 .tabbtn[data-tab="profile"]{ --ic: url('assets/tab-profile.svg'); }
 
-/* Placement symétrique + ajustements droits (inchangés) */
+/* Placement symétrique validé + ajustements fins côté droit */
 .tabbar .tabbtn:nth-of-type(1){ grid-column:1; }
 .tabbar .tabbtn:nth-of-type(2){ grid-column:2; }
-.tabbar .tabbtn:nth-of-type(3){ grid-column:4; justify-self:start; margin-left:-15px; }
-.tabbar .tabbtn:nth-of-type(4){ grid-column:5; justify-self:end;   margin-right:10px; }
+/* Historique rapproché du CTA */
+.tabbar .tabbtn:nth-of-type(3){
+  grid-column:4; justify-self:start; margin-left:-15px;
+}
+/* Profil rapproché vers l’intérieur */
+.tabbar .tabbtn:nth-of-type(4){
+  grid-column:5; justify-self:end; margin-right:10px;
+}
 
-/* CTA centré */
+/* CTA central (animé) */
 .cta-img{
   position:absolute; left:50%; transform:translateX(-50%);
   top: calc(-1 * var(--cta-lift));
@@ -81,19 +199,17 @@
 }
 .cta-img img{ width:100%; height:100%; object-fit:contain; }
 
-/* Mode commande: on NE change QUE le gap central, pas la largeur des colonnes */
+/* Mode commande : CTA se fond, colonnes resserrées sans changer la taille des icônes */
 body.ordering .cta-img{
   opacity:0; transform:translate(-50%, -2px) scale(.92); pointer-events:none;
 }
-body.ordering .tabbar{ 
-  grid-template-columns:
-    var(--tab-col) var(--tab-col) 0px var(--tab-col) var(--tab-col); /* <- gap replié */
-}
-/* et on neutralise tout offset éventuel */
-body.ordering .tabbar .tabbtn{
-  margin:0 !important; justify-self:center !important;
+body.ordering .tabbar{ --cta-gap: 0px; }      /* rapproche 2 et 4, colonnes clampées */
+body.ordering .tabbar .tabbtn{ margin:0 !important; justify-self:center !important; }
+
+/* Sécurité petits écrans */
+@media (max-width: 360px){
+  :root{ --icon-sz: 440px; --icon-shift-y:-96px; }
 }
 
-/* SÉCURITÉ: la tabbar reste identique même si la bannière est cachée */
-.banner{ /* ta bannière validée */ }
+/* Forçage identique sur tous les onglets (pas de marche) */
 .tab{ min-height: calc(100vh - (var(--tabbar-h) + env(safe-area-inset-bottom, 0px))); }
