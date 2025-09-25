@@ -2,7 +2,6 @@
 <html lang="fr">
 <head>
   <meta charset="utf-8" />
-  <!-- PWA plein écran et safe-area -->
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
@@ -10,8 +9,8 @@
   <link rel="manifest" href="manifest.json" />
 
   <title>Manhattan Street — Commande</title>
-  <link rel="stylesheet" href="styles.css?v=72" />
-  <script defer src="app.js?v=72"></script>
+  <link rel="stylesheet" href="styles.css?v=71" />
+  <script defer src="app.js?v=71"></script>
 </head>
 <body>
   <!-- Splash -->
@@ -19,7 +18,7 @@
     <img src="assets/splash.jpg" alt="Splash Manhattan Street">
   </div>
 
-  <!-- Toast -->
+  <!-- toast -->
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
 
   <!-- ===== Bannière (Accueil uniquement) ===== -->
@@ -59,45 +58,33 @@
 
     <!-- Commande -->
     <section class="tab" id="tab-order">
-      <!-- Aligne avec le JS: .segmented + .seg-btn -->
-      <div class="order-overlay">
-        <div class="segmented" id="orderModes">
-          <button class="seg-btn" data-mode="takeaway">À emporter</button>
-          <button class="seg-btn" data-mode="delivery">Livraison</button>
-          <button class="seg-btn" data-mode="dinein">Sur place</button>
-        </div>
-
-        <!-- Panneaux dynamiques -->
-        <div class="panel" id="deliveryPanel" style="display:none;">
-          <form id="addressForm" class="address-row">
-            <input id="deliveryAddress" placeholder="Ex: 15 rue de Paris, Mouscron" />
-            <button class="btn small primary" type="submit">Valider</button>
-          </form>
-        </div>
-
-        <div class="panel" id="dineinPanel" style="display:none;">
-          <label>Numéro de table
-            <input id="tableNumberInline" inputmode="numeric" pattern="[0-9]*" placeholder="Ex : 12" />
-          </label>
-        </div>
+      <div class="order-overlay" id="orderModes">
+        <button class="seg-btn" data-mode="takeaway">À emporter</button>
+        <button class="seg-btn" data-mode="delivery">Livraison</button>
+        <button class="seg-btn" data-mode="dinein">Sur place</button>
       </div>
 
-      <!-- Carte plein écran sous l’overlay -->
-      <div class="map-fullscreen" id="orderMap">
-        <!-- Leaflet prendra la main ici (JS). Si tu préfères l’iframe de secours, garde ton .map-wrap dans la card -->
-      </div>
-
-      <!-- Card d’infos / fallback -->
       <div class="order-card">
         <h2 id="orderModeTitle">Commande</h2>
         <div class="order-info hint" id="orderInfo"></div>
 
-        <!-- Fallback iframe (reste utile si Leaflet indispo) -->
-        <div class="map-wrap">
-          <iframe id="mapFrame" title="Carte"
-                  src="https://www.openstreetmap.org/export/embed.html?bbox=3.204,50.734,3.224,50.754&layer=mapnik&marker=50.744,3.214">
-          </iframe>
+        <div id="deliveryPanel" class="panel" style="display:none;">
+          <form id="addressForm">
+            <div class="address-row">
+              <input id="deliveryAddress" placeholder="Ex: 15 rue de Paris, Mouscron" />
+              <button class="btn small primary" type="submit">OK</button>
+            </div>
+          </form>
         </div>
+
+        <div id="dineinPanel" class="panel" style="display:none;">
+          <label>Numéro de table
+            <input id="tableNumberInline" inputmode="numeric" pattern="[0-9]*" placeholder="Ex : 12" />
+          </label>
+        </div>
+
+        <!-- Carte -->
+        <div id="orderMap" class="map-fullscreen"></div>
 
         <div class="order-actions">
           <button class="btn primary" id="orderStart">Commencer ma commande</button>
