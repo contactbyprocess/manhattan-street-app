@@ -218,3 +218,19 @@ body.ordering .cta-img{ opacity:0; transform:translate(-50%,-2px) scale(.92); po
 .page-spacer {
   height: calc(32vh + var(--safe-bottom)); /* tu peux ajuster 24–40vh */
 }
+
+
+/* === Stabilise la tabbar sur les onglets courts (hors Accueil) === */
+.tab { position: relative; }
+
+/* Ajoute un "tampon" invisible sous le contenu des onglets non-accueil,
+   pour compenser la tabbar + safe-area et un peu d'air (32vh). */
+#tab-loyalty::after,
+#tab-orders::after,
+#tab-profile::after {
+  content: "";
+  display: block;
+  height: calc(32vh + var(--tabbar-h) + var(--safe-bottom));
+}
+
+/* On laisse l’accueil intact (pas de spacer forcé) */
