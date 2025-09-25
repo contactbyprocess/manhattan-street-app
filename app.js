@@ -3,27 +3,19 @@ const qs = s => document.querySelector(s);
 const qsa = s => [...document.querySelectorAll(s)];
 const get = (k,d)=>{try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch{return d}};
 const set = (k,v)=>localStorage.setItem(k,JSON.stringify(v));
-const euro = n => n.toFixed(2).replace('.',',')+' €';
 function showToast(msg,dur=1500){const t=qs('#toast');if(!t)return;t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),dur);}
 
-/* ===== Données démo (inchangées) ===== */
+/* ===== Données démo ===== */
 const KEY={PROFILE:'ms_profile',USERS:'ms_users',PRODUCTS:'ms_products'};
-const DEFAULT_PRODUCTS=[
-  {id:'b1',name:'Classic Manhattan Burger',price:7.9,img:'https://picsum.photos/seed/b1/900/600',tags:['featured']},
-  {id:'b2',name:'Cheese Lover Burger',price:8.5,img:'https://picsum.photos/seed/b2/900/600',tags:['featured']},
-  {id:'h1',name:'NY Hot-Dog',price:5.9,img:'https://picsum.photos/seed/h1/900/600'},
-  {id:'f1',name:'Frites Maison',price:2.8,img:'https://picsum.photos/seed/f1/900/600'}
-];
-function getProducts(){const p=get(KEY.PRODUCTS,null);if(p)return p;set(KEY.PRODUCTS,DEFAULT_PRODUCTS);return DEFAULT_PRODUCTS;}
 function getUsers(){return get(KEY.USERS,{});} function setUsers(u){set(KEY.USERS,u);}
 function getProfile(){return get(KEY.PROFILE,{firstName:'',email:'',phone:''});}
 function setProfile(p){set(KEY.PROFILE,p);}
 function getPoints(email){const u=getUsers();return u[email]?.points||0;}
 
-/* ===== Bannière carousel (inchangé) ===== */
+/* ===== Bannière carousel ===== */
 function initBannerCarousel(){
-  const track = qs('#bannerTrack');
-  const dots  = qs('#bannerDots');
+  const track = document.querySelector('#bannerTrack');
+  const dots  = document.querySelector('#bannerDots');
   if(!track || !dots) return;
 
   const slides = [...track.children];
@@ -59,26 +51,24 @@ function renderFeatured(){
 }
 
 /* ===== Tabs ===== */
-function toggleBannerFor(tab){
-  const banner = document.querySelector('.banner');
-  if(!banner) return;
-  banner.style.display = (tab === 'home') ? 'block' : 'none';
-}
 function switchTab(tab){
-  // active bouton
+  // activer boutons
   qsa('.tabbar [data-tab]').forEach(b=> b.classList.toggle('active', b.dataset.tab===tab));
-  // active section
+  // activer sections
   qsa('.tab').forEach(s=> s.classList.toggle('active', s.id===`tab-${tab}`));
 
-  toggleBannerFor(tab);
+  // Bannière uniquement sur l’accueil
+  const hb = document.getElementById('homeBanner');
+  if (hb) hb.style.display = (tab === 'home' ? 'block' : 'none');
 
-  // Mode commande = CTA fade out (géré par CSS via body.ordering)
-  if(tab === 'order'){
-    document.body.classList.add('ordering');
-    window.scrollTo({top:0, behavior:'smooth'});
-  }else{
+  // Mode commande : ne touche pas à la taille des icônes (juste replie le gap)
+  if (tab === 'order') {
+    document.body.classList.add('ordering'); // → CSS: --cta-gap:0
+  } else {
     document.body.classList.remove('ordering');
   }
+
+  window.scrollTo({top:0, behavior:'smooth'});
 }
 function bindTabbar(){
   document.addEventListener('click', (e)=>{
@@ -89,61 +79,19 @@ function bindTabbar(){
   });
 }
 
-/* ===== CTA & ouverture "Commande" ===== */
+/* ===== CTA ===== */
 function bindCTA(){
-  const openOrderPage = ()=>{
-    switchTab('order');                 // → ajoute body.ordering
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+  const openOrder = ()=>{
+    switchTab('order');
   };
-
-  qs('#ctaOrder')?.addEventListener('click', (e)=>{
+  document.getElementById('ctaOrder')?.addEventListener('click', (e)=>{
     e.preventDefault(); e.stopPropagation();
-    openOrderPage();
+    openOrder();
   });
 
-  qs('#goOrderTop')?.addEventListener('click', (e)=>{
-    e.preventDefault();
-    openOrderPage();
-  });
-
-  // Choix mode commande (si présent dans ton HTML actuel)
-  document.getElementById('orderModes')?.addEventListener('click', (e)=>{
-    const b = e.target.closest('.mode-btn');
-    if(!b) return;
-    // visuel actif
-    qsa('#orderModes .mode-btn').forEach(x=> x.classList.toggle('active', x===b));
-    const title=qs('#orderModeTitle'), info=qs('#orderInfo');
-    const fn=(getProfile().firstName||'chef');
-
-    if(b.dataset.mode==='takeaway'){
-      title.textContent='Click & Collect';
-      info.textContent=`${fn}, passe ta commande et viens la récupérer.`;
-      qs('#deliveryAddressWrap')?.setAttribute('style','display:none;margin-top:12px;');
-      qs('#dineInBlock')?.setAttribute('style','display:none;margin-top:12px;');
-    }else if(b.dataset.mode==='delivery'){
-      title.textContent='Livraison';
-      info.textContent=`${fn}, saisis ton adresse de livraison.`;
-      qs('#deliveryAddressWrap')?.setAttribute('style','display:block;margin-top:12px;');
-      qs('#dineInBlock')?.setAttribute('style','display:none;margin-top:12px;');
-    }else{
-      title.textContent='Sur place';
-      info.textContent=`${fn}, indique ton numéro de table.`;
-      qs('#deliveryAddressWrap')?.setAttribute('style','display:none;margin-top:12px;');
-      qs('#dineInBlock')?.setAttribute('style','display:block;margin-top:12px;');
-    }
-  });
-
-  // Valider l’adresse (placeholder pour plus tard)
-  document.getElementById('checkAddressBtn')?.addEventListener('click', ()=>{
-    const v = (qs('#deliveryAddress')?.value||'').trim();
-    if(!v) return showToast('Entre une adresse');
-    showToast('Adresse OK ✅', 1500);
-  });
-
-  // ENTER sur table
-  qs('#tableNumber')?.addEventListener('keydown', (e)=>{
-    if(e.key==='Enter'){ e.preventDefault(); showToast('Table enregistrée ✅'); }
-  });
+  // Raccourcis espace client
+  document.getElementById('tileOrders')?.addEventListener('click', ()=> switchTab('orders'));
+  document.getElementById('tileProfile')?.addEventListener('click', ()=> switchTab('profile'));
 }
 
 /* ===== Profil / Fidélité ===== */
@@ -192,15 +140,15 @@ function renderQR(email){
 
 /* ===== INIT ===== */
 document.addEventListener('DOMContentLoaded',()=>{
-  renderFeatured();          // neutralisé (au cas où)
+  renderFeatured();         // neutralisé
   bindTabbar();
   bindCTA();
   bindProfile();
   renderLoyalty();
   initBannerCarousel();
 
-  // Onglet par défaut
-  switchTab('home');         // => affiche la bannière
+  // Onglet par défaut : Accueil
+  switchTab('home');
 });
 
 /* ===== PWA: keep SW fresh ===== */
