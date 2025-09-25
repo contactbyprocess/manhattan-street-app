@@ -61,9 +61,9 @@ function switchTab(tab){
   const hb = document.getElementById('homeBanner');
   if (hb) hb.style.display = (tab === 'home' ? 'block' : 'none');
 
-  // Mode commande : ne touche pas à la taille des icônes (juste replie le gap)
+  // Mode commande : ne touche pas aux tailles, juste le CTA se cache via CSS
   if (tab === 'order') {
-    document.body.classList.add('ordering'); // → CSS: --cta-gap:0
+    document.body.classList.add('ordering');
   } else {
     document.body.classList.remove('ordering');
   }
