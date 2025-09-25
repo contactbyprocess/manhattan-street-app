@@ -14,10 +14,17 @@
   /* Tabbar (validées) */
   --tabbar-bg:#ffffff;
   --tabbar-h:50px;
-  --icon-sz:480px;          /* tes icônes géantes + décalage validés */
+  --icon-sz:480px;          /* icônes validées */
   --icon-shift-y:-105px;
   --cta-size:102px;
   --cta-lift:50px;
+
+  /* NEW: clamp colonnes pour éviter l’agrandissement quand le CTA disparaît */
+  --tab-col-min: 64px;
+  --tab-col-max: 88px;
+
+  /* gap central du CTA (peut être replié en mode ordering) */
+  --cta-gap: calc(var(--cta-size) + 16px);
 }
 
 /* ===== Document ===== */
@@ -38,7 +45,7 @@ h1,h2,h3{ margin:0 0 8px 0 }
 }
 #splash img, .splash img{
   width:100%; height:100%;
-  object-fit:cover;            /* >>> plein écran couvrant */
+  object-fit:cover;            /* plein écran couvrant */
   display:block;
 }
 
@@ -101,15 +108,14 @@ h1,h2,h3{ margin:0 0 8px 0 }
 .map-fullscreen iframe,
 .map-wrap iframe{ width:100%; height:100%; border:0 }
 
-/* ===== Overlay commande (remonté pour être bien visible) ===== */
+/* ===== Overlay commande ===== */
 .order-overlay{
   position: fixed;
   left: 12px; right: 12px;
-  top: calc(120px + var(--safe-top));   /* encadré remonté */
+  top: calc(120px + var(--safe-top));   /* encadré visible */
   z-index: 2;
   display: grid; gap:8px;
 }
-
 .segmented{
   display: grid; grid-template-columns: 1fr 1fr 1fr;
   background: #fff; border:1px solid var(--line); border-radius: 14px; overflow: hidden;
@@ -120,7 +126,6 @@ h1,h2,h3{ margin:0 0 8px 0 }
   color: #333;
 }
 .seg-btn.active{ background:var(--accent-cta); color:#fff; }
-
 .panel{
   background:#fff; border:1px solid var(--line); border-radius: 14px; padding: 10px;
   box-shadow: 0 8px 26px rgba(0,0,0,.10);
@@ -128,7 +133,7 @@ h1,h2,h3{ margin:0 0 8px 0 }
 .address-row{ display: grid; grid-template-columns: 1fr auto; gap:8px; align-items:center; }
 .address-row input{ height:40px; padding:8px; border-radius:10px; border:1px solid #ddd; }
 
-/* ===== Cartes “classiques” (si on n’est pas en plein écran) ===== */
+/* ===== Cartes classiques ===== */
 .map-wrap{ height:300px; margin:12px 0; }
 .map-wrap iframe{ width:100%; height:100%; border:0 }
 
@@ -140,19 +145,18 @@ h1,h2,h3{ margin:0 0 8px 0 }
   padding-bottom: var(--safe-bottom);
   padding: 0 16px;
   box-shadow:0 -2px 8px rgba(0,0,0,.08);
+  overflow:visible;
 
-  /* grille 2 | CTA | 2 + gap central (modifiable) */
-  --cta-gap: calc(var(--cta-size) + 16px);
+  /* grille 2 | CTA | 2 avec colonnes CLAMPÉES (évite l’agrandissement) */
   display:grid;
   grid-template-columns:
-    minmax(64px,1fr)
-    minmax(64px,1fr)
+    minmax(var(--tab-col-min), var(--tab-col-max))
+    minmax(var(--tab-col-min), var(--tab-col-max))
     var(--cta-gap)
-    minmax(64px,1fr)
-    minmax(64px,1fr);
+    minmax(var(--tab-col-min), var(--tab-col-max))
+    minmax(var(--tab-col-min), var(--tab-col-max));
   align-items:center;
 
-  /* transitions douces quand le CTA disparaît */
   transition: grid-template-columns .28s ease, padding .28s ease, box-shadow .28s ease, background .28s ease, opacity .2s ease;
 }
 
@@ -167,6 +171,7 @@ h1,h2,h3{ margin:0 0 8px 0 }
   -webkit-tap-highlight-color: transparent;
   color:#bdbdbd; /* inactif gris */
   transition: color .18s ease, transform .18s ease;
+  max-width: var(--tab-col-max); /* clamp côté bouton aussi */
 }
 .tabbtn.active{ color:#A64027; }  /* actif marque */
 
@@ -219,12 +224,12 @@ h1,h2,h3{ margin:0 0 8px 0 }
 body.ordering .cta-img{
   opacity:0; transform:translate(-50%, -2px) scale(.92); pointer-events:none;
 }
-body.ordering .tabbar{ --cta-gap: 0px; }           /* rapproche les colonnes 2 et 4 */
+body.ordering .tabbar{ --cta-gap: 0px; }           /* rapproche 2 et 4, colonnes clampées */
 body.ordering .tabbar .tabbtn{
   margin:0 !important; justify-self:center !important;
 }
 
-/* Sécurité petits écrans (tu peux conserver 480/-105 si ça te va) */
+/* Sécurité petits écrans (ajuste si besoin) */
 @media (max-width: 360px){
   :root{ --icon-sz: 440px; --icon-shift-y:-96px; }
 }
