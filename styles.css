@@ -14,16 +14,16 @@
   /* Tabbar (validées) */
   --tabbar-bg:#ffffff;
   --tabbar-h:50px;
-  --icon-sz:480px;          /* icônes validées */
+  --icon-sz:480px;
   --icon-shift-y:-105px;
   --cta-size:102px;
   --cta-lift:50px;
 
-  /* clamp colonnes pour éviter l’agrandissement quand le CTA disparaît */
+  /* Colonnes clampées pour ne PAS grossir quand le CTA disparaît */
   --tab-col-min: 64px;
   --tab-col-max: 88px;
 
-  /* gap central du CTA (on NE le replie PLUS en mode commande) */
+  /* Gap central du CTA (on ne le modifie plus en mode commande) */
   --cta-gap: calc(var(--cta-size) + 16px);
 }
 
@@ -36,18 +36,13 @@ body{
 }
 h1,h2,h3{ margin:0 0 8px 0 }
 
-/* ===== Splash (plein écran, compatible #splash ou .splash) ===== */
+/* ===== Splash ===== */
 #splash, .splash{
   position:fixed; inset:0; z-index:9999;
   display:grid; place-items:center;
-  background:#fff;
-  transition:opacity .6s ease;
+  background:#fff; transition:opacity .6s ease;
 }
-#splash img, .splash img{
-  width:100%; height:100%;
-  object-fit:cover;            /* plein écran couvrant */
-  display:block;
-}
+#splash img, .splash img{ width:100%; height:100%; object-fit:cover; display:block }
 
 /* ===== Toast ===== */
 .toast{
@@ -97,57 +92,54 @@ h1,h2,h3{ margin:0 0 8px 0 }
 .tab{ display:none; }
 .tab.active{ display:block; }
 
-/* ===== Map plein écran (derrière l’UI, au-dessus du fond) ===== */
+/* ===== Map plein écran ===== */
 .map-fullscreen{
   position: fixed;
   top: 0; left: 0; right: 0;
   bottom: calc(var(--tabbar-h) + env(safe-area-inset-bottom, 0px));
-  z-index: 1;
-  background: #f2f2f2;
+  z-index: 1; background: #f2f2f2;
 }
 .map-fullscreen iframe,
 .map-wrap iframe{ width:100%; height:100%; border:0 }
 
 /* ===== Overlay commande ===== */
 .order-overlay{
-  position: fixed;
-  left: 12px; right: 12px;
-  top: calc(120px + var(--safe-top));   /* encadré visible */
-  z-index: 2;
-  display: grid; gap:8px;
+  position: fixed; left: 12px; right: 12px;
+  top: calc(120px + var(--safe-top));
+  z-index: 2; display: grid; gap:8px;
 }
 .segmented{
   display: grid; grid-template-columns: 1fr 1fr 1fr;
-  background: #fff; border:1px solid var(--line); border-radius: 14px; overflow: hidden;
-  box-shadow: 0 4px 18px rgba(0,0,0,.08);
+  background:#fff; border:1px solid var(--line); border-radius:14px; overflow:hidden;
+  box-shadow:0 4px 18px rgba(0,0,0,.08);
 }
 .seg-btn{
-  appearance: none; background: transparent; border: 0; padding: 10px 8px; font-weight: 800; cursor: pointer;
-  color: #333;
+  appearance:none; background:transparent; border:0; padding:10px 8px; font-weight:800; cursor:pointer; color:#333;
 }
 .seg-btn.active{ background:var(--accent-cta); color:#fff; }
-.panel{
-  background:#fff; border:1px solid var(--line); border-radius: 14px; padding: 10px;
-  box-shadow: 0 8px 26px rgba(0,0,0,.10);
-}
-.address-row{ display: grid; grid-template-columns: 1fr auto; gap:8px; align-items:center; }
-.address-row input{ height:40px; padding:8px; border-radius:10px; border:1px solid #ddd; }
 
-/* ===== Cartes classiques ===== */
-.map-wrap{ height:300px; margin:12px 0; }
+.panel{
+  background:#fff; border:1px solid var(--line); border-radius:14px; padding:10px;
+  box-shadow:0 8px 26px rgba(0,0,0,.10);
+}
+.address-row{ display:grid; grid-template-columns:1fr auto; gap:8px; align-items:center }
+.address-row input{ height:40px; padding:8px; border-radius:10px; border:1px solid #ddd }
+
+/* ===== Carte classique ===== */
+.map-wrap{ height:300px; margin:12px 0 }
 .map-wrap iframe{ width:100%; height:100%; border:0 }
 
-/* ===== Tabbar (blanche, validée) ===== */
+/* ===== Tabbar (blanche, VALIDÉE – inchangée) ===== */
 .tabbar{
   position:fixed; left:0; right:0; bottom:0; z-index:30;
   background:var(--tabbar-bg);
-  height: calc(var(--tabbar-h) + var(--safe-bottom));
+  height: calc(var(--tabbar-h) + var(--safe-bottom));   /* <<< comme sur l’accueil */
   padding-bottom: var(--safe-bottom);
   padding: 0 16px;
   box-shadow:0 -2px 8px rgba(0,0,0,.08);
   overflow:visible;
 
-  /* grille 2 | CTA | 2 avec colonnes CLAMPÉES (empêche l’agrandissement) */
+  /* grille 2 | CTA | 2 (colonnes clampées pour ne pas grossir) */
   display:grid;
   grid-template-columns:
     minmax(var(--tab-col-min), var(--tab-col-max))
@@ -160,53 +152,34 @@ h1,h2,h3{ margin:0 0 8px 0 }
   transition: grid-template-columns .28s ease, padding .28s ease, box-shadow .28s ease, background .28s ease, opacity .2s ease;
 }
 
-/* Icônes des onglets (teinte via mask) */
+/* Icônes (teinte via mask) */
 .tabbtn{
   -webkit-appearance:none; appearance:none;
   background:transparent; border:0; padding:0; cursor:pointer;
   width:100%; height:var(--icon-sz);
-  justify-self:center; align-self:center;
-  display:grid; place-items:center;
+  justify-self:center; align-self:center; display:grid; place-items:center;
   transform: translateY(var(--icon-shift-y));
-  -webkit-tap-highlight-color: transparent;
-  color:#bdbdbd; /* inactif gris */
-  transition: color .18s ease, transform .18s ease;
-  max-width: var(--tab-col-max); /* clamp côté bouton aussi */
+  -webkit-tap-highlight-color:transparent;
+  color:#bdbdbd; transition:color .18s ease, transform .18s ease;
+  max-width: var(--tab-col-max);
 }
-.tabbtn.active{ color:#A64027; }  /* actif marque */
-
-/* on n’utilise pas <img>, on masque et on peint au mask */
+.tabbtn.active{ color:#A64027; }
 .tabbtn .tab-ic{ display:none !important; }
 .tabbtn::before{
-  content:"";
-  width: min(var(--icon-sz), 100%);
-  height: min(var(--icon-sz), 100%);
-  display:block;
-  background: currentColor;
-  transform: translateY(var(--icon-shift-y));
-  -webkit-mask: var(--ic) center / contain no-repeat;
-          mask: var(--ic) center / contain no-repeat;
+  content:""; width:min(var(--icon-sz),100%); height:min(var(--icon-sz),100%);
+  display:block; background:currentColor; transform: translateY(var(--icon-shift-y));
+  -webkit-mask: var(--ic) center / contain no-repeat; mask: var(--ic) center / contain no-repeat;
 }
 .tabbtn[data-tab="home"]   { --ic: url('assets/tab-home.svg'); }
 .tabbtn[data-tab="loyalty"]{ --ic: url('assets/tab-loyalty.svg'); }
 .tabbtn[data-tab="orders"] { --ic: url('assets/tab-orders.svg'); }
 .tabbtn[data-tab="profile"]{ --ic: url('assets/tab-profile.svg'); }
 
-/* Placement symétrique validé + ajustements fins côté droit */
+/* Placement validé + ajustements fins */
 .tabbar .tabbtn:nth-of-type(1){ grid-column:1; }
 .tabbar .tabbtn:nth-of-type(2){ grid-column:2; }
-/* Historique rapproché du CTA */
-.tabbar .tabbtn:nth-of-type(3){
-  grid-column:4;
-  justify-self:start;
-  margin-left:-15px;
-}
-/* Profil rapproché vers l’intérieur */
-.tabbar .tabbtn:nth-of-type(4){
-  grid-column:5;
-  justify-self:end;
-  margin-right:10px;
-}
+.tabbar .tabbtn:nth-of-type(3){ grid-column:4; justify-self:start; margin-left:-15px; }
+.tabbar .tabbtn:nth-of-type(4){ grid-column:5; justify-self:end;   margin-right:10px; }
 
 /* CTA central (animé) */
 .cta-img{
@@ -215,74 +188,25 @@ h1,h2,h3{ margin:0 0 8px 0 }
   width: var(--cta-size); height: var(--cta-size);
   background:transparent; border:0; padding:0; cursor:pointer;
   display:grid; place-items:center; z-index:101;
-
-  transition: opacity .24s ease, transform .24s ease;
+  transition:opacity .24s ease, transform .24s ease;
 }
-.cta-img img{ width:100%; height:100%; object-fit:contain; }
+.cta-img img{ width:100%; height:100%; object-fit:contain }
 
-/* Mode commande : CTA se fond, colonnes conservées (pas de repli du gap) */
-body.ordering .cta-img{
-  opacity:0; transform:translate(-50%, -2px) scale(.92); pointer-events:none;
-}
-/* (NOTE) On a volontairement supprimé:
-   body.ordering .tabbar{ --cta-gap: 0px; }
-   pour que la tabbar reste identique à l’accueil. */
-body.ordering .tabbar .tabbtn{
-  margin:0 !important; justify-self:center !important;
-}
+/* Mode commande : on cache le CTA, MAIS on ne change PAS le gap ni la taille des icônes */
+body.ordering .cta-img{ opacity:0; transform:translate(-50%,-2px) scale(.92); pointer-events:none; }
+/* pas de body.ordering .tabbar{ --cta-gap:0 } → la tabbar reste identique */
 
-/* Sécurité petits écrans (ajuste si besoin) */
+/* Petits écrans */
 @media (max-width: 360px){
-  :root{ --icon-sz: 440px; --icon-shift-y:-96px; }
+  :root{ --icon-sz:440px; --icon-shift-y:-96px; }
 }
 
-/* Forçage identique sur tous les onglets (pas de marche) */
+/* Hauteur min des pages → pas de “marche” */
 .tab{ min-height: calc(100vh - (var(--tabbar-h) + env(safe-area-inset-bottom, 0px))); }
 
-/* Quand on n’est pas sur Commande, on coupe la carte/overlay plein écran */
+/* Masquer carte/overlay si on n’est pas sur l’onglet commande */
 #tab-order:not(.active) .map-fullscreen{ display:none; }
 #tab-order:not(.active) .order-overlay{ display:none; }
 
-/* Petite carte info dans l’onglet commande (sous l’overlay) */
-.order-card{
-  position: relative;
-  z-index: 0;
-  margin: calc(120px + var(--safe-top)) 12px 12px; /* descend sous l’overlay */
-}
-
-/* ==== LOCK TABBAR: identique à l'accueil sur TOUTES les pages ==== */
-.tabbar{
-  position: fixed !important;
-  left: 0 !important;
-  right: 0 !important;
-  bottom: 0 !important;                      /* collée tout en bas */
-  z-index: 30 !important;
-
-  height: var(--tabbar-h) !important;        /* hauteur validée, inchangée */
-  padding-bottom: env(safe-area-inset-bottom, 0px) !important; /* recouvre le home-indicator */
-  background: var(--tabbar-bg) !important;
-  box-shadow: 0 -2px 8px rgba(0,0,0,.08) !important;
-}
-
-/* Peindre la safe-area sous la barre (sans la pousser) */
-.tabbar::after{
-  content: "";
-  position: fixed;
-  left: 0; right: 0; bottom: 0;
-  height: env(safe-area-inset-bottom, 0px);
-  background: var(--tabbar-bg);
-  pointer-events: none;
-  z-index: 20; /* juste sous la tabbar */
-}
-
-/* Sécurité: empêcher tout style par-onglet de décaler la barre */
-#tab-home .tabbar,
-#tab-loyalty .tabbar,
-#tab-orders .tabbar,
-#tab-profile .tabbar,
-#tab-order .tabbar{
-  bottom: 0 !important;
-  height: var(--tabbar-h) !important;
-  padding-bottom: env(safe-area-inset-bottom, 0px) !important;
-}
-
+/* Petite carte info sous l’overlay */
+.order-card{ position:relative; z-index:0; margin: calc(120px + var(--safe-top)) 12px 12px; }
