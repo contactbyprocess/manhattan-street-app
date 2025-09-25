@@ -2,6 +2,7 @@
 <html lang="fr">
 <head>
   <meta charset="utf-8" />
+  <!-- PWA plein écran + safe-area -->
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
@@ -14,7 +15,7 @@
 </head>
 <body>
   <!-- Splash -->
-  <div id="splash">
+  <div id="splash" class="splash">
     <img src="assets/splash.jpg" alt="Splash Manhattan Street">
   </div>
 
@@ -58,7 +59,7 @@
 
     <!-- Commande -->
     <section class="tab" id="tab-order">
-      <div class="order-overlay" id="orderModes">
+      <div class="order-modes segmented" id="orderModes">
         <button class="seg-btn" data-mode="takeaway">À emporter</button>
         <button class="seg-btn" data-mode="delivery">Livraison</button>
         <button class="seg-btn" data-mode="dinein">Sur place</button>
@@ -68,23 +69,24 @@
         <h2 id="orderModeTitle">Commande</h2>
         <div class="order-info hint" id="orderInfo"></div>
 
-        <div id="deliveryPanel" class="panel" style="display:none;">
-          <form id="addressForm">
-            <div class="address-row">
-              <input id="deliveryAddress" placeholder="Ex: 15 rue de Paris, Mouscron" />
-              <button class="btn small primary" type="submit">OK</button>
-            </div>
-          </form>
+        <div id="deliveryAddressWrap" style="display:none;margin-top:12px;">
+          <label>Adresse de livraison :
+            <input id="deliveryAddress" placeholder="Ex: 15 rue de Paris, Mouscron" />
+          </label>
+          <button id="checkAddressBtn" class="btn small primary" style="margin-top:8px;">Valider l’adresse</button>
         </div>
 
-        <div id="dineinPanel" class="panel" style="display:none;">
+        <div id="dineInBlock" style="display:none;margin-top:12px;">
           <label>Numéro de table
-            <input id="tableNumberInline" inputmode="numeric" pattern="[0-9]*" placeholder="Ex : 12" />
+            <input id="tableNumber" inputmode="numeric" pattern="[0-9]*" placeholder="Ex : 12" />
           </label>
         </div>
 
-        <!-- Carte -->
-        <div id="orderMap" class="map-fullscreen"></div>
+        <div class="map-wrap">
+          <iframe id="mapFrame" title="Carte"
+            src="https://www.openstreetmap.org/export/embed.html?bbox=3.204,50.734,3.224,50.754&layer=mapnik&marker=50.744,3.214">
+          </iframe>
+        </div>
 
         <div class="order-actions">
           <button class="btn primary" id="orderStart">Commencer ma commande</button>
@@ -134,7 +136,7 @@
     </section>
   </main>
 
-  <!-- Tabbar -->
+  <!-- Tabbar (blanche, validée, CTA centré) -->
   <nav class="tabbar" aria-label="Navigation">
     <button class="tabbtn" data-tab="home"><img class="tab-ic" src="assets/tab-home.svg" alt=""/></button>
     <button class="tabbtn" data-tab="loyalty"><img class="tab-ic" src="assets/tab-loyalty.svg" alt=""/></button>
