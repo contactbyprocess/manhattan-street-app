@@ -11,19 +11,19 @@
   /* Bannière */
   --banner-h: 21vh;
 
-  /* Tabbar (VALIDÉE) */
+  /* Tabbar (validées) */
   --tabbar-bg:#ffffff;
   --tabbar-h:50px;
-  --icon-sz:480px;
+  --icon-sz:480px;          /* icônes validées */
   --icon-shift-y:-105px;
   --cta-size:102px;
   --cta-lift:50px;
 
-  /* Colonnes clampées (évite de grossir quand le CTA disparaît) */
+  /* Colonnes clampées pour ne PAS grossir quand le CTA disparaît */
   --tab-col-min: 64px;
   --tab-col-max: 88px;
 
-  /* Gap central du CTA (on NE le replie pas en mode commande) */
+  /* Gap central du CTA (ne change pas en mode commande) */
   --cta-gap: calc(var(--cta-size) + 16px);
 }
 
@@ -44,21 +44,17 @@ h1,h2,h3{ margin:0 0 8px 0 }
 }
 #splash img, .splash img{ width:100%; height:100%; object-fit:cover; display:block }
 
-/* ===== Toast ===== */
+/* ===== Toast (bulle en bas-centre) ===== */
 .toast{
-  position:fixed; left:50%; transform:translateX(-50%); top:16px;
+  position:fixed; left:50%; transform:translateX(-50%);
+  bottom: calc(var(--tabbar-h) + var(--safe-bottom) + 16px);
   background:rgba(0,0,0,.85); color:#fff; padding:10px 14px; border-radius:12px;
   z-index:9998; opacity:0; pointer-events:none; transition:opacity .2s;
-  max-width:92vw; text-align:center;
+  max-width: 92vw; text-align:center;
 }
 .toast.show{ opacity:1 }
-.toast.bottom{
-  top:auto;
-  bottom: calc(var(--tabbar-h) + env(safe-area-inset-bottom, 0px) + 16px);
-  transform: translateX(-50%);
-}
 
-/* ===== Bannière (Accueil uniquement) ===== */
+/* ===== Bannière (validée) ===== */
 .banner{
   position:relative; margin:0; padding:0; border:0; background:#000;
   margin-top: calc(-1 * var(--safe-top));
@@ -95,27 +91,18 @@ h1,h2,h3{ margin:0 0 8px 0 }
 .hero-tag{ font-size:15px; font-weight:900; letter-spacing:.3px }
 
 /* ===== Onglets (pages) ===== */
-.tab{ display:none; position:relative; }
+.tab{ display:none; }
 .tab.active{ display:block; }
 
-/* ===== Carte (iframe) ===== */
-.map-wrap{ height:300px; margin:12px 0; background:#f2f2f2; }
+/* ===== Carte en BLOC (pas plein écran) ===== */
+.map-wrap{ height:300px; margin:12px 0 }
 .map-wrap iframe{ width:100%; height:100%; border:0 }
 
-/* Plein écran (modes livraison / emporter) */
-.map-wrap.fullscreen{
-  position: fixed;
-  top: 0; left: 0; right: 0;
-  bottom: calc(var(--tabbar-h) + env(safe-area-inset-bottom, 0px));
-  height: auto; z-index: 1;
-}
-
-/* ===== Overlay commande (inputs) ===== */
-.order-modes.segmented{
-  display:grid; grid-template-columns:1fr 1fr 1fr;
+/* ===== Encadré modes commande ===== */
+.segmented{
+  display: grid; grid-template-columns: 1fr 1fr 1fr;
   background:#fff; border:1px solid var(--line); border-radius:14px; overflow:hidden;
   box-shadow:0 4px 18px rgba(0,0,0,.08);
-  position: sticky; top: calc(12px + var(--safe-top)); z-index: 3;
 }
 .seg-btn{
   appearance:none; background:transparent; border:0; padding:10px 8px; font-weight:800; cursor:pointer; color:#333;
@@ -123,26 +110,9 @@ h1,h2,h3{ margin:0 0 8px 0 }
 .seg-btn.active{ background:var(--accent-cta); color:#fff; }
 
 .order-card{
-  position:relative; z-index:2;
-  background:#fff; border:1px solid var(--line); border-radius:14px; padding:12px;
-  box-shadow:0 8px 26px rgba(0,0,0,.10);
-  margin-top:12px;
+  background:#fff; border:1px solid var(--line); border-radius:16px; padding:16px; margin:10px 0;
+  box-shadow:0 4px 14px rgba(0,0,0,.05);
 }
-
-/* Adresse + suggestions */
-.address-wrap{ position: relative; display:block; }
-.address-row{ display:grid; grid-template-columns:1fr auto; gap:8px; align-items:center }
-.address-row input,
-#deliveryAddress{ width:100%; height:40px; padding:8px; border-radius:10px; border:1px solid #ddd }
-
-.addr-suggest{
-  position:absolute; left:0; right:0; top: calc(100% + 6px);
-  background:#fff; border:1px solid var(--line); border-radius:12px;
-  box-shadow:0 12px 30px rgba(0,0,0,.12);
-  max-height:240px; overflow:auto; z-index:5; padding:6px 0;
-}
-.addr-suggest .item{ padding:10px 12px; cursor:pointer; line-height:1.2 }
-.addr-suggest .item:hover{ background:#f4f4f4 }
 
 /* ===== Tabbar (blanche, VALIDÉE – inchangée) ===== */
 .tabbar{
@@ -166,7 +136,7 @@ h1,h2,h3{ margin:0 0 8px 0 }
   transition: grid-template-columns .28s ease, padding .28s ease, box-shadow .28s ease, background .28s ease, opacity .2s ease;
 }
 
-/* Icônes (mask colorisé) */
+/* Icônes (teinte via mask) */
 .tabbtn{
   -webkit-appearance:none; appearance:none;
   background:transparent; border:0; padding:0; cursor:pointer;
@@ -208,12 +178,14 @@ h1,h2,h3{ margin:0 0 8px 0 }
 
 /* Mode commande : on cache le CTA, MAIS on ne change PAS le gap ni la taille des icônes */
 body.ordering .cta-img{ opacity:0; transform:translate(-50%,-2px) scale(.92); pointer-events:none; }
-/* pas de body.ordering .tabbar{ --cta-gap:0 } → la tabbar reste identique */
-
-/* Hauteur min des pages → pas de “marche” visuelle */
-.tab{ min-height: calc(100vh - (var(--tabbar-h) + env(safe-area-inset-bottom, 0px))); }
 
 /* Petits écrans */
 @media (max-width: 360px){
   :root{ --icon-sz:440px; --icon-shift-y:-96px; }
 }
+
+/* Hauteur min des pages → pas de “marche” */
+.tab{ min-height: calc(100vh - (var(--tabbar-h) + env(safe-area-inset-bottom, 0px))); }
+
+/* Spacer à mettre en bas des onglets non-accueil tant qu'ils sont vides */
+.page-spacer { height: calc(32vh + var(--safe-bottom)); }
