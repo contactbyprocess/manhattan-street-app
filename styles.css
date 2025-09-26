@@ -226,3 +226,39 @@ body.ordering .cta-img{ opacity:0; transform:translate(-50%,-2px) scale(.92); po
 .notif.success { background:#27ae60; }
 .notif.error   { background:#c0392b; }
 .notif.info    { background:#2980b9; }
+
+/* ===== Notif “message” en haut ===== */
+#notifBar.notif{
+  position: fixed;
+  left: 12px; right: 12px;
+  top: calc(10px + env(safe-area-inset-top, 0px));
+  z-index: 9998;
+  padding: 12px 14px;
+  border-radius: 14px;
+  font-weight: 700;
+  box-shadow: 0 10px 30px rgba(0,0,0,.15);
+  opacity: 0; transform: translateY(-12px);
+  transition: opacity .18s ease, transform .18s ease;
+  text-align: center;
+}
+#notifBar.notif.show{ opacity:1; transform: translateY(0) }
+#notifBar.notif.info    { background:#eef2ff; color:#1e2a78; }
+#notifBar.notif.success { background:#e9f8ee; color:#145a2c; }
+#notifBar.notif.error   { background:#ffecec; color:#7a1616; }
+
+/* ===== Suggestions d’adresse (auto-complétion) ===== */
+#addrSuggest.addr-suggest{
+  position: fixed; z-index: 9999;
+  background:#fff; border:1px solid #e7e7e7; border-radius:12px;
+  box-shadow: 0 8px 26px rgba(0,0,0,.12);
+  max-height: 50vh; overflow:auto;
+  display:none;
+}
+#addrSuggest.addr-suggest.open{ display:block }
+#addrSuggest .s-item{
+  padding:10px 12px; cursor:pointer; font-size:14px;
+  border-bottom:1px solid #f1f1f1;
+}
+#addrSuggest .s-item:last-child{ border-bottom:0 }
+#addrSuggest .s-item:hover{ background:#fafafa }
+#addrSuggest .s-item.muted{ color:#888; cursor:default; background:#f9f9f9 }
