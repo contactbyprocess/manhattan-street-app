@@ -55,18 +55,30 @@ function switchTab(tab){
   // activer sections
   qsa('.tab').forEach(s=> s.classList.toggle('active', s.id===`tab-${tab}`));
 
-  // Bannière uniquement sur l’accueil
-  const hb = qs('#homeBanner');
+ // ...dans switchTab(tab), après avoir activé les sections/boutons :
+{
+  // Bannière accueil
+  const hb = document.getElementById('homeBanner');
   if (hb) hb.style.display = (tab === 'home' ? 'block' : 'none');
 
-  // Mode commande : ne pas toucher au layout de la tabbar (juste cacher le CTA)
+  // Mode commande : CTA fade (gap inchangé)
   if (tab === 'order') {
     document.body.classList.add('ordering');
   } else {
     document.body.classList.remove('ordering');
   }
 
-  window.scrollTo({top:0, behavior:'smooth'});
+  // --- HOTFIX reflow + scroll top pour éviter l'offset initial ---
+  // 1) On force le reflow
+  document.body.getBoundingClientRect();
+  // 2) On désactive temporairement le scroll-behavior smooth
+  const html = document.documentElement;
+  const prev = html.style.scrollBehavior;
+  html.style.scrollBehavior = 'auto';
+  // 3) On remonte tout en haut (instantané)
+  window.scrollTo(0, 0);
+  // 4) On rétablit le smooth pour l’app après un tick
+  requestAnimationFrame(() => { html.style.scrollBehavior = prev || ''; });
 }
 function bindTabbar(){
   document.addEventListener('click', (e)=>{
