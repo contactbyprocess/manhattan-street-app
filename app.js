@@ -3,17 +3,14 @@ const qs = s => document.querySelector(s);
 const qsa = s => [...document.querySelectorAll(s)];
 const get = (k,d)=>{try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch{return d}};
 const set = (k,v)=>localStorage.setItem(k,JSON.stringify(v));
-
-function showToast(msg, dur=1500, pos='top'){
+function showToast(msg,dur=1800){
   const t=qs('#toast'); if(!t) return;
-  t.textContent = msg;
-  t.classList.toggle('bottom', pos==='bottom');
-  t.classList.add('show');
-  setTimeout(()=> t.classList.remove('show'), dur);
+  t.textContent=msg; t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'), dur);
 }
 
-/* ===== Données démo ===== */
-const KEY={PROFILE:'ms_profile',USERS:'ms_users',PRODUCTS:'ms_products'};
+/* ===== Données profil / points (démo) ===== */
+const KEY={PROFILE:'ms_profile',USERS:'ms_users'};
 function getUsers(){return get(KEY.USERS,{});} function setUsers(u){set(KEY.USERS,u);}
 function getProfile(){return get(KEY.PROFILE,{firstName:'',email:'',phone:''});}
 function setProfile(p){set(KEY.PROFILE,p);}
@@ -68,10 +65,10 @@ function switchTab(tab){
   const hb = document.getElementById('homeBanner');
   if (hb) hb.style.display = (tab === 'home' ? 'block' : 'none');
 
-  // Mode commande : CTA fade uniquement (tabbar inchangée)
+  // Mode commande : on cache juste le CTA (les colonnes/tailles restent identiques)
   if (tab === 'order') {
-    document.body.classList.add('ordering'); // → CSS cache le CTA, ne change pas le gap
-    setMode(currentMode || 'takeaway');      // met à jour panneaux & carte
+    document.body.classList.add('ordering');
+    setMode('takeaway'); // par défaut
   } else {
     document.body.classList.remove('ordering');
   }
@@ -87,10 +84,52 @@ function bindTabbar(){
   });
 }
 
-/* ===== Commande (iframe OSM) ===== */
+/* ===== Commande : modes et adresse ===== */
 const RESTO_ADDR = 'Petite rue 10, Mouscron 7700, Belgique';
 const RESTO_FALLBACK = { lat: 50.744, lng: 3.214 };
 const DELIVERY_RADIUS_M = 5000;
+
+function requestGeolocationAuth(){
+  if(!navigator.geolocation) return;
+  // simple “poke” pour demander l’autorisation en amont
+  navigator.geolocation.getCurrentPosition(
+    _=>{}, _=>{}, { enableHighAccuracy:true, timeout:5000, maximumAge:0 }
+  );
+}
+
+function setMode(mode){
+  // toggle visuel du segmented
+  qsa('#orderModes .seg-btn').forEach(b=> b.classList.toggle('active', b.dataset.mode===mode));
+
+  // textes et blocs
+  const title=qs('#orderModeTitle'), info=qs('#orderInfo');
+  const addrWrap=qs('#deliveryAddressWrap');
+  const dineWrap=qs('#dineInBlock');
+  const mapWrap=qs('#mapWrap');
+
+  if(mode==='takeaway'){
+    title.textContent='Click & Collect';
+    info.textContent="Passe ta commande et viens la récupérer au restaurant.";
+    addrWrap.style.display='none';
+    dineWrap.style.display='none';
+    mapWrap.style.display='block';
+  }
+  else if(mode==='delivery'){
+    title.textContent='Livraison';
+    info.textContent="Entre ton adresse pour vérifier la zone de livraison.";
+    addrWrap.style.display='block';
+    dineWrap.style.display='none';
+    mapWrap.style.display='block';
+    requestGeolocationAuth();
+  }
+  else{ // dinein
+    title.textContent='Sur place';
+    info.textContent="Indique ton numéro de table.";
+    addrWrap.style.display='none';
+    dineWrap.style.display='block';
+    mapWrap.style.display='none';     // <<< pas de carte en Sur place
+  }
+}
 
 function haversine(a, b){
   const R=6371000, toRad = d=>d*Math.PI/180;
@@ -115,181 +154,55 @@ async function geocode(query){
   if(!res.ok) throw new Error('geo http '+res.status);
   const arr = await res.json();
   if(!arr.length) throw new Error('Adresse introuvable');
-  const pt = { lat: parseFloat(arr[0].lat), lng: parseFloat(arr[0].lon) };
-  set(cacheKey, pt);
-  return pt;
+  return { lat: parseFloat(arr[0].lat), lng: parseFloat(arr[0].lon) };
 }
 
-/* Carte (iframe) helpers */
-function centerIframeTo(lat, lng, zoom=16){
-  const iframe = document.getElementById('mapFrame');
-  if(!iframe) return;
-  const delta = zoom >= 16 ? 0.01 : 0.02;
-  const bbox=`${lng-delta},${lat-delta},${lng+delta},${lat+delta}`;
-  iframe.src = `https://www.openstreetmap.org/export/embed.html?bbox=${bbox}&layer=mapnik&marker=${lat},${lng}`;
-}
-
-/* Demande d’autorisation de géoloc (pas d’usage immédiat, mais déclenche le prompt) */
-function requestGeolocationAuth(){
-  if(!navigator.geolocation) return;
-  navigator.geolocation.getCurrentPosition(
-    _pos => {},
-    _err => {},
-    { enableHighAccuracy:true, timeout:8000, maximumAge:0 }
-  );
-}
-
-let currentMode = 'takeaway';
-
-function setMode(mode){
-  currentMode = mode;
-  document.querySelectorAll('#orderModes .seg-btn').forEach(b=>{
-    b.classList.toggle('active', b.dataset.mode === mode);
-  });
-
-  const deliveryPanel = document.getElementById('deliveryAddressWrap');
-  const dineinPanel   = document.getElementById('dineInBlock');
-  const mapWrap       = document.querySelector('.map-wrap');
-
-  if(mode === 'delivery'){
-    deliveryPanel.style.display = 'block';
-    dineinPanel.style.display   = 'none';
-    if(mapWrap){
-      mapWrap.style.display = 'block';
-      mapWrap.classList.add('fullscreen');       // plein écran
-    }
-    requestGeolocationAuth();
-  } else if(mode === 'takeaway'){
-    deliveryPanel.style.display = 'none';
-    dineinPanel.style.display   = 'none';
-    if(mapWrap){
-      mapWrap.style.display = 'block';
-      mapWrap.classList.add('fullscreen');       // plein écran
-    }
-  } else { // sur place
-    deliveryPanel.style.display = 'none';
-    dineinPanel.style.display   = 'block';
-    if(mapWrap){
-      mapWrap.classList.remove('fullscreen');
-      mapWrap.style.display = 'none';            // pas de carte
-    }
-  }
-
-  // titre / info
-  const title=qs('#orderModeTitle'), info=qs('#orderInfo');
-  const fn=(getProfile().firstName||'chef');
-  if(mode==='takeaway'){
-    title.textContent='Click & Collect';
-    info.textContent=`${fn}, passe ta commande et viens la récupérer.`;
-  } else if(mode==='delivery'){
-    title.textContent='Livraison';
-    info.textContent=`${fn}, indique ton adresse de livraison.`;
-  } else {
-    title.textContent='Sur place';
-    info.textContent=`${fn}, indique ton numéro de table.`;
-  }
-
-  window.scrollTo({top:0, behavior:'smooth'});
-}
-
-/* Vérif / centrage adresse */
-async function handleAddressSubmit(){
-  const input = document.getElementById('deliveryAddress');
-  if(!input) return;
-  const q = input.value.trim();
-  if(!q){ showToast('Entre une adresse', 1400, 'bottom'); return; }
+async function validateAddress(){
+  const input = qs('#deliveryAddress');
+  const q = (input?.value || '').trim();
+  if(!q){ showToast('Entre une adresse'); return; }
 
   try{
     const pt = await geocode(q);
-    centerIframeTo(pt.lat, pt.lng, 16);
-
-    // distance par rapport au resto
-    let resto = RESTO_FALLBACK;
-    try{ resto = await geocode(RESTO_ADDR); }catch(_){}
+    const resto = RESTO_FALLBACK; // pour l’instant on garde le centre fixe de l’iframe
     const d = haversine(resto, pt);
+
     if(d > DELIVERY_RADIUS_M){
-      showToast('Adresse hors zone (5 km)', 1800, 'bottom');
+      showToast('Désolé, adresse hors zone (5 km) ❌');
       return;
     }
-    showToast('Adresse OK ✅', 1500, 'bottom');
-  }catch(_err){
-    showToast('Adresse introuvable', 1500, 'bottom');
+    showToast('Adresse OK ✅');
+    // NOTE: on ne bouge pas la carte (iframe) pour l’instant → design plus tard
+  }catch(_){
+    showToast('Adresse introuvable');
   }
-}
-
-/* Auto-complétion adresse (Nominatim) */
-function debounce(fn, delay=250){
-  let t; return (...args)=>{ clearTimeout(t); t=setTimeout(()=>fn(...args), delay); };
-}
-async function fetchAddressSuggest(q){
-  if(!q || q.length < 3) return [];
-  const url = new URL('https://nominatim.openstreetmap.org/search');
-  url.searchParams.set('q', q);
-  url.searchParams.set('format', 'json');
-  url.searchParams.set('limit', '5');
-  url.searchParams.set('addressdetails', '1');
-  url.searchParams.set('countrycodes', 'be,fr');
-  const res = await fetch(url.toString(), {
-    headers: { 'Accept': 'application/json', 'User-Agent': 'MSApp/1.0 (demo)' }
-  });
-  if(!res.ok) return [];
-  return await res.json();
-}
-function bindAddressAutocomplete(){
-  const input = document.getElementById('deliveryAddress');
-  const box   = document.getElementById('addrSuggest');
-  if(!input || !box) return;
-
-  const render = (items)=>{
-    if(!items.length){ box.style.display='none'; box.innerHTML=''; return; }
-    box.innerHTML = items.map(it=>`<div class="item" data-lat="${it.lat}" data-lng="${it.lon}">
-      ${it.display_name}
-    </div>`).join('');
-    box.style.display='block';
-  };
-
-  const onInput = debounce(async ()=>{
-    const q = input.value.trim();
-    const res = await fetchAddressSuggest(q);
-    render(res);
-  }, 250);
-
-  input.addEventListener('input', onInput);
-  input.addEventListener('focus', onInput);
-  input.addEventListener('blur', ()=> setTimeout(()=>{ box.style.display='none'; }, 180));
-
-  box.addEventListener('click', (e)=>{
-    const it = e.target.closest('.item'); if(!it) return;
-    input.value = e.target.textContent.trim();
-    box.style.display='none';
-    centerIframeTo(parseFloat(it.dataset.lat), parseFloat(it.dataset.lng), 16);
-    showToast('Adresse sélectionnée ✅', 1400, 'bottom');
-  });
 }
 
 /* ===== CTA ===== */
 function bindCTA(){
-  const openOrder = ()=>{
-    switchTab('order'); // -> body.ordering + setMode()
-  };
-  document.getElementById('ctaOrder')?.addEventListener('click', (e)=>{
+  const openOrder = ()=> switchTab('order');
+
+  qs('#ctaOrder')?.addEventListener('click', (e)=>{
     e.preventDefault(); e.stopPropagation();
     openOrder();
   });
 
-  // Raccourcis espace client
-  document.getElementById('tileOrders')?.addEventListener('click', ()=> switchTab('orders'));
-  document.getElementById('tileProfile')?.addEventListener('click', ()=> switchTab('profile'));
-
-  // Modes
-  document.getElementById('orderModes')?.addEventListener('click', (e)=>{
+  // Segmented control
+  qs('#orderModes')?.addEventListener('click', (e)=>{
     const b = e.target.closest('.seg-btn');
     if(!b) return;
     setMode(b.dataset.mode);
   });
 
-  // Adresse
-  document.getElementById('checkAddressBtn')?.addEventListener('click', handleAddressSubmit);
+  // Adresse : bouton + Enter
+  qs('#checkAddressBtn')?.addEventListener('click', validateAddress);
+  qs('#deliveryAddress')?.addEventListener('keydown', (e)=>{
+    if(e.key==='Enter'){ e.preventDefault(); validateAddress(); }
+  });
+
+  // Raccourcis espace client
+  qs('#tileOrders')?.addEventListener('click', ()=> switchTab('orders'));
+  qs('#tileProfile')?.addEventListener('click', ()=> switchTab('profile'));
 }
 
 /* ===== Profil / Fidélité ===== */
@@ -300,7 +213,7 @@ function bindProfile(){
       email:(qs('#profileEmail').value||'').trim(),
       phone:(qs('#profilePhone').value||'').trim()
     };
-    setProfile(p); renderLoyalty(); showToast('Profil enregistré ✅', 1400, 'bottom');
+    setProfile(p); renderLoyalty(); showToast('Profil enregistré ✅');
   });
 }
 function renderLoyalty(){
@@ -344,7 +257,6 @@ document.addEventListener('DOMContentLoaded',()=>{
   bindProfile();
   renderLoyalty();
   initBannerCarousel();
-  bindAddressAutocomplete();
 
   // Onglet par défaut : Accueil
   switchTab('home');
