@@ -19,7 +19,7 @@
     <img src="assets/splash.jpg" alt="Splash Manhattan Street">
   </div>
 
-  <!-- toast -->
+  <!-- toast (notif) -->
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
 
   <!-- ===== Bannière (Accueil uniquement) ===== -->
@@ -69,21 +69,23 @@
         <h2 id="orderModeTitle">Commande</h2>
         <div class="order-info hint" id="orderInfo"></div>
 
+        <!-- Adresse (livraison) -->
         <div id="deliveryAddressWrap" style="display:none;margin-top:12px;">
-          <label class="address-wrap">Adresse de livraison :
-            <input id="deliveryAddress" placeholder="Ex: 15 rue de Paris, Mouscron" autocomplete="off" />
-            <div id="addrSuggest" class="addr-suggest" style="display:none"></div>
+          <label>Adresse de livraison :
+            <input id="deliveryAddress" placeholder="Ex: 15 rue de Paris, Mouscron" />
           </label>
           <button id="checkAddressBtn" class="btn small primary" style="margin-top:8px;">Valider l’adresse</button>
         </div>
 
+        <!-- Table (sur place) -->
         <div id="dineInBlock" style="display:none;margin-top:12px;">
           <label>Numéro de table
             <input id="tableNumber" inputmode="numeric" pattern="[0-9]*" placeholder="Ex : 12" />
           </label>
         </div>
 
-        <div class="map-wrap">
+        <!-- Carte en BLOC (pas plein écran) -->
+        <div class="map-wrap" id="mapWrap">
           <iframe id="mapFrame" title="Carte"
             src="https://www.openstreetmap.org/export/embed.html?bbox=3.204,50.734,3.224,50.754&layer=mapnik&marker=50.744,3.214">
           </iframe>
@@ -93,6 +95,9 @@
           <button class="btn primary" id="orderStart">Commencer ma commande</button>
         </div>
       </div>
+
+      <!-- spacer provisoire pour stabiliser la tabbar -->
+      <div class="page-spacer"></div>
     </section>
 
     <!-- Fidélité -->
@@ -113,6 +118,7 @@
           <div class="qr-code-text" id="qrCodeText"></div>
         </div>
       </div>
+      <div class="page-spacer"></div>
     </section>
 
     <!-- Historique -->
@@ -121,6 +127,7 @@
         <h2>Mon historique</h2>
         <div id="myOrders"></div>
       </div>
+      <div class="page-spacer"></div>
     </section>
 
     <!-- Profil -->
@@ -134,6 +141,7 @@
         </div>
         <button class="btn primary" id="saveProfileBtn">Enregistrer</button>
       </div>
+      <div class="page-spacer"></div>
     </section>
   </main>
 
