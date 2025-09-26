@@ -23,7 +23,7 @@
   --tab-col-min: 64px;
   --tab-col-max: 88px;
 
-  /* Gap central réservé au CTA */
+  /* Espace central réservé au CTA (on NE le modifie pas en mode commande) */
   --cta-gap: calc(var(--cta-size) + 16px);
 }
 
@@ -35,6 +35,11 @@ body{
   min-height:100%; overflow:auto; -webkit-overflow-scrolling:touch;
 }
 h1,h2,h3{ margin:0 0 8px 0 }
+
+/* ===== Buttons ===== */
+.btn{ appearance:none; border:1px solid var(--line); background:#fff; border-radius:12px; padding:10px 14px; font-weight:700; }
+.btn.primary{ background:var(--accent-cta); color:#fff; border-color:var(--accent-cta); }
+.btn.small{ font-size:14px; padding:8px 12px }
 
 /* ===== Splash ===== */
 #splash{
@@ -92,6 +97,7 @@ h1,h2,h3{ margin:0 0 8px 0 }
 .tab{ display:none; }
 .tab.active{ display:block; }
 
+/* ===== Carte (iframe simple) ===== */
 .map-wrap{ height:300px; margin:12px 0 }
 .map-wrap iframe{ width:100%; height:100%; border:0 }
 
@@ -105,13 +111,6 @@ h1,h2,h3{ margin:0 0 8px 0 }
   appearance:none; background:transparent; border:0; padding:10px 8px; font-weight:800; cursor:pointer; color:#333;
 }
 .seg-btn.active{ background:var(--accent-cta); color:#fff; }
-
-.panel{
-  background:#fff; border:1px solid var(--line); border-radius:14px; padding:10px;
-  box-shadow:0 8px 26px rgba(0,0,0,.10); margin-top:10px;
-}
-.address-row{ display:grid; grid-template-columns:1fr auto; gap:8px; align-items:center }
-.address-row input{ height:40px; padding:8px; border-radius:10px; border:1px solid #ddd }
 
 /* ===== Tabbar (VALIDÉE – identique partout) ===== */
 .tabbar{
@@ -135,6 +134,7 @@ h1,h2,h3{ margin:0 0 8px 0 }
   transition: grid-template-columns .28s ease, padding .28s ease, box-shadow .28s ease, background .28s ease, opacity .2s ease;
 }
 
+/* Icônes (mask colorisé) */
 .tabbtn{
   -webkit-appearance:none; appearance:none;
   background:transparent; border:0; padding:0; cursor:pointer;
@@ -157,11 +157,13 @@ h1,h2,h3{ margin:0 0 8px 0 }
 .tabbtn[data-tab="orders"] { --ic: url('assets/tab-orders.svg'); }
 .tabbtn[data-tab="profile"]{ --ic: url('assets/tab-profile.svg'); }
 
+/* Placement validé + ajustements fins */
 .tabbar .tabbtn:nth-of-type(1){ grid-column:1; }
 .tabbar .tabbtn:nth-of-type(2){ grid-column:2; }
 .tabbar .tabbtn:nth-of-type(3){ grid-column:4; justify-self:start; margin-left:-15px; }
 .tabbar .tabbtn:nth-of-type(4){ grid-column:5; justify-self:end;   margin-right:10px; }
 
+/* CTA centré */
 .cta-img{
   position:absolute; left:50%; transform:translateX(-50%);
   top: calc(-1 * var(--cta-lift));
@@ -171,98 +173,17 @@ h1,h2,h3{ margin:0 0 8px 0 }
   transition:opacity .24s ease, transform .24s ease;
 }
 .cta-img img{ width:100%; height:100%; object-fit:contain }
+
+/* Mode commande : on masque seulement le CTA (gap inchangé) */
 body.ordering .cta-img{ opacity:0; transform:translate(-50%,-2px) scale(.92); pointer-events:none; }
-
-/* Hauteur min pages + spacers pour onglets peu remplis */
-.tab{ min-height: calc(100vh - (var(--tabbar-h) + env(safe-area-inset-bottom, 0px))); }
-.page-spacer{ height: calc(32vh + var(--safe-bottom)); }
-
-/* ===== MENU v1 (ajouts) ===== */
-.menu-sticky{
-  position: sticky;
-  top: calc(var(--safe-top) + 8px);
-  z-index: 5;
-  background: transparent;
-  padding-bottom: 8px;
-}
-.menu-mode-pill{
-  display: inline-flex; align-items: center; gap:8px;
-  background: #fff; border:1px solid var(--line);
-  border-radius: 999px; padding: 8px 12px; font-weight: 800;
-  box-shadow: 0 4px 16px rgba(0,0,0,.06);
-  margin-bottom: 10px;
-}
-.chips{
-  display: flex; gap:10px; overflow-x: auto; overflow-y: hidden;
-  -webkit-overflow-scrolling: touch; padding: 2px;
-  scrollbar-width: none;
-  mask-image: linear-gradient(90deg, transparent 0, black 16px, black calc(100% - 16px), transparent 100%);
-}
-.chips::-webkit-scrollbar{ display:none; }
-.chip{
-  flex: 0 0 auto;
-  display: inline-flex; align-items:center; gap:8px;
-  background: #fff; border:1px solid var(--line);
-  padding: 10px 14px; border-radius: 999px; font-weight: 800;
-  box-shadow: 0 4px 16px rgba(0,0,0,.06);
-}
-.chip.active{
-  background: #FF2E8B;
-  color:#fff; border-color: transparent;
-}
-.menu-section{ scroll-margin-top: 90px; margin-top: 14px; }
-.menu-section .sec-header{
-  display:flex; align-items:center; gap:10px; margin: 6px 2px 10px;
-  font-size: 22px; font-weight: 900;
-}
-.item-card{
-  background:#fff; border:1px solid var(--line); border-radius:16px;
-  padding:12px; display:grid; grid-template-columns: 1fr 112px; gap:10px;
-  box-shadow: 0 8px 26px rgba(0,0,0,.06);
-  margin:10px 0;
-}
-.item-card .meta{ display:grid; gap:4px }
-.item-card .name{ font-weight:900; }
-.item-card .desc{ color:#666; font-size:13px; line-height:1.25 }
-.item-card .price{ font-weight:900; margin-top:6px }
-.item-card .thumb{
-  width:100%; height:84px; border-radius:12px; overflow:hidden; background:#f3f3f3;
-  display:grid; place-items:center; font-size:12px; color:#999;
-}
 
 /* Petits écrans */
 @media (max-width: 360px){
   :root{ --icon-sz:440px; --icon-shift-y:-96px; }
 }
 
-/* === LOCK TABBAR: fixe partout, au-dessus de tout === */
-.tabbar{
-  position: fixed !important;
-  left: 0 !important;
-  right: 0 !important;
-  bottom: 0 !important;
-  height: calc(var(--tabbar-h) + var(--safe-bottom)) !important;
-  padding-bottom: var(--safe-bottom) !important;
-  z-index: 9999 !important;          /* passe devant tout */
-  transform: none !important;        /* évite qu’un transform la détache du viewport */
-  will-change: transform;
-}
+/* Hauteur min pages → pas de “marche” */
+.tab{ min-height: calc(100vh - (var(--tabbar-h) + env(safe-area-inset-bottom, 0px))); }
 
-/* Neutralise les transforms qui peuvent casser position:fixed sur iOS */
-main, .layout, .tab, .order-card, .banner {
-  transform: none !important;
-}
-
-/* Sécurité: aucune page ne peut repositionner la tabbar */
-#tab-home .tabbar,
-#tab-order .tabbar,
-#tab-loyalty .tabbar,
-#tab-orders .tabbar,
-#tab-profile .tabbar {
-  position: fixed !important;
-  bottom: 0 !important;
-}
-
-/* Garde un peu de contenu en bas pour éviter l’illusion de “remontée” */
-.page-spacer { height: calc(32vh + var(--safe-bottom)); }
-
+/* Spacers provisoires pour onglets peu remplis */
+.page-spacer{ height: calc(32vh + var(--safe-bottom)); }
