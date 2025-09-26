@@ -189,3 +189,10 @@ body.ordering .cta-img{ opacity:0; transform:translate(-50%,-2px) scale(.92); po
 
 /* Spacer à mettre en bas des onglets non-accueil tant qu'ils sont vides */
 .page-spacer { height: calc(32vh + var(--safe-bottom)); }
+
+/* ===== Overlay commande : encadré des modes ===== */
+.order-modes {
+  position: relative;
+  margin-top: calc(var(--safe-top) + 40px); /* <<< DESCENDU pour ne pas coller à la barre système */
+  margin-bottom: 16px;
+}
