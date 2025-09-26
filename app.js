@@ -48,53 +48,6 @@ function renderFeatured(){
   el.style.display = 'none';
 }
 
-/* ===== MODE COMMANDE (segmented) ===== */
-let currentMode = 'takeaway';
-
-function setMode(mode){
-  currentMode = mode;
-
-  // 1) visuel : bouton actif coloré
-  document.querySelectorAll('#orderModes .seg-btn').forEach(b=>{
-    b.classList.toggle('active', b.dataset.mode === mode);
-  });
-
-  // 2) zones conditionnelles (uniquement display; pas de positionnement)
-  const deliveryWrap = qs('#deliveryAddressWrap');
-  const dineinBlock  = qs('#dineInBlock');
-  const mapWrap      = qs('#tab-order .map-wrap');
-  const titleEl      = qs('#orderModeTitle');
-  const infoEl       = qs('#orderInfo');
-
-  if(mode === 'delivery'){
-    if(deliveryWrap) deliveryWrap.style.display = 'block';
-    if(dineinBlock)  dineinBlock.style.display  = 'none';
-    if(mapWrap)      mapWrap.style.display      = 'block';
-    if(titleEl) titleEl.textContent = 'Livraison';
-    if(infoEl)  infoEl.textContent  = 'Entre ton adresse pour vérifier la zone.';
-  } else if(mode === 'takeaway'){
-    if(deliveryWrap) deliveryWrap.style.display = 'none';
-    if(dineinBlock)  dineinBlock.style.display  = 'none';
-    if(mapWrap)      mapWrap.style.display      = 'block';
-    if(titleEl) titleEl.textContent = 'À emporter';
-    if(infoEl)  infoEl.textContent  = 'Passe ta commande et viens la récupérer.';
-  } else { // dinein
-    if(deliveryWrap) deliveryWrap.style.display = 'none';
-    if(dineinBlock)  dineinBlock.style.display  = 'block';
-    if(mapWrap)      mapWrap.style.display      = 'none'; // pas de carte sur place
-    if(titleEl) titleEl.textContent = 'Sur place';
-    if(infoEl)  infoEl.textContent  = 'Indique ton numéro de table.';
-  }
-}
-
-function bindOrderModes(){
-  qs('#orderModes')?.addEventListener('click', (e)=>{
-    const btn = e.target.closest('.seg-btn');
-    if(!btn) return;
-    setMode(btn.dataset.mode);
-  });
-}
-
 /* ===== Tabs ===== */
 function switchTab(tab){
   // activer boutons
@@ -106,15 +59,20 @@ function switchTab(tab){
   const hb = document.getElementById('homeBanner');
   if (hb) hb.style.display = (tab === 'home' ? 'block' : 'none');
 
-  // Commande : on ne change AUCUNE position, on ajuste seulement le contenu
+  // Mode commande : CTA fade (gap inchangé)
   if (tab === 'order') {
-    document.body.classList.add('ordering');   // masque le CTA, c’est tout
-    setMode(currentMode || 'takeaway');        // remet l’état visuel/sections
+    document.body.classList.add('ordering');
   } else {
     document.body.classList.remove('ordering');
   }
 
-  window.scrollTo({top:0, behavior:'smooth'});
+  // hotfix reflow
+  document.body.getBoundingClientRect();
+  const html = document.documentElement;
+  const prev = html.style.scrollBehavior;
+  html.style.scrollBehavior = 'auto';
+  window.scrollTo(0, 0);
+  requestAnimationFrame(() => { html.style.scrollBehavior = prev || ''; });
 }
 
 function bindTabbar(){
@@ -134,7 +92,7 @@ function bindCTA(){
     openOrder();
   });
 
-  // Raccourcis espace client depuis l’accueil
+  // Raccourcis espace client
   qs('#tileOrders')?.addEventListener('click', ()=> switchTab('orders'));
   qs('#tileProfile')?.addEventListener('click', ()=> switchTab('profile'));
 }
@@ -183,12 +141,127 @@ function renderQR(email){
   });
 })();
 
+/* ===== === MENU v1 === ===== */
+
+/* état du mode (lié aux boutons de l’onglet Commande) */
+let orderMode = 'takeaway'; // 'takeaway' | 'delivery' | 'dinein'
+
+document.getElementById('orderModes')?.addEventListener('click', (e)=>{
+  const b = e.target.closest('.seg-btn'); if(!b) return;
+  orderMode = b.dataset.mode;
+  document.querySelectorAll('#orderModes .seg-btn')
+    .forEach(x=> x.classList.toggle('active', x===b));
+});
+
+/* Données démo */
+const MENU = {
+  categories: [
+    { id:'combos', name:'Formules Combo', emoji:'✌️🍔' },
+    { id:'pullup', name:'Pull Up', emoji:'🍗' },
+    { id:'burgers', name:'Burgers', emoji:'🍔' },
+    { id:'sides', name:'Accompagnements', emoji:'🍟' },
+    { id:'drinks', name:'Boissons', emoji:'🥤' },
+  ],
+  products: [
+    { id:'c1', cat:'combos',  name:'Combo Crush',   desc:"Menu + bread + chili cheese", price:18.9, img:'' },
+    { id:'c2', cat:'combos',  name:'Combo Bangers', desc:"Pour ceux qui aiment quand ça tape", price:19.9, img:'' },
+    { id:'c3', cat:'combos',  name:"Combo Chick's", desc:"100% poulet: burger + tenders", price:23.9, img:'' },
+    { id:'p1', cat:'pullup',  name:'Grrrr',         desc:"Poulet crousti + sauce secrète", price:10.9, img:'' },
+    { id:'b1', cat:'burgers', name:'Classic Manhattan', desc:"Steak, cheddar, sauce MS", price:7.9, img:'' },
+    { id:'s1', cat:'sides',   name:'Frites Maison', desc:"Pommes de terre fraîches", price:2.8, img:'' },
+    { id:'d1', cat:'drinks',  name:'Cola 33cl',     desc:"Bien frais", price:2.2, img:'' },
+  ]
+};
+const EURO = n => n.toFixed(2).replace('.', ',')+' €';
+
+function setMenuModePill(){
+  const emoji = (orderMode==='delivery') ? '🚚' : (orderMode==='dinein' ? '🍽️' : '🏃‍♂️');
+  const label = (orderMode==='delivery') ? 'En livraison' : (orderMode==='dinein' ? 'Sur place' : 'À emporter');
+  const e = document.getElementById('menuModeEmoji');
+  const t = document.getElementById('menuModeText');
+  if(e) e.textContent = emoji;
+  if(t) t.textContent = label;
+}
+
+function renderMenuSections(){
+  const wrap = document.getElementById('menuSections'); if(!wrap) return;
+  wrap.innerHTML = MENU.categories.map(cat=>{
+    const items = MENU.products.filter(p=>p.cat===cat.id);
+    return `
+      <section class="menu-section" id="sec-${cat.id}">
+        <div class="sec-header">${cat.name} ${cat.emoji||''}</div>
+        ${items.map(p=>`
+          <article class="item-card">
+            <div class="meta">
+              <div class="name">${p.name}</div>
+              <div class="desc">${p.desc||''}</div>
+              <div class="price">${EURO(p.price)}</div>
+            </div>
+            <div class="thumb">${p.img?`<img src="${p.img}" alt="" style="width:100%;height:100%;object-fit:cover">`:'Image'}</div>
+          </article>
+        `).join('')}
+      </section>
+    `;
+  }).join('');
+}
+
+function renderMenuChips(){
+  const chips = document.getElementById('menuChips'); if(!chips) return;
+  chips.innerHTML = MENU.categories.map((c,i)=>`
+    <button class="chip ${i===0?'active':''}" data-target="sec-${c.id}">
+      ${c.emoji?`<span>${c.emoji}</span>`:''}<span>${c.name}</span>
+    </button>
+  `).join('');
+
+  chips.querySelectorAll('.chip').forEach(ch=>{
+    ch.addEventListener('click', ()=>{
+      const id = ch.dataset.target;
+      const el = document.getElementById(id);
+      if(!el) return;
+      el.scrollIntoView({ behavior:'smooth', block:'start' });
+      chips.querySelectorAll('.chip').forEach(c=>c.classList.toggle('active', c===ch));
+    });
+  });
+}
+
+function observeSectionsForChips(){
+  const chips = document.getElementById('menuChips'); if(!chips) return;
+  const map = new Map();
+  chips.querySelectorAll('.chip').forEach(ch => map.set(ch.dataset.target, ch));
+
+  const io = new IntersectionObserver((entries)=>{
+    entries.forEach(ent=>{
+      if(ent.isIntersecting){
+        const ch = map.get(ent.target.id);
+        if(ch){
+          chips.querySelectorAll('.chip').forEach(c=>c.classList.toggle('active', c===ch));
+        }
+      }
+    });
+  }, { rootMargin: '-40% 0px -55% 0px', threshold: 0.01 });
+
+  document.querySelectorAll('.menu-section').forEach(sec=> io.observe(sec));
+}
+
+function openMenu(){
+  switchTab('menu');
+  setMenuModePill();
+  renderMenuChips();
+  renderMenuSections();
+  observeSectionsForChips();
+}
+
+/* Lancer le menu depuis l’onglet commande */
+document.getElementById('orderStart')?.addEventListener('click', (e)=>{
+  e.preventDefault();
+  openMenu();
+});
+
 /* ===== INIT ===== */
 document.addEventListener('DOMContentLoaded',()=>{
   renderFeatured();
   bindTabbar();
   bindCTA();
-  bindOrderModes();          // ← active le segmented control
   bindProfile();
   renderLoyalty();
   initBannerCarousel();
@@ -196,6 +269,7 @@ document.addEventListener('DOMContentLoaded',()=>{
   // Onglet par défaut : Accueil
   switchTab('home');
 });
+
 /* ===== PWA: keep SW fresh ===== */
 if ('serviceWorker' in navigator) {
   navigator.serviceWorker.getRegistrations().then(list => list.forEach(reg => reg.update()));
