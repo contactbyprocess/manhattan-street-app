@@ -234,3 +234,35 @@ body.ordering .cta-img{ opacity:0; transform:translate(-50%,-2px) scale(.92); po
 @media (max-width: 360px){
   :root{ --icon-sz:440px; --icon-shift-y:-96px; }
 }
+
+/* === LOCK TABBAR: fixe partout, au-dessus de tout === */
+.tabbar{
+  position: fixed !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  height: calc(var(--tabbar-h) + var(--safe-bottom)) !important;
+  padding-bottom: var(--safe-bottom) !important;
+  z-index: 9999 !important;          /* passe devant tout */
+  transform: none !important;        /* évite qu’un transform la détache du viewport */
+  will-change: transform;
+}
+
+/* Neutralise les transforms qui peuvent casser position:fixed sur iOS */
+main, .layout, .tab, .order-card, .banner {
+  transform: none !important;
+}
+
+/* Sécurité: aucune page ne peut repositionner la tabbar */
+#tab-home .tabbar,
+#tab-order .tabbar,
+#tab-loyalty .tabbar,
+#tab-orders .tabbar,
+#tab-profile .tabbar {
+  position: fixed !important;
+  bottom: 0 !important;
+}
+
+/* Garde un peu de contenu en bas pour éviter l’illusion de “remontée” */
+.page-spacer { height: calc(32vh + var(--safe-bottom)); }
+
