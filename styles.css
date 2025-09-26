@@ -14,7 +14,7 @@
   /* Tabbar (VALIDÉE) */
   --tabbar-bg:#ffffff;
   --tabbar-h:50px;
-  --icon-sz:480px;          /* icônes validées */
+  --icon-sz:480px;
   --icon-shift-y:-105px;
   --cta-size:102px;
   --cta-lift:50px;
@@ -36,7 +36,7 @@ body{
 }
 h1,h2,h3{ margin:0 0 8px 0 }
 
-/* ===== Splash (plein écran) ===== */
+/* ===== Splash ===== */
 #splash{
   position:fixed; inset:0; z-index:9999;
   display:grid; place-items:center;
@@ -52,7 +52,7 @@ h1,h2,h3{ margin:0 0 8px 0 }
 }
 .toast.show{ opacity:1 }
 
-/* ===== Bannière (Accueil seulement) ===== */
+/* ===== Bannière (Accueil) ===== */
 .banner{
   position:relative; margin:0; padding:0; border:0; background:#000;
   margin-top: calc(-1 * var(--safe-top));
@@ -88,7 +88,7 @@ h1,h2,h3{ margin:0 0 8px 0 }
 .hero-hash{ font-size:32px; line-height:1.05; margin-bottom:2px }
 .hero-tag{ font-size:15px; font-weight:900; letter-spacing:.3px }
 
-/* ===== Onglets (pages) ===== */
+/* ===== Onglets ===== */
 .tab{ display:none; }
 .tab.active{ display:block; }
 
