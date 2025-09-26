@@ -197,25 +197,32 @@ body.ordering .cta-img{ opacity:0; transform:translate(-50%,-2px) scale(.92); po
   margin-bottom: 16px;
 }
 
-/* ===== Notif "bannière message" ===== */
+/* ===== Notifications style “message” ===== */
 .notif {
   position: fixed;
-  left: 12px; right: 12px;
-  top: calc(10px + var(--safe-top));
-  z-index: 9998;
-  padding: 12px 14px;
+  top: 12px;
+  left: 50%;
+  transform: translateX(-50%) translateY(-30px);
+  background: #111;
+  color: #fff;
+  padding: 10px 16px;
   border-radius: 14px;
-  font-weight: 700;
-  box-shadow: 0 8px 26px rgba(0,0,0,.10);
-  transform: translateY(-16px);
+  font-size: 15px;
+  font-weight: 500;
+  box-shadow: 0 4px 14px rgba(0,0,0,0.25);
+  z-index: 9999;
   opacity: 0;
-  transition: transform .24s ease, opacity .24s ease;
+  transition: all .3s ease;
+  pointer-events: none;
 }
-.notif.show { transform: translateY(0); opacity: 1; }
 
-.notif.info    { background:#111; color:#fff; }
-.notif.success { background:#0f9d58; color:#fff; }
-.notif.error   { background:#c0392b; color:#fff; }
+/* entrée */
+.notif.show {
+  transform: translateX(-50%) translateY(0);
+  opacity: 1;
+}
 
-
-
+/* variantes */
+.notif.success { background:#27ae60; }
+.notif.error   { background:#c0392b; }
+.notif.info    { background:#2980b9; }
