@@ -19,11 +19,11 @@
   --cta-size:102px;
   --cta-lift:50px;
 
-  /* Colonnes clampées pour ne PAS grossir quand le CTA disparaît */
+  /* Colonnes clampées (empêche grossissement quand le CTA disparaît) */
   --tab-col-min: 64px;
   --tab-col-max: 88px;
 
-  /* Gap central (inchangé en mode commande) */
+  /* Gap central du CTA (on NE le replie pas) */
   --cta-gap: calc(var(--cta-size) + 16px);
 }
 
@@ -89,27 +89,15 @@ h1,h2,h3{ margin:0 0 8px 0 }
 .hero-tag{ font-size:15px; font-weight:900; letter-spacing:.3px }
 
 /* ===== Onglets (pages) ===== */
-.tab{ display:none; }
+.tab{ display:none; position:relative; }
 .tab.active{ display:block; }
 
-/* ===== Map plein écran ===== */
-.map-fullscreen{
-  position: fixed;
-  top: 0; left: 0; right: 0;
-  bottom: calc(var(--tabbar-h) + env(safe-area-inset-bottom, 0px));
-  z-index: 1; background: #f2f2f2;
-}
-.map-fullscreen iframe,
-.map-wrap iframe{ width:100%; height:100%; border:0 }
+/* ===== Carte (Leaflet conteneur) ===== */
+.leaflet-map{ width:100%; height:360px; border-radius:12px; overflow:hidden; background:#f2f2f2 }
 
-/* ===== Overlay commande ===== */
-.order-overlay{
-  position: fixed; left: 12px; right: 12px;
-  top: calc(120px + var(--safe-top));
-  z-index: 2; display: grid; gap:8px;
-}
+/* ===== Overlay/segments ===== */
 .segmented{
-  display: grid; grid-template-columns: 1fr 1fr 1fr;
+  display:grid; grid-template-columns:1fr 1fr 1fr;
   background:#fff; border:1px solid var(--line); border-radius:14px; overflow:hidden;
   box-shadow:0 4px 18px rgba(0,0,0,.08);
 }
@@ -125,21 +113,16 @@ h1,h2,h3{ margin:0 0 8px 0 }
 .address-row{ display:grid; grid-template-columns:1fr auto; gap:8px; align-items:center }
 .address-row input{ height:40px; padding:8px; border-radius:10px; border:1px solid #ddd }
 
-/* ===== Carte classique ===== */
-.map-wrap{ height:300px; margin:12px 0 }
-.map-wrap iframe{ width:100%; height:100%; border:0 }
-
 /* ===== Tabbar (blanche, VALIDÉE – inchangée) ===== */
 .tabbar{
   position:fixed; left:0; right:0; bottom:0; z-index:30;
   background:var(--tabbar-bg);
-  height: calc(var(--tabbar-h) + var(--safe-bottom));
+  height: calc(var(--tabbar-h) + var(--safe-bottom));   /* comme sur l’accueil */
   padding-bottom: var(--safe-bottom);
   padding: 0 16px;
   box-shadow:0 -2px 8px rgba(0,0,0,.08);
   overflow:visible;
 
-  /* grille 2 | CTA | 2 (colonnes clampées pour ne pas grossir) */
   display:grid;
   grid-template-columns:
     minmax(var(--tab-col-min), var(--tab-col-max))
@@ -152,7 +135,7 @@ h1,h2,h3{ margin:0 0 8px 0 }
   transition: grid-template-columns .28s ease, padding .28s ease, box-shadow .28s ease, background .28s ease, opacity .2s ease;
 }
 
-/* Icônes (teinte via mask) */
+/* Icônes (mask) */
 .tabbtn{
   -webkit-appearance:none; appearance:none;
   background:transparent; border:0; padding:0; cursor:pointer;
@@ -192,32 +175,16 @@ h1,h2,h3{ margin:0 0 8px 0 }
 }
 .cta-img img{ width:100%; height:100%; object-fit:contain }
 
-/* Mode commande : on cache juste le CTA (gap et tailles inchangés) */
+/* Mode commande : on cache le CTA, MAIS on ne change PAS la grille (pas de grossissement) */
 body.ordering .cta-img{ opacity:0; transform:translate(-50%,-2px) scale(.92); pointer-events:none; }
+
+/* Hauteur min des pages → pas de “marche” */
+.tab{ min-height: calc(100vh - (var(--tabbar-h) + env(safe-area-inset-bottom, 0px))); }
+
+/* Spacer discret pour onglets encore vides */
+.page-spacer { height: calc(28vh + var(--safe-bottom)); }
 
 /* Petits écrans */
 @media (max-width: 360px){
   :root{ --icon-sz:440px; --icon-shift-y:-96px; }
 }
-
-/* Hauteur min des pages → pas de marche (règle unique) */
-.tab{ 
-  min-height: calc(100vh - (var(--tabbar-h) + env(safe-area-inset-bottom, 0px)));
-  position: relative;
-}
-
-/* === Stabilise la tabbar sur les onglets courts (hors Accueil) === */
-#tab-loyalty::after,
-#tab-orders::after,
-#tab-profile::after {
-  content: "";
-  display: block;
-  height: calc(32vh + var(--tabbar-h) + var(--safe-bottom));
-}
-
-/* Masquer carte/overlay si on n’est pas sur l’onglet commande */
-#tab-order:not(.active) .map-fullscreen{ display:none; }
-#tab-order:not(.active) .order-overlay{ display:none; }
-
-/* Petite carte info sous l’overlay */
-.order-card{ position:relative; z-index:0; margin: calc(120px + var(--safe-top)) 12px 12px; }
