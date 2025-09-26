@@ -53,6 +53,9 @@ function switchTab(tab){
   const hb = document.getElementById('homeBanner');
   if (hb) hb.style.display = (tab === 'home' ? 'block' : 'none');
 
+  // >>> ajoute cette ligne :
+document.body.classList.toggle('no-banner', tab !== 'home');
+
   // mode commande: cache CTA mais NE change pas la taille des icônes (grille inchangée)
   if (tab === 'order') {
     document.body.classList.add('ordering');
