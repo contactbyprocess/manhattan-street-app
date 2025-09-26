@@ -10,8 +10,8 @@
   <link rel="manifest" href="manifest.json" />
 
   <title>Manhattan Street — Commande</title>
-  <link rel="stylesheet" href="styles.css?v=75" />
-  <script defer src="app.js?v=75"></script>
+  <link rel="stylesheet" href="styles.css?v=80" />
+  <script defer src="app.js?v=80"></script>
 </head>
 <body>
   <!-- Splash -->
@@ -57,11 +57,11 @@
       </section>
     </section>
 
-    <!-- Commande -->
+    <!-- Commande (modes) -->
     <section class="tab" id="tab-order">
-      <!-- Dans le flux : pas overlay -->
+      <!-- Barre des modes dans le flux (ne bouge pas) -->
       <div class="segmented" id="orderModes">
-        <button class="seg-btn" data-mode="takeaway">À emporter</button>
+        <button class="seg-btn active" data-mode="takeaway">À emporter</button>
         <button class="seg-btn" data-mode="delivery">Livraison</button>
         <button class="seg-btn" data-mode="dinein">Sur place</button>
       </div>
@@ -83,7 +83,7 @@
           </label>
         </div>
 
-        <div class="map-wrap">
+        <div class="map-wrap" id="mapWrap">
           <iframe id="mapFrame" title="Carte"
             src="https://www.openstreetmap.org/export/embed.html?bbox=3.204,50.734,3.224,50.754&layer=mapnik&marker=50.744,3.214">
           </iframe>
@@ -99,21 +99,17 @@
 
     <!-- ===== MENU (nouvel onglet) ===== -->
     <section class="tab" id="tab-menu">
-      <!-- Bandeau sticky -->
       <div class="menu-sticky">
         <div class="menu-mode-pill" id="menuModePill">
           <span id="menuModeEmoji">🏃‍♂️</span>
           <span id="menuModeText">À emporter</span>
         </div>
-
-        <!-- Chips catégories (scroll horizontal) -->
         <div class="chips" id="menuChips" aria-label="Catégories"></div>
       </div>
 
-      <!-- Sections de menu -->
       <div id="menuSections"></div>
 
-      <div class="page-spacer"></div>
+      <div style="height:24vh"></div>
     </section>
 
     <!-- Fidélité -->
