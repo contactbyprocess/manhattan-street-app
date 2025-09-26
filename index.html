@@ -10,8 +10,8 @@
   <link rel="manifest" href="manifest.json" />
 
   <title>Manhattan Street — Commande</title>
-  <link rel="stylesheet" href="styles.css?v=80" />
-  <script defer src="app.js?v=80"></script>
+  <link rel="stylesheet" href="styles.css?v=75" />
+  <script defer src="app.js?v=75"></script>
 </head>
 <body>
   <!-- Splash -->
@@ -59,9 +59,9 @@
 
     <!-- Commande -->
     <section class="tab" id="tab-order">
-      <!-- Barre de modes (DANS LE FLUX, validée) -->
+      <!-- Dans le flux : pas overlay -->
       <div class="segmented" id="orderModes">
-        <button class="seg-btn active" data-mode="takeaway">À emporter</button>
+        <button class="seg-btn" data-mode="takeaway">À emporter</button>
         <button class="seg-btn" data-mode="delivery">Livraison</button>
         <button class="seg-btn" data-mode="dinein">Sur place</button>
       </div>
@@ -97,24 +97,21 @@
       <div class="page-spacer"></div>
     </section>
 
-    <!-- MENU (nouvel onglet) -->
+    <!-- ===== MENU (nouvel onglet) ===== -->
     <section class="tab" id="tab-menu">
-      <!-- Bandeau sticky : mode + chips catégories -->
+      <!-- Bandeau sticky -->
       <div class="menu-sticky">
         <div class="menu-mode-pill" id="menuModePill">
           <span id="menuModeEmoji">🏃‍♂️</span>
           <span id="menuModeText">À emporter</span>
         </div>
 
-        <div class="chips" id="menuChips" aria-label="Catégories">
-          <!-- injecté par JS -->
-        </div>
+        <!-- Chips catégories (scroll horizontal) -->
+        <div class="chips" id="menuChips" aria-label="Catégories"></div>
       </div>
 
-      <!-- Sections menu -->
-      <div id="menuSections">
-        <!-- injecté par JS -->
-      </div>
+      <!-- Sections de menu -->
+      <div id="menuSections"></div>
 
       <div class="page-spacer"></div>
     </section>
@@ -167,7 +164,7 @@
     </section>
   </main>
 
-  <!-- Tabbar (VALIDÉE, inchangée) -->
+  <!-- Tabbar (VALIDÉE) -->
   <nav class="tabbar" aria-label="Navigation">
     <button class="tabbtn" data-tab="home"><img class="tab-ic" src="assets/tab-home.svg" alt=""/></button>
     <button class="tabbtn" data-tab="loyalty"><img class="tab-ic" src="assets/tab-loyalty.svg" alt=""/></button>
