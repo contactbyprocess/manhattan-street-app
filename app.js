@@ -1,32 +1,18 @@
-<script>
-// ===== Helpers =====
+/* ===== Helpers ===== */
 const qs = s => document.querySelector(s);
 const qsa = s => [...document.querySelectorAll(s)];
 const get = (k,d)=>{try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch{return d}};
 const set = (k,v)=>localStorage.setItem(k,JSON.stringify(v));
+function showToast(msg,dur=1500){const t=qs('#toast');if(!t)return;t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),dur);}
 
-// ===== Notifs (style “message” en haut) =====
-function showNotif(msg, type='info', dur=2200){
-  let box = qs('#notifBar');
-  if(!box){
-    box = document.createElement('div');
-    box.id = 'notifBar';
-    document.body.appendChild(box);
-  }
-  box.textContent = msg;
-  box.className = `notif ${type} show`;
-  clearTimeout(showNotif._t);
-  showNotif._t = setTimeout(()=> box.classList.remove('show'), dur);
-}
-
-// ===== Données démo (inchangées) =====
+/* ===== Données démo ===== */
 const KEY={PROFILE:'ms_profile',USERS:'ms_users',PRODUCTS:'ms_products'};
 function getUsers(){return get(KEY.USERS,{});} function setUsers(u){set(KEY.USERS,u);}
 function getProfile(){return get(KEY.PROFILE,{firstName:'',email:'',phone:''});}
 function setProfile(p){set(KEY.PROFILE,p);}
 function getPoints(email){const u=getUsers();return u[email]?.points||0;}
 
-// ===== Bannière carousel =====
+/* ===== Bannière carousel ===== */
 function initBannerCarousel(){
   const track = document.querySelector('#bannerTrack');
   const dots  = document.querySelector('#bannerDots');
@@ -37,11 +23,13 @@ function initBannerCarousel(){
 
   let i = 0;
   const slideW = () => track.getBoundingClientRect().width;
+
   const go = n => {
     i = (n + slides.length) % slides.length;
     track.scrollTo({ left: i * slideW(), behavior: 'smooth' });
     dots.querySelectorAll('.dot').forEach((d,di)=> d.classList.toggle('active', di===i));
   };
+
   let timer = setInterval(()=>go(i+1), 4000);
   dots.querySelectorAll('.dot').forEach(d=>{
     d.addEventListener('click', ()=>{
@@ -50,10 +38,11 @@ function initBannerCarousel(){
       timer = setInterval(()=>go(i+1), 4000);
     });
   });
+
   window.addEventListener('resize', ()=> { track.scrollLeft = i * slideW(); });
 }
 
-// ===== Featured neutralisé =====
+/* ===== Featured (neutralisé) ===== */
 function renderFeatured(){
   const el = document.getElementById('featured');
   if (!el) return;
@@ -61,18 +50,20 @@ function renderFeatured(){
   el.style.display = 'none';
 }
 
-// ===== Tabs =====
+/* ===== Tabs ===== */
 function switchTab(tab){
+  // activer boutons
   qsa('.tabbar [data-tab]').forEach(b=> b.classList.toggle('active', b.dataset.tab===tab));
+  // activer sections
   qsa('.tab').forEach(s=> s.classList.toggle('active', s.id===`tab-${tab}`));
 
   // Bannière uniquement sur l’accueil
   const hb = document.getElementById('homeBanner');
   if (hb) hb.style.display = (tab === 'home' ? 'block' : 'none');
 
-  // Mode commande : on conserve la tabbar identique (pas de changement de gap/tailles)
+  // Mode commande
   if (tab === 'order') {
-    document.body.classList.add('ordering'); // cache juste le CTA via CSS
+    document.body.classList.add('ordering');
   } else {
     document.body.classList.remove('ordering');
   }
@@ -88,194 +79,22 @@ function bindTabbar(){
   });
 }
 
-// ===== Autocomplete Nominatim (livraison) =====
-let acAbort = null;
-async function fetchAddrSuggestions(q){
-  if(acAbort) acAbort.abort();
-  acAbort = new AbortController();
-  const url = new URL('https://nominatim.openstreetmap.org/search');
-  url.searchParams.set('q', q);
-  url.searchParams.set('format', 'jsonv2');
-  url.searchParams.set('limit', '5');
-  const res = await fetch(url.toString(), {
-    headers:{'Accept':'application/json','User-Agent':'MSApp/1.0 (demo)'},
-    signal: acAbort.signal
-  });
-  if(!res.ok) return [];
-  const data = await res.json();
-  return data.map(r=>({label:r.display_name, lat:+r.lat, lng:+r.lon}));
-}
-function ensureSuggestBox(){
-  let box = qs('#addrSuggest');
-  if(!box){
-    box = document.createElement('div');
-    box.id = 'addrSuggest';
-    document.body.appendChild(box);
-  }
-  return box;
-}
-function positionSuggestBox(input){
-  const box = ensureSuggestBox();
-  const r = input.getBoundingClientRect();
-  box.style.position='fixed';
-  box.style.left = (r.left) + 'px';
-  box.style.top  = (r.bottom + 6) + 'px';
-  box.style.width= (r.width) + 'px';
-}
-
-// ===== Commande (fonctionnel simple) =====
-const RESTO_ADDR = 'Petite rue 10, Mouscron 7700, Belgique';
-const RESTO_POS  = { lat:50.744, lng:3.214 }; // fallback
-const DELIVERY_RADIUS_M = 5000;
-
-function haversine(a, b){
-  const R=6371000, toRad = d=>d*Math.PI/180;
-  const dLat = toRad(b.lat-a.lat), dLng = toRad(b.lng-a.lng);
-  const s1 = Math.sin(dLat/2)**2 + Math.cos(toRad(a.lat))*Math.cos(toRad(b.lat))*Math.sin(dLng/2)**2;
-  return 2*R*Math.asin(Math.sqrt(s1));
-}
-
-let currentMode = 'takeaway';
-let lastValidDelivery = null;
-
-function setMode(mode){
-  currentMode = mode;
-  // Segmented visuel
-  document.querySelectorAll('#orderModes .seg-btn').forEach(b=>{
-    b.classList.toggle('active', b.dataset.mode === mode);
-  });
-
-  const deliveryWrap = qs('#deliveryAddressWrap');
-  const dineBlock    = qs('#dineInBlock');
-  const mapWrap      = qs('#tab-order .map-wrap');
-
-  // Panneaux
-  if(deliveryWrap) deliveryWrap.style.display = (mode==='delivery' ? 'block' : 'none');
-  if(dineBlock)    dineBlock.style.display    = (mode==='dinein'   ? 'block' : 'none');
-
-  // Map visible uniquement en “livraison” ou “à emporter”
-  if(mapWrap) mapWrap.style.display = (mode==='dinein' ? 'none' : 'block');
-
-  // Titre / info
-  const title=qs('#orderModeTitle'), info=qs('#orderInfo');
-  const fn=(getProfile().firstName||'chef');
-  if(mode==='delivery'){
-    title.textContent='Livraison';
-    info.textContent=`${fn}, indique ton adresse.`;
-  }else if(mode==='dinein'){
-    title.textContent='Sur place';
-    info.textContent=`${fn}, indique ton numéro de table.`;
-  }else{
-    title.textContent='Click & Collect';
-    info.textContent=`${fn}, passe ta commande et viens la récupérer.`;
-  }
-}
-
-async function validateDeliveryAddress(q){
-  if(!q || q.length<5){ showNotif('Entre une adresse complète', 'error', 2600); return; }
-  // on prend la première suggestion comme “géocodage” simple
-  const list = await fetchAddrSuggestions(q);
-  if(!list.length){ showNotif('Adresse introuvable', 'error', 2600); return; }
-  const pt = list[0];
-  const d = haversine(RESTO_POS, pt);
-  if(d > DELIVERY_RADIUS_M){
-    showNotif('Désolé, hors zone de livraison (5 km)', 'error', 3200);
-    lastValidDelivery = null;
-    return;
-  }
-  lastValidDelivery = pt;
-  showNotif('Adresse OK ✅', 'success', 2400);
-}
-
-function openMenuFlow(){
-  // Ici on branchera l’écran du menu réel.
-  // Pour l’instant : aucun toast, pas de popup — on log juste.
-  // Tu peux remplacer par: window.location.href = 'menu.html';
-  console.log('[menu] ouverture du menu…');
-}
-
-// ===== CTA & interactions =====
+/* ===== CTA ===== */
 function bindCTA(){
-  // Ouvrir l’onglet commande
-  qs('#ctaOrder')?.addEventListener('click', (e)=>{
-    e.preventDefault(); e.stopPropagation();
+  const openOrder = ()=>{
     switchTab('order');
-  });
-
-  // Segmented control
-  qs('#orderModes')?.addEventListener('click', (e)=>{
-    const b = e.target.closest('.seg-btn');
-    if(!b) return;
-    setMode(b.dataset.mode);
-  });
-
-  // Valider l’adresse (bouton)
-  qs('#checkAddressBtn')?.addEventListener('click', async ()=>{
-    const q = (qs('#deliveryAddress')?.value||'').trim();
-    await validateDeliveryAddress(q);
-  });
-
-  // Autocomplete : au fil de la frappe
-  const addr = qs('#deliveryAddress');
-  if(addr){
-    addr.addEventListener('input', async()=>{
-      const q = addr.value.trim();
-      const box = ensureSuggestBox();
-      if(q.length < 3){ box.innerHTML=''; box.className='addr-suggest'; return; }
-      positionSuggestBox(addr);
-      box.className='addr-suggest open';
-      box.innerHTML = '<div class="s-item muted">Recherche…</div>';
-      try{
-        const list = await fetchAddrSuggestions(q);
-        if(!list.length){ box.innerHTML = '<div class="s-item muted">Aucune suggestion</div>'; return; }
-        box.innerHTML = list.map(it=>`<div class="s-item" data-lat="${it.lat}" data-lng="${it.lng}" data-label="${it.label.replace(/"/g,'&quot;')}">${it.label}</div>`).join('');
-      }catch{
-        box.innerHTML = '<div class="s-item muted">Erreur réseau</div>';
-      }
-    });
-
-    // choix d’une suggestion
-    document.addEventListener('click', (e)=>{
-      const item = e.target.closest('#addrSuggest .s-item');
-      if(!item || item.classList.contains('muted')) return;
-      const label = item.dataset.label;
-      const lat   = +item.dataset.lat;
-      const lng   = +item.dataset.lng;
-      qs('#deliveryAddress').value = label;
-      ensureSuggestBox().className='addr-suggest'; // ferme
-      const d = haversine(RESTO_POS, {lat, lng});
-      if(d > DELIVERY_RADIUS_M){
-        showNotif('Désolé, hors zone de livraison (5 km)', 'error', 3200);
-        lastValidDelivery = null;
-      }else{
-        lastValidDelivery = {lat,lng,label};
-        showNotif('Adresse OK ✅', 'success', 2400);
-      }
-    });
-
-    // clique à l’extérieur → ferme
-    document.addEventListener('click', (e)=>{
-      if(!e.target.closest('#addrSuggest') && e.target !== addr){
-        ensureSuggestBox().className='addr-suggest';
-      }
-    });
-  }
-
-  // “Commencer ma commande” → ouvre le menu (pas de notif)
-  qs('#orderStart')?.addEventListener('click', ()=>{
-    if(currentMode==='delivery' && !lastValidDelivery){
-      showNotif('Valide d’abord une adresse de livraison', 'error', 2600);
-      return;
-    }
-    openMenuFlow();
+  };
+  document.getElementById('ctaOrder')?.addEventListener('click', (e)=>{
+    e.preventDefault(); e.stopPropagation();
+    openOrder();
   });
 
   // Raccourcis espace client
-  qs('#tileOrders')?.addEventListener('click', ()=> switchTab('orders'));
-  qs('#tileProfile')?.addEventListener('click', ()=> switchTab('profile'));
+  document.getElementById('tileOrders')?.addEventListener('click', ()=> switchTab('orders'));
+  document.getElementById('tileProfile')?.addEventListener('click', ()=> switchTab('profile'));
 }
 
-// ===== Profil / Fidélité =====
+/* ===== Profil / Fidélité ===== */
 function bindProfile(){
   qs('#saveProfileBtn')?.addEventListener('click',()=>{
     const p={...getProfile(),
@@ -283,7 +102,7 @@ function bindProfile(){
       email:(qs('#profileEmail').value||'').trim(),
       phone:(qs('#profilePhone').value||'').trim()
     };
-    setProfile(p); renderLoyalty(); showNotif('Profil enregistré ✅','success',1800);
+    setProfile(p); renderLoyalty(); showToast('Profil enregistré ✅');
   });
 }
 function renderLoyalty(){
@@ -304,21 +123,35 @@ function renderQR(email){
   qs('#qrCodeText').textContent=email;
 }
 
-// ===== Splash 5s min =====
+/* ===== Splash 5s min (corrigé) ===== */
 (function(){
-  const MIN_MS = 5000, MAX_MS = 9000;
-  const minDelayP = new Promise(res=> setTimeout(res, MIN_MS));
-  const maxTimeoutP = new Promise(res=> setTimeout(res, MAX_MS));
-  window.addEventListener('load', async ()=>{
-    const splash = document.getElementById('splash');
-    if(!splash) return;
-    await Promise.race([minDelayP, maxTimeoutP]);
-    splash.style.opacity = 0;
-    setTimeout(()=> splash.remove(), 600);
+  const MIN_MS = 5000;   // min 5s
+  const MAX_MS = 9000;   // max 9s
+  const start  = Date.now();
+
+  function hideSplash(){
+    const s = document.getElementById('splash');
+    if(!s || s.classList.contains('done')) return;
+    s.style.opacity = 0;
+    s.classList.add('done');
+    setTimeout(()=> s.remove(), 600);
+  }
+
+  // hard timeout
+  setTimeout(hideSplash, MAX_MS);
+
+  document.addEventListener('DOMContentLoaded', ()=>{
+    const left = Math.max(0, MIN_MS - (Date.now() - start));
+    setTimeout(hideSplash, left);
+  });
+
+  window.addEventListener('load', ()=>{
+    const left = Math.max(0, MIN_MS - (Date.now() - start));
+    setTimeout(hideSplash, left);
   });
 })();
 
-// ===== INIT =====
+/* ===== INIT ===== */
 document.addEventListener('DOMContentLoaded',()=>{
   renderFeatured();
   bindTabbar();
@@ -326,11 +159,12 @@ document.addEventListener('DOMContentLoaded',()=>{
   bindProfile();
   renderLoyalty();
   initBannerCarousel();
-  switchTab('home'); // onglet par défaut
+
+  // Onglet par défaut : Accueil
+  switchTab('home');
 });
 
-// ===== SW refresh =====
+/* ===== PWA: keep SW fresh ===== */
 if ('serviceWorker' in navigator) {
   navigator.serviceWorker.getRegistrations().then(list => list.forEach(reg => reg.update()));
 }
-</script>
