@@ -189,3 +189,42 @@ body.ordering .cta-img{ opacity:0; transform:translate(-50%,-2px) scale(.92); po
 
 /* Spacers provisoires pour onglets peu remplis */
 .page-spacer{ height: calc(32vh + var(--safe-bottom)); }
+
+/* ===== Hotfix anti-overlay & stabilisation ===== */
+
+/* Si un vieux style d'overlay traîne encore, on le neutralise de force */
+.order-overlay,
+.map-fullscreen {
+  position: static !important;
+  inset: auto !important;
+  top: auto !important;
+  left: auto !important;
+  right: auto !important;
+  bottom: auto !important;
+  height: auto !important;
+  z-index: auto !important;
+  background: transparent !important;
+  pointer-events: auto !important;
+}
+
+/* La barre des modes doit VIVRE dans le flux (pas fixed) */
+#orderModes {
+  position: static !important;
+  margin-top: 12px !important;
+}
+
+/* La tabbar est TOUJOURS collée en bas, identique partout */
+.tabbar {
+  position: fixed !important;
+  bottom: 0 !important;
+  left: 0; right: 0;
+  height: calc(var(--tabbar-h) + var(--safe-bottom)) !important;
+  padding-bottom: var(--safe-bottom) !important;
+}
+
+/* Sécurité : aucun onglet ne “tire” la tabbar vers le haut */
+.tab {
+  position: relative !important;
+  min-height: calc(100vh - (var(--tabbar-h) + env(safe-area-inset-bottom, 0px))) !important;
+}
+
