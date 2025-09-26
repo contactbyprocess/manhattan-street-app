@@ -10,6 +10,13 @@
   <link rel="manifest" href="manifest.json" />
 
   <title>Manhattan Street — Commande</title>
+
+  <!-- Leaflet (carte) -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+        integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="anonymous">
+  <script defer src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+          integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin="anonymous"></script>
+
   <link rel="stylesheet" href="styles.css?v=72" />
   <script defer src="app.js?v=72"></script>
 </head>
@@ -59,6 +66,7 @@
 
     <!-- Commande -->
     <section class="tab" id="tab-order">
+      <!-- Segmented control -->
       <div class="order-modes segmented" id="orderModes">
         <button class="seg-btn" data-mode="takeaway">À emporter</button>
         <button class="seg-btn" data-mode="delivery">Livraison</button>
@@ -69,29 +77,34 @@
         <h2 id="orderModeTitle">Commande</h2>
         <div class="order-info hint" id="orderInfo"></div>
 
-        <div id="deliveryAddressWrap" style="display:none;margin-top:12px;">
-          <label>Adresse de livraison :
+        <!-- LIVRAISON -->
+        <div id="deliveryPanel" class="panel" style="display:none; margin-top:10px;">
+          <div class="address-row">
             <input id="deliveryAddress" placeholder="Ex: 15 rue de Paris, Mouscron" />
-          </label>
-          <button id="checkAddressBtn" class="btn small primary" style="margin-top:8px;">Valider l’adresse</button>
+            <button id="checkAddressBtn" class="btn small primary">Valider</button>
+          </div>
+          <p class="hint" style="margin-top:6px">On livre autour du restaurant (≈ 5 km).</p>
         </div>
 
-        <div id="dineInBlock" style="display:none;margin-top:12px;">
+        <!-- SUR PLACE -->
+        <div id="dineinPanel" class="panel" style="display:none; margin-top:10px;">
           <label>Numéro de table
-            <input id="tableNumber" inputmode="numeric" pattern="[0-9]*" placeholder="Ex : 12" />
+            <input id="tableNumberInline" inputmode="numeric" pattern="[0-9]*" placeholder="Ex : 12" />
           </label>
         </div>
 
-        <div class="map-wrap">
-          <iframe id="mapFrame" title="Carte"
-            src="https://www.openstreetmap.org/export/embed.html?bbox=3.204,50.734,3.224,50.754&layer=mapnik&marker=50.744,3.214">
-          </iframe>
+        <!-- Carte interactive -->
+        <div class="map-wrap" style="margin-top:12px;">
+          <div id="orderMap" class="leaflet-map"></div>
         </div>
 
         <div class="order-actions">
           <button class="btn primary" id="orderStart">Commencer ma commande</button>
         </div>
       </div>
+
+      <!-- petit tampon pour stabiliser le bas quand l’onglet est vide -->
+      <div class="page-spacer"></div>
     </section>
 
     <!-- Fidélité -->
@@ -112,6 +125,7 @@
           <div class="qr-code-text" id="qrCodeText"></div>
         </div>
       </div>
+      <div class="page-spacer"></div>
     </section>
 
     <!-- Historique -->
@@ -120,6 +134,7 @@
         <h2>Mon historique</h2>
         <div id="myOrders"></div>
       </div>
+      <div class="page-spacer"></div>
     </section>
 
     <!-- Profil -->
@@ -133,6 +148,7 @@
         </div>
         <button class="btn primary" id="saveProfileBtn">Enregistrer</button>
       </div>
+      <div class="page-spacer"></div>
     </section>
   </main>
 
