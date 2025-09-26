@@ -2,7 +2,7 @@
 <html lang="fr">
 <head>
   <meta charset="utf-8" />
-  <!-- PWA plein écran + safe-area -->
+  <!-- PWA + safe-area -->
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
@@ -10,8 +10,8 @@
   <link rel="manifest" href="manifest.json" />
 
   <title>Manhattan Street — Commande</title>
-  <link rel="stylesheet" href="styles.css?v=82" />
-  <script defer src="app.js?v=82"></script>
+  <link rel="stylesheet" href="styles.css?v=90" />
+  <script defer src="app.js?v=90"></script>
 </head>
 <body>
   <!-- Splash -->
@@ -57,11 +57,10 @@
       </section>
     </section>
 
-    <!-- Commande (modes) -->
+    <!-- Commande (modes OK, positions validées) -->
     <section class="tab" id="tab-order">
-      <!-- Barre des modes dans le flux (ne bouge pas) -->
       <div class="segmented" id="orderModes">
-        <button class="seg-btn active" data-mode="takeaway">À emporter</button>
+        <button class="seg-btn" data-mode="takeaway">À emporter</button>
         <button class="seg-btn" data-mode="delivery">Livraison</button>
         <button class="seg-btn" data-mode="dinein">Sur place</button>
       </div>
@@ -83,33 +82,36 @@
           </label>
         </div>
 
-        <div class="map-wrap" id="mapWrap">
+        <div class="map-wrap">
           <iframe id="mapFrame" title="Carte"
             src="https://www.openstreetmap.org/export/embed.html?bbox=3.204,50.734,3.224,50.754&layer=mapnik&marker=50.744,3.214">
           </iframe>
         </div>
 
-        <div class="order-actions">
-          <button class="btn primary" id="orderStart">Commencer ma commande</button>
+        <div class="order-actions" style="display:flex; gap:8px; flex-wrap:wrap;">
+          <button class="btn" id="orderStart">Commencer ma commande</button>
+          <!-- NOUVEAU : ouvre la page Menu -->
+          <button class="btn primary" id="openMenuBtn">Ouvrir le menu</button>
         </div>
       </div>
 
       <div class="page-spacer"></div>
     </section>
 
-    <!-- ===== MENU (nouvel onglet) ===== -->
+    <!-- MENU (page simple pour test navigation) -->
     <section class="tab" id="tab-menu">
-      <div class="menu-sticky">
-        <div class="menu-mode-pill" id="menuModePill">
-          <span id="menuModeEmoji">🏃‍♂️</span>
-          <span id="menuModeText">À emporter</span>
-        </div>
-        <div class="chips" id="menuChips" aria-label="Catégories"></div>
+      <div class="card">
+        <h2>Menu</h2>
+        <p class="hint">Page menu (brouillon). On remplira plus tard les catégories et produits.</p>
+        <ul>
+          <li>Formules</li>
+          <li>Burgers</li>
+          <li>Accompagnements</li>
+          <li>Boissons</li>
+          <li>Desserts</li>
+        </ul>
       </div>
-
-      <div id="menuSections"></div>
-
-      <div style="height:24vh"></div>
+      <div class="page-spacer"></div>
     </section>
 
     <!-- Fidélité -->
@@ -130,7 +132,6 @@
           <div class="qr-code-text" id="qrCodeText"></div>
         </div>
       </div>
-
       <div class="page-spacer"></div>
     </section>
 
@@ -140,7 +141,6 @@
         <h2>Mon historique</h2>
         <div id="myOrders"></div>
       </div>
-
       <div class="page-spacer"></div>
     </section>
 
@@ -155,7 +155,6 @@
         </div>
         <button class="btn primary" id="saveProfileBtn">Enregistrer</button>
       </div>
-
       <div class="page-spacer"></div>
     </section>
   </main>
