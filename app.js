@@ -49,38 +49,58 @@ function renderFeatured(){
 }
 
 /* ===== Tabs ===== */
-
 function switchTab(tab){
   // activer boutons
-  qsa('.tabbar [data-tab]').forEach(b => {
-    b.classList.toggle('active', b.dataset.tab === tab);
-  });
-
+  qsa('.tabbar [data-tab]').forEach(b=> b.classList.toggle('active', b.dataset.tab===tab));
   // activer sections
-  qsa('.tab').forEach(s => {
-    s.classList.toggle('active', s.id === `tab-${tab}`);
-  });
+  qsa('.tab').forEach(s=> s.classList.toggle('active', s.id===`tab-${tab}`));
 
   // Bannière uniquement sur l’accueil
   const hb = document.getElementById('homeBanner');
   if (hb) hb.style.display = (tab === 'home' ? 'block' : 'none');
 
-  // Mode commande : on ne change PAS la tabbar (juste la classe pour fade du CTA)
+  // Mode commande : ne touche pas à la taille des icônes (on masque juste le CTA via .ordering)
   if (tab === 'order') {
     document.body.classList.add('ordering');
   } else {
     document.body.classList.remove('ordering');
   }
 
-  // --- Reflow + scrollTop pour éviter l’offset initial ---
-  document.body.getBoundingClientRect();              // force reflow
+  // --- Reset scroll FIABLE (iOS/PWA, Android, Safari) ---
   const html = document.documentElement;
-  const prev = html.style.scrollBehavior;
+  const prevSmooth = html.style.scrollBehavior;
   html.style.scrollBehavior = 'auto';
-  window.scrollTo(0, 0);                               // remonte tout en haut
-  requestAnimationFrame(() => { html.style.scrollBehavior = prev || ''; });
-}
 
+  // 1) force reflow pour que le layout tienne compte de l'affichage/cachage de la bannière
+  document.body.getBoundingClientRect();
+
+  // 2) candidats au scroll (selon les plateformes)
+  const SCROLLERS = [
+    document.scrollingElement,
+    document.documentElement,
+    document.body,
+    window
+  ].filter(Boolean);
+
+  const forceTop = () => {
+    for (const sc of SCROLLERS) {
+      try {
+        if (sc === window) window.scrollTo(0, 0);
+        else sc.scrollTop = 0;
+      } catch {}
+    }
+  };
+
+  // 3) on insiste : maintenant, à la frame suivante, puis après un micro délai
+  forceTop();
+  requestAnimationFrame(() => {
+    forceTop();
+    setTimeout(() => {
+      forceTop();
+      html.style.scrollBehavior = prevSmooth || '';
+    }, 0);
+  });
+}
 
 function bindTabbar(){
   document.addEventListener('click', (e)=>{
