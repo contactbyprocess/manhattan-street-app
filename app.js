@@ -6,7 +6,7 @@ const set = (k,v)=>localStorage.setItem(k,JSON.stringify(v));
 function showToast(msg,dur=1500){const t=qs('#toast');if(!t)return;t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),dur);}
 
 /* ===== Données démo ===== */
-const KEY={PROFILE:'ms_profile',USERS:'ms_users',PRODUCTS:'ms_products'};
+const KEY={PROFILE:'ms_profile',USERS:'ms_users'};
 function getUsers(){return get(KEY.USERS,{});} function setUsers(u){set(KEY.USERS,u);}
 function getProfile(){return get(KEY.PROFILE,{firstName:'',email:'',phone:''});}
 function setProfile(p){set(KEY.PROFILE,p);}
@@ -14,13 +14,12 @@ function getPoints(email){const u=getUsers();return u[email]?.points||0;}
 
 /* ===== Bannière carousel ===== */
 function initBannerCarousel(){
-  const track = document.querySelector('#bannerTrack');
-  const dots  = document.querySelector('#bannerDots');
+  const track = qs('#bannerTrack');
+  const dots  = qs('#bannerDots');
   if(!track || !dots) return;
 
   const slides = [...track.children];
   dots.innerHTML = slides.map((_,i)=>`<span class="dot ${i===0?'active':''}" data-i="${i}"></span>`).join('');
-
   let i = 0;
   const slideW = () => track.getBoundingClientRect().width;
 
@@ -38,7 +37,6 @@ function initBannerCarousel(){
       timer = setInterval(()=>go(i+1), 4000);
     });
   });
-
   window.addEventListener('resize', ()=> { track.scrollLeft = i * slideW(); });
 }
 
@@ -58,10 +56,10 @@ function switchTab(tab){
   qsa('.tab').forEach(s=> s.classList.toggle('active', s.id===`tab-${tab}`));
 
   // Bannière uniquement sur l’accueil
-  const hb = document.getElementById('homeBanner');
+  const hb = qs('#homeBanner');
   if (hb) hb.style.display = (tab === 'home' ? 'block' : 'none');
 
-  // Mode commande
+  // Mode commande : ne pas toucher au layout de la tabbar (juste cacher le CTA)
   if (tab === 'order') {
     document.body.classList.add('ordering');
   } else {
@@ -81,17 +79,16 @@ function bindTabbar(){
 
 /* ===== CTA ===== */
 function bindCTA(){
-  const openOrder = ()=>{
-    switchTab('order');
-  };
-  document.getElementById('ctaOrder')?.addEventListener('click', (e)=>{
+  const openOrder = ()=> switchTab('order');
+
+  qs('#ctaOrder')?.addEventListener('click', (e)=>{
     e.preventDefault(); e.stopPropagation();
     openOrder();
   });
 
-  // Raccourcis espace client
-  document.getElementById('tileOrders')?.addEventListener('click', ()=> switchTab('orders'));
-  document.getElementById('tileProfile')?.addEventListener('click', ()=> switchTab('profile'));
+  // Raccourcis espace client depuis l’accueil
+  qs('#tileOrders')?.addEventListener('click', ()=> switchTab('orders'));
+  qs('#tileProfile')?.addEventListener('click', ()=> switchTab('profile'));
 }
 
 /* ===== Profil / Fidélité ===== */
@@ -123,37 +120,24 @@ function renderQR(email){
   qs('#qrCodeText').textContent=email;
 }
 
-/* ===== Splash 5s min (corrigé) ===== */
+/* ===== Splash 5s min ===== */
 (function(){
-  const MIN_MS = 5000;   // min 5s
-  const MAX_MS = 9000;   // max 9s
-  const start  = Date.now();
+  const MIN_MS = 5000, MAX_MS = 9000;
+  const minDelayP = new Promise(res=> setTimeout(res, MIN_MS));
+  const maxTimeoutP = new Promise(res=> setTimeout(res, MAX_MS));
 
-  function hideSplash(){
-    const s = document.getElementById('splash');
-    if(!s || s.classList.contains('done')) return;
-    s.style.opacity = 0;
-    s.classList.add('done');
-    setTimeout(()=> s.remove(), 600);
-  }
-
-  // hard timeout
-  setTimeout(hideSplash, MAX_MS);
-
-  document.addEventListener('DOMContentLoaded', ()=>{
-    const left = Math.max(0, MIN_MS - (Date.now() - start));
-    setTimeout(hideSplash, left);
-  });
-
-  window.addEventListener('load', ()=>{
-    const left = Math.max(0, MIN_MS - (Date.now() - start));
-    setTimeout(hideSplash, left);
+  window.addEventListener('load', async ()=>{
+    const splash = document.getElementById('splash');
+    if(!splash) return;
+    await Promise.race([minDelayP, maxTimeoutP]);
+    splash.style.opacity = 0;
+    setTimeout(()=> splash.remove(), 600);
   });
 })();
 
 /* ===== INIT ===== */
 document.addEventListener('DOMContentLoaded',()=>{
-  renderFeatured();
+  renderFeatured();         // neutralisé
   bindTabbar();
   bindCTA();
   bindProfile();
