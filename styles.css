@@ -196,3 +196,26 @@ body.ordering .cta-img{ opacity:0; transform:translate(-50%,-2px) scale(.92); po
   margin-top: calc(var(--safe-top) + 40px); /* <<< DESCENDU pour ne pas coller à la barre système */
   margin-bottom: 16px;
 }
+
+/* ===== Notif "bannière message" ===== */
+.notif {
+  position: fixed;
+  left: 12px; right: 12px;
+  top: calc(10px + var(--safe-top));
+  z-index: 9998;
+  padding: 12px 14px;
+  border-radius: 14px;
+  font-weight: 700;
+  box-shadow: 0 8px 26px rgba(0,0,0,.10);
+  transform: translateY(-16px);
+  opacity: 0;
+  transition: transform .24s ease, opacity .24s ease;
+}
+.notif.show { transform: translateY(0); opacity: 1; }
+
+.notif.info    { background:#111; color:#fff; }
+.notif.success { background:#0f9d58; color:#fff; }
+.notif.error   { background:#c0392b; color:#fff; }
+
+
+
