@@ -49,37 +49,39 @@ function renderFeatured(){
 }
 
 /* ===== Tabs ===== */
+
 function switchTab(tab){
   // activer boutons
-  qsa('.tabbar [data-tab]').forEach(b=> b.classList.toggle('active', b.dataset.tab===tab));
-  // activer sections
-  qsa('.tab').forEach(s=> s.classList.toggle('active', s.id===`tab-${tab}`));
+  qsa('.tabbar [data-tab]').forEach(b => {
+    b.classList.toggle('active', b.dataset.tab === tab);
+  });
 
- // ...dans switchTab(tab), après avoir activé les sections/boutons :
-{
-  // Bannière accueil
+  // activer sections
+  qsa('.tab').forEach(s => {
+    s.classList.toggle('active', s.id === `tab-${tab}`);
+  });
+
+  // Bannière uniquement sur l’accueil
   const hb = document.getElementById('homeBanner');
   if (hb) hb.style.display = (tab === 'home' ? 'block' : 'none');
 
-  // Mode commande : CTA fade (gap inchangé)
+  // Mode commande : on ne change PAS la tabbar (juste la classe pour fade du CTA)
   if (tab === 'order') {
     document.body.classList.add('ordering');
   } else {
     document.body.classList.remove('ordering');
   }
 
-  // --- HOTFIX reflow + scroll top pour éviter l'offset initial ---
-  // 1) On force le reflow
-  document.body.getBoundingClientRect();
-  // 2) On désactive temporairement le scroll-behavior smooth
+  // --- Reflow + scrollTop pour éviter l’offset initial ---
+  document.body.getBoundingClientRect();              // force reflow
   const html = document.documentElement;
   const prev = html.style.scrollBehavior;
   html.style.scrollBehavior = 'auto';
-  // 3) On remonte tout en haut (instantané)
-  window.scrollTo(0, 0);
-  // 4) On rétablit le smooth pour l’app après un tick
+  window.scrollTo(0, 0);                               // remonte tout en haut
   requestAnimationFrame(() => { html.style.scrollBehavior = prev || ''; });
 }
+
+
 function bindTabbar(){
   document.addEventListener('click', (e)=>{
     const btn = e.target.closest('.tabbar [data-tab]');
