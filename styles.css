@@ -188,3 +188,13 @@ body.ordering .cta-img{ opacity:0; transform:translate(-50%,-2px) scale(.92); po
 @media (max-width: 360px){
   :root{ --icon-sz:440px; --icon-shift-y:-96px; }
 }
+
+/* Quand la bannière est cachée (onglets ≠ Accueil), on décale le contenu sous la safe-area */
+.no-banner .layout{
+  padding-top: calc(var(--safe-top) + 10px);
+}
+
+/* Petit confort : un léger espace avant l’encadré de modes */
+.no-banner #tab-order .order-modes{
+  margin-top: 6px;
+}
