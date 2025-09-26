@@ -48,6 +48,53 @@ function renderFeatured(){
   el.style.display = 'none';
 }
 
+/* ===== MODE COMMANDE (segmented) ===== */
+let currentMode = 'takeaway';
+
+function setMode(mode){
+  currentMode = mode;
+
+  // 1) visuel : bouton actif coloré
+  document.querySelectorAll('#orderModes .seg-btn').forEach(b=>{
+    b.classList.toggle('active', b.dataset.mode === mode);
+  });
+
+  // 2) zones conditionnelles (uniquement display; pas de positionnement)
+  const deliveryWrap = qs('#deliveryAddressWrap');
+  const dineinBlock  = qs('#dineInBlock');
+  const mapWrap      = qs('#tab-order .map-wrap');
+  const titleEl      = qs('#orderModeTitle');
+  const infoEl       = qs('#orderInfo');
+
+  if(mode === 'delivery'){
+    if(deliveryWrap) deliveryWrap.style.display = 'block';
+    if(dineinBlock)  dineinBlock.style.display  = 'none';
+    if(mapWrap)      mapWrap.style.display      = 'block';
+    if(titleEl) titleEl.textContent = 'Livraison';
+    if(infoEl)  infoEl.textContent  = 'Entre ton adresse pour vérifier la zone.';
+  } else if(mode === 'takeaway'){
+    if(deliveryWrap) deliveryWrap.style.display = 'none';
+    if(dineinBlock)  dineinBlock.style.display  = 'none';
+    if(mapWrap)      mapWrap.style.display      = 'block';
+    if(titleEl) titleEl.textContent = 'À emporter';
+    if(infoEl)  infoEl.textContent  = 'Passe ta commande et viens la récupérer.';
+  } else { // dinein
+    if(deliveryWrap) deliveryWrap.style.display = 'none';
+    if(dineinBlock)  dineinBlock.style.display  = 'block';
+    if(mapWrap)      mapWrap.style.display      = 'none'; // pas de carte sur place
+    if(titleEl) titleEl.textContent = 'Sur place';
+    if(infoEl)  infoEl.textContent  = 'Indique ton numéro de table.';
+  }
+}
+
+function bindOrderModes(){
+  qs('#orderModes')?.addEventListener('click', (e)=>{
+    const btn = e.target.closest('.seg-btn');
+    if(!btn) return;
+    setMode(btn.dataset.mode);
+  });
+}
+
 /* ===== Tabs ===== */
 function switchTab(tab){
   // activer boutons
@@ -55,29 +102,21 @@ function switchTab(tab){
   // activer sections
   qsa('.tab').forEach(s=> s.classList.toggle('active', s.id===`tab-${tab}`));
 
-  // Flags de page
-  document.body.classList.toggle('is-home',  tab === 'home');
-  document.body.classList.toggle('ordering', tab === 'order'); // masque le CTA seulement
+  // Bannière uniquement sur l’accueil
+  const hb = document.getElementById('homeBanner');
+  if (hb) hb.style.display = (tab === 'home' ? 'block' : 'none');
 
-  // --- reset scroll & layout sans effet secondaire ---
-  const html = document.documentElement;
-  const prev = html.style.scrollBehavior;
-  html.style.scrollBehavior = 'auto';
+  // Commande : on ne change AUCUNE position, on ajuste seulement le contenu
+  if (tab === 'order') {
+    document.body.classList.add('ordering');   // masque le CTA, c’est tout
+    setMode(currentMode || 'takeaway');        // remet l’état visuel/sections
+  } else {
+    document.body.classList.remove('ordering');
+  }
 
-  // force reflow (prise en compte de la rétraction bannière)
-  document.body.getBoundingClientRect();
-
-  // remonte en haut, et insiste (Safari/iOS)
-  const forceTop = () => {
-    try{ window.scrollTo(0,0); }catch{}
-    try{ document.scrollingElement && (document.scrollingElement.scrollTop = 0); }catch{}
-  };
-  forceTop();
-  requestAnimationFrame(()=>{
-    forceTop();
-    setTimeout(()=>{ forceTop(); html.style.scrollBehavior = prev || ''; }, 0);
-  });
+  window.scrollTo({top:0, behavior:'smooth'});
 }
+
 function bindTabbar(){
   document.addEventListener('click', (e)=>{
     const btn = e.target.closest('.tabbar [data-tab]');
@@ -90,7 +129,6 @@ function bindTabbar(){
 /* ===== CTA ===== */
 function bindCTA(){
   const openOrder = ()=> switchTab('order');
-
   qs('#ctaOrder')?.addEventListener('click', (e)=>{
     e.preventDefault(); e.stopPropagation();
     openOrder();
@@ -147,9 +185,10 @@ function renderQR(email){
 
 /* ===== INIT ===== */
 document.addEventListener('DOMContentLoaded',()=>{
-  renderFeatured();         // neutralisé
+  renderFeatured();
   bindTabbar();
   bindCTA();
+  bindOrderModes();          // ← active le segmented control
   bindProfile();
   renderLoyalty();
   initBannerCarousel();
@@ -157,7 +196,6 @@ document.addEventListener('DOMContentLoaded',()=>{
   // Onglet par défaut : Accueil
   switchTab('home');
 });
-
 /* ===== PWA: keep SW fresh ===== */
 if ('serviceWorker' in navigator) {
   navigator.serviceWorker.getRegistrations().then(list => list.forEach(reg => reg.update()));
