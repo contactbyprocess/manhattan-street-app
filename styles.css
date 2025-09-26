@@ -11,7 +11,7 @@
   /* Bannière */
   --banner-h: 21vh;
 
-  /* Tabbar (validées) */
+  /* Tabbar (VALIDÉE) */
   --tabbar-bg:#ffffff;
   --tabbar-h:50px;
   --icon-sz:480px;          /* icônes validées */
@@ -19,11 +19,11 @@
   --cta-size:102px;
   --cta-lift:50px;
 
-  /* Colonnes clampées pour ne PAS grossir quand le CTA disparaît */
+  /* Colonnes clampées → évite qu’elles grossissent quand le CTA disparaît */
   --tab-col-min: 64px;
   --tab-col-max: 88px;
 
-  /* Gap central du CTA (ne change pas en mode commande) */
+  /* Gap central réservé au CTA (on ne le change pas en mode commande) */
   --cta-gap: calc(var(--cta-size) + 16px);
 }
 
@@ -36,7 +36,7 @@ body{
 }
 h1,h2,h3{ margin:0 0 8px 0 }
 
-/* ===== Splash ===== */
+/* ===== Splash (plein écran) ===== */
 #splash, .splash{
   position:fixed; inset:0; z-index:9999;
   display:grid; place-items:center;
@@ -44,17 +44,15 @@ h1,h2,h3{ margin:0 0 8px 0 }
 }
 #splash img, .splash img{ width:100%; height:100%; object-fit:cover; display:block }
 
-/* ===== Toast (bulle en bas-centre) ===== */
+/* ===== Toast / notif simple ===== */
 .toast{
-  position:fixed; left:50%; transform:translateX(-50%);
-  bottom: calc(var(--tabbar-h) + var(--safe-bottom) + 16px);
+  position:fixed; left:50%; transform:translateX(-50%); top:16px;
   background:rgba(0,0,0,.85); color:#fff; padding:10px 14px; border-radius:12px;
-  z-index:9998; opacity:0; pointer-events:none; transition:opacity .2s;
-  max-width: 92vw; text-align:center;
+  z-index:9998; opacity:0; pointer-events:none; transition:opacity .2s
 }
 .toast.show{ opacity:1 }
 
-/* ===== Bannière (validée) ===== */
+/* ===== Bannière (Accueil uniquement, hauteur validée) ===== */
 .banner{
   position:relative; margin:0; padding:0; border:0; background:#000;
   margin-top: calc(-1 * var(--safe-top));
@@ -94,27 +92,29 @@ h1,h2,h3{ margin:0 0 8px 0 }
 .tab{ display:none; }
 .tab.active{ display:block; }
 
-/* ===== Carte en BLOC (pas plein écran) ===== */
+/* ===== Carte “classique” (iframe) ===== */
 .map-wrap{ height:300px; margin:12px 0 }
 .map-wrap iframe{ width:100%; height:100%; border:0 }
 
-/* ===== Encadré modes commande ===== */
+/* ===== Segmented (modes commande) ===== */
 .segmented{
-  display: grid; grid-template-columns: 1fr 1fr 1fr;
+  display:grid; grid-template-columns:1fr 1fr 1fr;
   background:#fff; border:1px solid var(--line); border-radius:14px; overflow:hidden;
-  box-shadow:0 4px 18px rgba(0,0,0,.08);
+  box-shadow:0 4px 18px rgba(0,0,0,.08); margin-top:12px;
 }
 .seg-btn{
   appearance:none; background:transparent; border:0; padding:10px 8px; font-weight:800; cursor:pointer; color:#333;
 }
 .seg-btn.active{ background:var(--accent-cta); color:#fff; }
 
-.order-card{
-  background:#fff; border:1px solid var(--line); border-radius:16px; padding:16px; margin:10px 0;
-  box-shadow:0 4px 14px rgba(0,0,0,.05);
+.panel{
+  background:#fff; border:1px solid var(--line); border-radius:14px; padding:10px;
+  box-shadow:0 8px 26px rgba(0,0,0,.10); margin-top:10px;
 }
+.address-row{ display:grid; grid-template-columns:1fr auto; gap:8px; align-items:center }
+.address-row input{ height:40px; padding:8px; border-radius:10px; border:1px solid #ddd }
 
-/* ===== Tabbar (blanche, VALIDÉE – inchangée) ===== */
+/* ===== Tabbar (blanche, VALIDÉE – taille & position figées) ===== */
 .tabbar{
   position:fixed; left:0; right:0; bottom:0; z-index:30;
   background:var(--tabbar-bg);
@@ -124,6 +124,7 @@ h1,h2,h3{ margin:0 0 8px 0 }
   box-shadow:0 -2px 8px rgba(0,0,0,.08);
   overflow:visible;
 
+  /* grille 2 | CTA | 2 (colonnes clampées) */
   display:grid;
   grid-template-columns:
     minmax(var(--tab-col-min), var(--tab-col-max))
@@ -165,7 +166,7 @@ h1,h2,h3{ margin:0 0 8px 0 }
 .tabbar .tabbtn:nth-of-type(3){ grid-column:4; justify-self:start; margin-left:-15px; }
 .tabbar .tabbtn:nth-of-type(4){ grid-column:5; justify-self:end;   margin-right:10px; }
 
-/* CTA central (animé) */
+/* CTA central */
 .cta-img{
   position:absolute; left:50%; transform:translateX(-50%);
   top: calc(-1 * var(--cta-lift));
@@ -176,8 +177,9 @@ h1,h2,h3{ margin:0 0 8px 0 }
 }
 .cta-img img{ width:100%; height:100%; object-fit:contain }
 
-/* Mode commande : on cache le CTA, MAIS on ne change PAS le gap ni la taille des icônes */
+/* Mode commande : on cache le CTA, MAIS on ne touche pas au gap ni aux icônes */
 body.ordering .cta-img{ opacity:0; transform:translate(-50%,-2px) scale(.92); pointer-events:none; }
+/* (pas de body.ordering .tabbar{ --cta-gap:0 } → la tabbar reste identique) */
 
 /* Petits écrans */
 @media (max-width: 360px){
@@ -187,78 +189,15 @@ body.ordering .cta-img{ opacity:0; transform:translate(-50%,-2px) scale(.92); po
 /* Hauteur min des pages → pas de “marche” */
 .tab{ min-height: calc(100vh - (var(--tabbar-h) + env(safe-area-inset-bottom, 0px))); }
 
-/* Spacer à mettre en bas des onglets non-accueil tant qu'ils sont vides */
+/* Spacers provisoires pour onglets encore vides → stabilise la tabbar */
 .page-spacer { height: calc(32vh + var(--safe-bottom)); }
 
-/* ===== Overlay commande : encadré des modes ===== */
-.order-modes {
-  position: relative;
-  margin-top: calc(var(--safe-top) + 40px); /* <<< DESCENDU pour ne pas coller à la barre système */
-  margin-bottom: 16px;
+/* Verrou global : la tabbar reste comme sur l’accueil sur TOUTES les pages */
+.tabbar{
+  position: fixed !important;
+  left: 0 !important; right: 0 !important; bottom: 0 !important;
+  height: calc(var(--tabbar-h) + var(--safe-bottom)) !important;
+  padding-bottom: var(--safe-bottom) !important;
+  background: var(--tabbar-bg) !important;
+  box-shadow: 0 -2px 8px rgba(0,0,0,.08) !important;
 }
-
-/* ===== Notifications style “message” ===== */
-.notif {
-  position: fixed;
-  top: 12px;
-  left: 50%;
-  transform: translateX(-50%) translateY(-30px);
-  background: #111;
-  color: #fff;
-  padding: 10px 16px;
-  border-radius: 14px;
-  font-size: 15px;
-  font-weight: 500;
-  box-shadow: 0 4px 14px rgba(0,0,0,0.25);
-  z-index: 9999;
-  opacity: 0;
-  transition: all .3s ease;
-  pointer-events: none;
-}
-
-/* entrée */
-.notif.show {
-  transform: translateX(-50%) translateY(0);
-  opacity: 1;
-}
-
-/* variantes */
-.notif.success { background:#27ae60; }
-.notif.error   { background:#c0392b; }
-.notif.info    { background:#2980b9; }
-
-/* ===== Notif “message” en haut ===== */
-#notifBar.notif{
-  position: fixed;
-  left: 12px; right: 12px;
-  top: calc(10px + env(safe-area-inset-top, 0px));
-  z-index: 9998;
-  padding: 12px 14px;
-  border-radius: 14px;
-  font-weight: 700;
-  box-shadow: 0 10px 30px rgba(0,0,0,.15);
-  opacity: 0; transform: translateY(-12px);
-  transition: opacity .18s ease, transform .18s ease;
-  text-align: center;
-}
-#notifBar.notif.show{ opacity:1; transform: translateY(0) }
-#notifBar.notif.info    { background:#eef2ff; color:#1e2a78; }
-#notifBar.notif.success { background:#e9f8ee; color:#145a2c; }
-#notifBar.notif.error   { background:#ffecec; color:#7a1616; }
-
-/* ===== Suggestions d’adresse (auto-complétion) ===== */
-#addrSuggest.addr-suggest{
-  position: fixed; z-index: 9999;
-  background:#fff; border:1px solid #e7e7e7; border-radius:12px;
-  box-shadow: 0 8px 26px rgba(0,0,0,.12);
-  max-height: 50vh; overflow:auto;
-  display:none;
-}
-#addrSuggest.addr-suggest.open{ display:block }
-#addrSuggest .s-item{
-  padding:10px 12px; cursor:pointer; font-size:14px;
-  border-bottom:1px solid #f1f1f1;
-}
-#addrSuggest .s-item:last-child{ border-bottom:0 }
-#addrSuggest .s-item:hover{ background:#fafafa }
-#addrSuggest .s-item.muted{ color:#888; cursor:default; background:#f9f9f9 }
