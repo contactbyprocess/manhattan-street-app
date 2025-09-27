@@ -204,3 +204,20 @@ body:not(.is-home) #homeBanner{
   pointer-events: auto !important;
   z-index: auto !important;
 }
+
+/* ==== Fix position du switch de mode (descend sous la zone d'état) ==== */
+#tab-order { 
+  padding-top: calc(16px + var(--safe-top)) !important;
+}
+
+/* Evite les micro-transitions qui provoquent un décalage à l'ouverture */
+body:not(.is-home) #homeBanner{
+  transition: none !important;
+}
+
+
+
+
+
+
+
