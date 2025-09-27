@@ -2,7 +2,7 @@
 <html lang="fr">
 <head>
   <meta charset="utf-8" />
-  <!-- PWA + safe-area -->
+  <!-- PWA plein écran + safe-area -->
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
@@ -10,10 +10,10 @@
   <link rel="manifest" href="manifest.json" />
 
   <title>Manhattan Street — Commande</title>
-  <link rel="stylesheet" href="styles.css?v=100" />
-  <script defer src="app.js?v=100"></script>
+  <link rel="stylesheet" href="styles.css?v=75" />
+  <script defer src="app.js?v=75"></script>
 </head>
-<body>
+<body class="is-home">
   <!-- Splash -->
   <div id="splash">
     <img src="assets/splash.jpg" alt="Splash Manhattan Street">
@@ -57,9 +57,9 @@
       </section>
     </section>
 
-    <!-- Commande (modes OK, positions validées) -->
+    <!-- Commande -->
     <section class="tab" id="tab-order">
-      <!-- Barre des modes DANS LE FLUX (pas overlay) -->
+      <!-- Modes dans le flux (pas overlay) -->
       <div class="segmented" id="orderModes">
         <button class="seg-btn" data-mode="takeaway">À emporter</button>
         <button class="seg-btn" data-mode="delivery">Livraison</button>
