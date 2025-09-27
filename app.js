@@ -85,51 +85,22 @@ function setMode(mode){
     if(infoEl)  infoEl.textContent  = 'Indique ton numéro de table.';
   }
 }
-function bindOrderStart() {
-  const btn = qs('#orderStart');
-  if (!btn) return;
-  btn.addEventListener('click', (e) => {
-    e.preventDefault();
-    // Pas de validation ici → on va directement au menu
-    switchTab('menu');
+function bindOrderModes(){
+  qs('#orderModes')?.addEventListener('click', (e)=>{
+    const btn = e.target.closest('.seg-btn');
+    if(!btn) return;
+    setMode(btn.dataset.mode);
   });
 }
 
-// --- Validation avant d'aller au menu ---
-function canProceedToMenu() {
-  const mode = (typeof currentMode === 'string' && currentMode) ? currentMode : 'takeaway';
-
-  if (mode === 'delivery') {
-    const addr = (qs('#deliveryAddress')?.value || '').trim();
-    if (!addr) {
-      showToast('Entre ton adresse de livraison 📍');
-      qs('#deliveryAddress')?.focus();
-      return false;
-    }
-  }
-
-  if (mode === 'dinein') {
-    const table = (qs('#tableNumber')?.value || '').trim();
-    if (!table) {
-      showToast('Indique ton numéro de table 🪑');
-      qs('#tableNumber')?.focus();
-      return false;
-    }
-  }
-
-  return true;
-}
-
+/* ===== BOUTON "JE COMMANDE" ===== */
 function bindOrderStart() {
   qs('#orderStart')?.addEventListener('click', (e) => {
     e.preventDefault();
-    if (!canProceedToMenu()) return;
-    // OK → on affiche la vitrine (menu)
+    // pas de validation → envoie directement vers l’onglet menu
     switchTab('menu');
   });
 }
-
-
 
 /* ===== Tabs ===== */
 function switchTab(tab){
@@ -141,15 +112,14 @@ function switchTab(tab){
   // Flags de page
   document.body.classList.toggle('is-home',  tab === 'home');
   document.body.classList.toggle('ordering', tab === 'order'); // masque le CTA seulement
+  if (tab === 'menu') document.body.classList.remove('ordering'); // menu = pas d’overlay
 
-  // Repli/affichage bannière via CSS, et reset scroll propre
+  // Repli/scroll top
   const html = document.documentElement;
   const prev = html.style.scrollBehavior;
   html.style.scrollBehavior = 'auto';
-  document.body.getBoundingClientRect(); // reflow
-  const forceTop = ()=>{ try{window.scrollTo(0,0);}catch{} try{document.scrollingElement&&(document.scrollingElement.scrollTop=0);}catch{} };
-  forceTop();
-  requestAnimationFrame(()=>{ forceTop(); setTimeout(()=>{ forceTop(); html.style.scrollBehavior = prev || ''; }, 0); });
+  window.scrollTo(0,0);
+  requestAnimationFrame(()=>{ html.style.scrollBehavior = prev || ''; });
 
   // Remettre l'état visuel des modes quand on arrive sur "Commande"
   if (tab === 'order') setMode(currentMode || 'takeaway');
@@ -204,10 +174,7 @@ function renderQR(email){
 
 /* ===== MENU (vitrine) ===== */
 function bindMenuScreen(){
-  // Bouton "Je commande" → onglet Commande
   document.getElementById('menuGoOrder')?.addEventListener('click', ()=> switchTab('order'));
-
-  // Pilule visuelle (juste l'état actif)
   document.querySelector('#tab-menu .menu-mode-pill')?.addEventListener('click', (e)=>{
     const btn = e.target.closest('.pill-btn'); if(!btn) return;
     document.querySelectorAll('#tab-menu .pill-btn').forEach(b=> b.classList.toggle('active', b===btn));
@@ -235,13 +202,12 @@ document.addEventListener('DOMContentLoaded',()=>{
   bindTabbar();
   bindCTA();
   bindOrderModes();
+  bindOrderStart();   // ← une seule version
   bindProfile();
   bindMenuScreen();
-  bindOrderStart();          // ← AJOUTER CETTE LIGNE
   renderLoyalty();
   initBannerCarousel();
 
-  // Onglet par défaut : Accueil
   switchTab('home');
 });
 
