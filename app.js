@@ -239,9 +239,6 @@ document.addEventListener('DOMContentLoaded',()=>{
   renderLoyalty();
   initBannerCarousel();
 
-  switchTab('home');
-});
-
   // Onglet par défaut : Accueil
   switchTab('home');
 });
