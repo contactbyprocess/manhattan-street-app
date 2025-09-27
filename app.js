@@ -1,5 +1,5 @@
 /* ===== Helpers ===== */
-const qs = s => document.querySelector(s);
+const qs  = s => document.querySelector(s);
 const qsa = s => [...document.querySelectorAll(s)];
 const get = (k,d)=>{try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch{return d}};
 const set = (k,v)=>localStorage.setItem(k,JSON.stringify(v));
@@ -50,11 +50,10 @@ function renderFeatured(){
 
 /* ===== MODE COMMANDE (segmented) ===== */
 let currentMode = 'takeaway';
-
 function setMode(mode){
   currentMode = mode;
 
-  // visuel : bouton actif coloré
+  // visuel : bouton actif
   document.querySelectorAll('#orderModes .seg-btn').forEach(b=>{
     b.classList.toggle('active', b.dataset.mode === mode);
   });
@@ -86,7 +85,6 @@ function setMode(mode){
     if(infoEl)  infoEl.textContent  = 'Indique ton numéro de table.';
   }
 }
-
 function bindOrderModes(){
   qs('#orderModes')?.addEventListener('click', (e)=>{
     const btn = e.target.closest('.seg-btn');
@@ -97,7 +95,7 @@ function bindOrderModes(){
 
 /* ===== Tabs ===== */
 function switchTab(tab){
-  // activer boutons
+  // activer boutons tabbar
   qsa('.tabbar [data-tab]').forEach(b=> b.classList.toggle('active', b.dataset.tab===tab));
   // activer sections
   qsa('.tab').forEach(s=> s.classList.toggle('active', s.id===`tab-${tab}`));
@@ -106,24 +104,18 @@ function switchTab(tab){
   document.body.classList.toggle('is-home',  tab === 'home');
   document.body.classList.toggle('ordering', tab === 'order'); // masque le CTA seulement
 
-  // Bannière uniquement sur l’accueil
-  const hb = document.getElementById('homeBanner');
-  if (hb) hb.style.display = (tab === 'home' ? 'block' : 'none');
-
-  // Commande : aucun changement de position; seulement contenu
-  if (tab === 'order') {
-    setMode(currentMode || 'takeaway');
-  }
-
-  // reset scroll propre (évite l’offset initial)
+  // Repli/affichage bannière via CSS, et reset scroll propre
   const html = document.documentElement;
   const prev = html.style.scrollBehavior;
   html.style.scrollBehavior = 'auto';
   document.body.getBoundingClientRect(); // reflow
-  window.scrollTo(0,0);
-  requestAnimationFrame(()=>{ html.style.scrollBehavior = prev || ''; });
-}
+  const forceTop = ()=>{ try{window.scrollTo(0,0);}catch{} try{document.scrollingElement&&(document.scrollingElement.scrollTop=0);}catch{} };
+  forceTop();
+  requestAnimationFrame(()=>{ forceTop(); setTimeout(()=>{ forceTop(); html.style.scrollBehavior = prev || ''; }, 0); });
 
+  // Remettre l'état visuel des modes quand on arrive sur "Commande"
+  if (tab === 'order') setMode(currentMode || 'takeaway');
+}
 function bindTabbar(){
   document.addEventListener('click', (e)=>{
     const btn = e.target.closest('.tabbar [data-tab]');
@@ -135,14 +127,10 @@ function bindTabbar(){
 
 /* ===== CTA ===== */
 function bindCTA(){
-  const openOrder = ()=> switchTab('order');
-
   qs('#ctaOrder')?.addEventListener('click', (e)=>{
     e.preventDefault(); e.stopPropagation();
-    openOrder();
+    switchTab('order');
   });
-
-  // Raccourcis espace client
   qs('#tileOrders')?.addEventListener('click', ()=> switchTab('orders'));
   qs('#tileProfile')?.addEventListener('click', ()=> switchTab('profile'));
 }
@@ -176,7 +164,19 @@ function renderQR(email){
   qs('#qrCodeText').textContent=email;
 }
 
-/* ===== Splash 5s min ===== */
+/* ===== MENU (vitrine) ===== */
+function bindMenuScreen(){
+  // Bouton "Je commande" → onglet Commande
+  document.getElementById('menuGoOrder')?.addEventListener('click', ()=> switchTab('order'));
+
+  // Pilule visuelle (juste l'état actif)
+  document.querySelector('#tab-menu .menu-mode-pill')?.addEventListener('click', (e)=>{
+    const btn = e.target.closest('.pill-btn'); if(!btn) return;
+    document.querySelectorAll('#tab-menu .pill-btn').forEach(b=> b.classList.toggle('active', b===btn));
+  });
+}
+
+/* ===== Splash (5–9s max) ===== */
 (function(){
   const MIN_MS = 5000, MAX_MS = 9000;
   const minDelayP = new Promise(res=> setTimeout(res, MIN_MS));
@@ -198,6 +198,7 @@ document.addEventListener('DOMContentLoaded',()=>{
   bindCTA();
   bindOrderModes();
   bindProfile();
+  bindMenuScreen();         // ← ajout
   renderLoyalty();
   initBannerCarousel();
 
