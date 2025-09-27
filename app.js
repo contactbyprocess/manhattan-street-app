@@ -85,11 +85,13 @@ function setMode(mode){
     if(infoEl)  infoEl.textContent  = 'Indique ton numéro de table.';
   }
 }
-function bindOrderModes(){
-  qs('#orderModes')?.addEventListener('click', (e)=>{
-    const btn = e.target.closest('.seg-btn');
-    if(!btn) return;
-    setMode(btn.dataset.mode);
+function bindOrderStart() {
+  const btn = qs('#orderStart');
+  if (!btn) return;
+  btn.addEventListener('click', (e) => {
+    e.preventDefault();
+    // Pas de validation ici → on va directement au menu
+    switchTab('menu');
   });
 }
 
