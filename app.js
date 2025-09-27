@@ -93,6 +93,42 @@ function bindOrderModes(){
   });
 }
 
+// --- Validation avant d'aller au menu ---
+function canProceedToMenu() {
+  const mode = (typeof currentMode === 'string' && currentMode) ? currentMode : 'takeaway';
+
+  if (mode === 'delivery') {
+    const addr = (qs('#deliveryAddress')?.value || '').trim();
+    if (!addr) {
+      showToast('Entre ton adresse de livraison 📍');
+      qs('#deliveryAddress')?.focus();
+      return false;
+    }
+  }
+
+  if (mode === 'dinein') {
+    const table = (qs('#tableNumber')?.value || '').trim();
+    if (!table) {
+      showToast('Indique ton numéro de table 🪑');
+      qs('#tableNumber')?.focus();
+      return false;
+    }
+  }
+
+  return true;
+}
+
+function bindOrderStart() {
+  qs('#orderStart')?.addEventListener('click', (e) => {
+    e.preventDefault();
+    if (!canProceedToMenu()) return;
+    // OK → on affiche la vitrine (menu)
+    switchTab('menu');
+  });
+}
+
+
+
 /* ===== Tabs ===== */
 function switchTab(tab){
   // activer boutons tabbar
