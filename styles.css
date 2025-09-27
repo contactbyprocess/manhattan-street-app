@@ -205,23 +205,19 @@ body:not(.is-home) #homeBanner{
   z-index: auto !important;
 }
 
-/* ==== Fix position du switch de mode (descend sous la zone d'état) ==== */
+/* ==== Fix position du switch de mode ==== */
 #tab-order { 
   padding-top: calc(16px + var(--safe-top)) !important;
 }
 
-/* Evite les micro-transitions qui provoquent un décalage à l'ouverture */
-body:not(.is-home) #homeBanner{
-  transition: none !important;
-}
+/* Evite les micro-transitions à l'ouverture */
+body:not(.is-home) #homeBanner{ transition: none !important; }
 
 /* ===== MENU (vitrine) ===== */
 #tab-menu { padding-top: calc(8px + env(safe-area-inset-top, 0px)); }
-#tab-menu .menu-hero{
-  display:grid; gap:10px; margin:8px 0 10px;
-}
+#tab-menu .menu-hero{ display:grid; gap:10px; margin:8px 0 10px; }
 
-/* Pilule de mode (visuel uniquement, ne déplace rien) */
+/* Pilule de mode (visuel uniquement) */
 #tab-menu .menu-mode-pill{
   display:grid; grid-template-columns:1fr 1fr; background:#fff; border:1px solid var(--line);
   border-radius:28px; padding:4px; box-shadow:0 4px 18px rgba(0,0,0,.08);
@@ -232,11 +228,11 @@ body:not(.is-home) #homeBanner{
 }
 #tab-menu .pill-btn.active{ background:#FF2D8A; color:#fff; }
 
-/* Carte */
-#tab-menu .menu-map{ height: 46vh; border-radius:16px; overflow:hidden; border:1px solid var(--line); }
+/* Map */
+#tab-menu .menu-map{ height:46vh; border-radius:16px; overflow:hidden; border:1px solid var(--line); }
 #tab-menu .menu-map iframe{ width:100%; height:100%; border:0 }
 
-/* Carte adresse */
+/* Adresse */
 #tab-menu .menu-address-card{
   background:#fff; border:1px solid var(--line); border-radius:18px; padding:12px;
   display:grid; grid-template-columns:auto 1fr auto; align-items:center; gap:10px;
@@ -267,27 +263,5 @@ body:not(.is-home) #homeBanner{
   box-shadow:0 8px 26px rgba(255,45,138,.28);
 }
 
-/* Bouton générique si pas déjà défini */
+/* Bouton générique */
 .btn.primary{ background:var(--accent-cta); color:#fff; border:0; border-radius:10px; padding:10px 12px; font-weight:800 }
-
-
-function bindMenuScreen(){
-  // Le bouton "Je commande" ouvre simplement l’onglet Commande
-  document.getElementById('menuGoOrder')?.addEventListener('click', ()=>{
-    switchTab('order');
-  });
-
-  // Le pill visuel peut juste changer le texte du titre dans l’onglet commande plus tard.
-  document.querySelector('#tab-menu .menu-mode-pill')?.addEventListener('click', (e)=>{
-    const btn = e.target.closest('.pill-btn');
-    if(!btn) return;
-    document.querySelectorAll('#tab-menu .pill-btn').forEach(b=> b.classList.toggle('active', b===btn));
-  });
-} 
-
-document.addEventListener('DOMContentLoaded', ()=>{
-  // ... tes appels existants ...
-  bindMenuScreen(); // ← AJOUT
-});
-
-
