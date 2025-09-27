@@ -10,8 +10,8 @@
   <link rel="manifest" href="manifest.json" />
 
   <title>Manhattan Street — Commande</title>
-  <link rel="stylesheet" href="styles.css?v=90" />
-  <script defer src="app.js?v=90"></script>
+  <link rel="stylesheet" href="styles.css?v=100" />
+  <script defer src="app.js?v=100"></script>
 </head>
 <body>
   <!-- Splash -->
@@ -59,6 +59,7 @@
 
     <!-- Commande (modes OK, positions validées) -->
     <section class="tab" id="tab-order">
+      <!-- Barre des modes DANS LE FLUX (pas overlay) -->
       <div class="segmented" id="orderModes">
         <button class="seg-btn" data-mode="takeaway">À emporter</button>
         <button class="seg-btn" data-mode="delivery">Livraison</button>
@@ -88,29 +89,11 @@
           </iframe>
         </div>
 
-        <div class="order-actions" style="display:flex; gap:8px; flex-wrap:wrap;">
-          <button class="btn" id="orderStart">Commencer ma commande</button>
-          <!-- NOUVEAU : ouvre la page Menu -->
-          <button class="btn primary" id="openMenuBtn">Ouvrir le menu</button>
+        <div class="order-actions">
+          <button class="btn primary" id="orderStart">Commencer ma commande</button>
         </div>
       </div>
 
-      <div class="page-spacer"></div>
-    </section>
-
-    <!-- MENU (page simple pour test navigation) -->
-    <section class="tab" id="tab-menu">
-      <div class="card">
-        <h2>Menu</h2>
-        <p class="hint">Page menu (brouillon). On remplira plus tard les catégories et produits.</p>
-        <ul>
-          <li>Formules</li>
-          <li>Burgers</li>
-          <li>Accompagnements</li>
-          <li>Boissons</li>
-          <li>Desserts</li>
-        </ul>
-      </div>
       <div class="page-spacer"></div>
     </section>
 
@@ -132,6 +115,7 @@
           <div class="qr-code-text" id="qrCodeText"></div>
         </div>
       </div>
+
       <div class="page-spacer"></div>
     </section>
 
@@ -141,6 +125,7 @@
         <h2>Mon historique</h2>
         <div id="myOrders"></div>
       </div>
+
       <div class="page-spacer"></div>
     </section>
 
@@ -155,6 +140,7 @@
         </div>
         <button class="btn primary" id="saveProfileBtn">Enregistrer</button>
       </div>
+
       <div class="page-spacer"></div>
     </section>
   </main>
