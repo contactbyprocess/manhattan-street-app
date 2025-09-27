@@ -66,7 +66,7 @@ function bindTabbar(){
   });
 }
 
-/* ===== CTA & Menu ===== */
+/* ===== CTA ===== */
 function bindCTA(){
   // CTA → onglet commande
   qs('#ctaOrder')?.addEventListener('click', (e)=>{
@@ -74,13 +74,7 @@ function bindCTA(){
     switchTab('order');
   });
 
-  // Bouton "Ouvrir le menu" (nouveau)
-  qs('#openMenuBtn')?.addEventListener('click', (e)=>{
-    e.preventDefault();
-    switchTab('menu');
-  });
-
-  // Raccourcis espace client depuis l’accueil
+  // Raccourcis espace client
   qs('#tileOrders')?.addEventListener('click', ()=> switchTab('orders'));
   qs('#tileProfile')?.addEventListener('click', ()=> switchTab('profile'));
 }
