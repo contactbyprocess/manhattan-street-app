@@ -10,8 +10,8 @@
   <link rel="manifest" href="manifest.json" />
 
   <title>Manhattan Street — Commande</title>
-  <link rel="stylesheet" href="styles.css?v=77" />
-  <script defer src="app.js?v=77"></script>
+  <link rel="stylesheet" href="styles.css?v=76" />
+  <script defer src="app.js?v=76"></script>
 </head>
 <body class="is-home">
   <!-- Splash -->
@@ -30,6 +30,42 @@
       <img src="assets/banner3.jpg" alt="Bannière 3" />
     </div>
     <div class="banner-dots" id="bannerDots"></div>
+  </section>
+
+  <!-- ===== MENU (onglet caché) ===== -->
+  <section class="tab" id="tab-menu">
+    <div class="menu-hero">
+      <div class="menu-mode-pill">
+        <button class="pill-btn active" data-goto="delivery">Livraison</button>
+        <button class="pill-btn" data-goto="takeaway">À emporter</button>
+      </div>
+
+      <div class="menu-address-card">
+        <span class="addr-ic">📍</span>
+        <span class="addr-text" id="menuAddress">120 Rue Kléber, Croix</span>
+        <button class="addr-gps" id="menuLocate" aria-label="Localiser">◎</button>
+      </div>
+    </div>
+
+    <div class="menu-map">
+      <iframe title="Carte"
+        src="https://www.openstreetmap.org/export/embed.html?bbox=3.204,50.734,3.224,50.754&layer=mapnik&marker=50.744,3.214"></iframe>
+    </div>
+
+    <div class="menu-card">
+      <div class="menu-card-row">
+        <img class="brand" src="assets/appicon.png" alt="" />
+        <div class="meta">
+          <div class="title">Manhattan Street</div>
+          <div class="sub">22 Grande Rue, Roubaix</div>
+        </div>
+        <div class="status ok">Ouvert</div>
+      </div>
+
+      <button class="btn big primary">Parcourir le menu</button>
+    </div>
+
+    <div class="page-spacer"></div>
   </section>
 
   <!-- ===== Contenu principal ===== -->
@@ -55,42 +91,6 @@
           <button class="client-tile" id="tileProfile"><span>Mon profil</span></button>
         </div>
       </section>
-    </section>
-
-    <!-- ===== MENU (vitrine) — NOUVEL ONGLET ===== -->
-    <section class="tab" id="tab-menu">
-      <div class="menu-hero">
-        <div class="menu-mode-pill">
-          <button class="pill-btn active" data-goto="delivery">Livraison</button>
-          <button class="pill-btn" data-goto="takeaway">Emporter</button>
-        </div>
-
-        <div class="menu-address-card">
-          <span class="addr-ic">📍</span>
-          <span class="addr-text" id="menuAddress">120 Rue Kléber, Croix</span>
-          <button class="addr-gps" id="menuLocate" aria-label="Localiser">◎</button>
-        </div>
-      </div>
-
-      <div class="menu-map">
-        <iframe title="Carte"
-          src="https://www.openstreetmap.org/export/embed.html?bbox=3.204,50.734,3.224,50.754&layer=mapnik&marker=50.744,3.214"></iframe>
-      </div>
-
-      <div class="menu-card">
-        <div class="menu-card-row">
-          <img class="brand" src="assets/appicon.png" alt="" />
-          <div class="meta">
-            <div class="title">Manhattan Street</div>
-            <div class="sub">22 Grande Rue, Roubaix</div>
-          </div>
-          <div class="status ok">Ouvert</div>
-        </div>
-
-        <button class="btn big primary" id="menuGoOrder">Je commande</button>
-      </div>
-
-      <div class="page-spacer"></div>
     </section>
 
     <!-- Commande -->
@@ -160,7 +160,6 @@
         <h2>Mon historique</h2>
         <div id="myOrders"></div>
       </div>
-
       <div class="page-spacer"></div>
     </section>
 
@@ -175,7 +174,6 @@
         </div>
         <button class="btn primary" id="saveProfileBtn">Enregistrer</button>
       </div>
-
       <div class="page-spacer"></div>
     </section>
   </main>
