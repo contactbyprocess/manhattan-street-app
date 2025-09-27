@@ -271,6 +271,23 @@ body:not(.is-home) #homeBanner{
 .btn.primary{ background:var(--accent-cta); color:#fff; border:0; border-radius:10px; padding:10px 12px; font-weight:800 }
 
 
+function bindMenuScreen(){
+  // Le bouton "Je commande" ouvre simplement l’onglet Commande
+  document.getElementById('menuGoOrder')?.addEventListener('click', ()=>{
+    switchTab('order');
+  });
 
+  // Le pill visuel peut juste changer le texte du titre dans l’onglet commande plus tard.
+  document.querySelector('#tab-menu .menu-mode-pill')?.addEventListener('click', (e)=>{
+    const btn = e.target.closest('.pill-btn');
+    if(!btn) return;
+    document.querySelectorAll('#tab-menu .pill-btn').forEach(b=> b.classList.toggle('active', b===btn));
+  });
+} 
+
+document.addEventListener('DOMContentLoaded', ()=>{
+  // ... tes appels existants ...
+  bindMenuScreen(); // ← AJOUT
+});
 
 
