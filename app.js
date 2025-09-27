@@ -365,6 +365,3 @@ document.addEventListener('DOMContentLoaded',()=>{
 if ('serviceWorker' in navigator) {
   navigator.serviceWorker.getRegistrations().then(list => list.forEach(reg => reg.update()));
 }
-
-
-
