@@ -234,9 +234,13 @@ document.addEventListener('DOMContentLoaded',()=>{
   bindCTA();
   bindOrderModes();
   bindProfile();
-  bindMenuScreen();         // ← ajout
+  bindMenuScreen();
+  bindOrderStart();          // ← AJOUTER CETTE LIGNE
   renderLoyalty();
   initBannerCarousel();
+
+  switchTab('home');
+});
 
   // Onglet par défaut : Accueil
   switchTab('home');
