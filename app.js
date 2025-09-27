@@ -40,6 +40,14 @@ function initBannerCarousel(){
   window.addEventListener('resize', ()=> { track.scrollLeft = i * slideW(); });
 }
 
+/* ===== Featured (neutralisé) ===== */
+function renderFeatured(){
+  const el = document.getElementById('featured');
+  if (!el) return;
+  el.innerHTML = '';
+  el.style.display = 'none';
+}
+
 /* ===== Tabs ===== */
 function switchTab(tab){
   // activer boutons
@@ -47,15 +55,28 @@ function switchTab(tab){
   // activer sections
   qsa('.tab').forEach(s=> s.classList.toggle('active', s.id===`tab-${tab}`));
 
-  // Bannière uniquement sur l’accueil
-  const hb = document.getElementById('homeBanner');
-  if (hb) hb.style.display = (tab === 'home' ? 'block' : 'none');
+  // Flags de page
+  document.body.classList.toggle('is-home',  tab === 'home');
+  document.body.classList.toggle('ordering', tab === 'order'); // masque le CTA seulement
 
-  // Mode commande : CTA fade, gap inchangé (VALIDÉ)
-  if (tab === 'order') document.body.classList.add('ordering');
-  else document.body.classList.remove('ordering');
+  // --- reset scroll & layout sans effet secondaire ---
+  const html = document.documentElement;
+  const prev = html.style.scrollBehavior;
+  html.style.scrollBehavior = 'auto';
 
-  window.scrollTo({top:0, behavior:'instant'});
+  // force reflow (prise en compte de la rétraction bannière)
+  document.body.getBoundingClientRect();
+
+  // remonte en haut, et insiste (Safari/iOS)
+  const forceTop = () => {
+    try{ window.scrollTo(0,0); }catch{}
+    try{ document.scrollingElement && (document.scrollingElement.scrollTop = 0); }catch{}
+  };
+  forceTop();
+  requestAnimationFrame(()=>{
+    forceTop();
+    setTimeout(()=>{ forceTop(); html.style.scrollBehavior = prev || ''; }, 0);
+  });
 }
 function bindTabbar(){
   document.addEventListener('click', (e)=>{
@@ -68,13 +89,14 @@ function bindTabbar(){
 
 /* ===== CTA ===== */
 function bindCTA(){
-  // CTA → onglet commande
+  const openOrder = ()=> switchTab('order');
+
   qs('#ctaOrder')?.addEventListener('click', (e)=>{
     e.preventDefault(); e.stopPropagation();
-    switchTab('order');
+    openOrder();
   });
 
-  // Raccourcis espace client
+  // Raccourcis espace client depuis l’accueil
   qs('#tileOrders')?.addEventListener('click', ()=> switchTab('orders'));
   qs('#tileProfile')?.addEventListener('click', ()=> switchTab('profile'));
 }
@@ -125,6 +147,7 @@ function renderQR(email){
 
 /* ===== INIT ===== */
 document.addEventListener('DOMContentLoaded',()=>{
+  renderFeatured();         // neutralisé
   bindTabbar();
   bindCTA();
   bindProfile();
