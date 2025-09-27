@@ -19,11 +19,11 @@
   --cta-size:102px;
   --cta-lift:50px;
 
-  /* Colonnes clampées (évite que les icônes grossissent) */
+  /* Colonnes clampées */
   --tab-col-min: 64px;
   --tab-col-max: 88px;
 
-  /* Espace central réservé au CTA (on NE le modifie pas en mode commande) */
+  /* Espace central réservé au CTA (inchangé en mode commande) */
   --cta-gap: calc(var(--cta-size) + 16px);
 }
 
@@ -36,7 +36,7 @@ body{
 }
 h1,h2,h3{ margin:0 0 8px 0 }
 
-/* ===== Buttons ===== */
+/* Buttons */
 .btn{ appearance:none; border:1px solid var(--line); background:#fff; border-radius:12px; padding:10px 14px; font-weight:700; }
 .btn.primary{ background:var(--accent-cta); color:#fff; border-color:var(--accent-cta); }
 .btn.small{ font-size:14px; padding:8px 12px }
