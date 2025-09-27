@@ -10,8 +10,8 @@
   <link rel="manifest" href="manifest.json" />
 
   <title>Manhattan Street — Commande</title>
-  <link rel="stylesheet" href="styles.css?v=75" />
-  <script defer src="app.js?v=75"></script>
+  <link rel="stylesheet" href="styles.css?v=77" />
+  <script defer src="app.js?v=77"></script>
 </head>
 <body class="is-home">
   <!-- Splash -->
@@ -32,7 +32,32 @@
     <div class="banner-dots" id="bannerDots"></div>
   </section>
 
-    <!-- MENU (vitrine) -->
+  <!-- ===== Contenu principal ===== -->
+  <main class="layout">
+    <!-- Accueil -->
+    <section class="tab tab-home active" id="tab-home">
+      <section class="hero-min">
+        <h1 class="hero-hash">#ManhattanStreet</h1>
+        <p class="hero-tag">TON INCONTOURNABLE 🗽🔥</p>
+      </section>
+
+      <section class="home-card">
+        <div class="prog-row">
+          <h2 class="home-title">Mon Programme</h2>
+          <div class="points-badge">Points : <strong id="pointsCountTop">0</strong></div>
+        </div>
+      </section>
+
+      <section class="home-block">
+        <h2>Mon espace client</h2>
+        <div class="client-grid">
+          <button class="client-tile" id="tileOrders"><span>Mes commandes</span></button>
+          <button class="client-tile" id="tileProfile"><span>Mon profil</span></button>
+        </div>
+      </section>
+    </section>
+
+    <!-- ===== MENU (vitrine) — NOUVEL ONGLET ===== -->
     <section class="tab" id="tab-menu">
       <div class="menu-hero">
         <div class="menu-mode-pill">
@@ -68,35 +93,8 @@
       <div class="page-spacer"></div>
     </section>
 
-  
-  <!-- ===== Contenu principal ===== -->
-  <main class="layout">
-    <!-- Accueil -->
-    <section class="tab tab-home active" id="tab-home">
-      <section class="hero-min">
-        <h1 class="hero-hash">#ManhattanStreet</h1>
-        <p class="hero-tag">TON INCONTOURNABLE 🗽🔥</p>
-      </section>
-
-      <section class="home-card">
-        <div class="prog-row">
-          <h2 class="home-title">Mon Programme</h2>
-          <div class="points-badge">Points : <strong id="pointsCountTop">0</strong></div>
-        </div>
-      </section>
-
-      <section class="home-block">
-        <h2>Mon espace client</h2>
-        <div class="client-grid">
-          <button class="client-tile" id="tileOrders"><span>Mes commandes</span></button>
-          <button class="client-tile" id="tileProfile"><span>Mon profil</span></button>
-        </div>
-      </section>
-    </section>
-
     <!-- Commande -->
     <section class="tab" id="tab-order">
-      <!-- Modes dans le flux (pas overlay) -->
       <div class="segmented" id="orderModes">
         <button class="seg-btn" data-mode="takeaway">À emporter</button>
         <button class="seg-btn" data-mode="delivery">Livraison</button>
